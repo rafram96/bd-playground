@@ -25,6 +25,9 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
+  // Allow webpack config while using Turbopack
+  turbopack: {},
 };
 
 export default nextConfig;
