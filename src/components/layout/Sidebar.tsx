@@ -37,60 +37,86 @@ interface NavItem {
   status?: Status;
 }
 
-interface NavGroup {
-  id: string;
-  label: string;
-  items: NavItem[];
-}
+type TreeEntry =
+  | { kind: "standalone"; item: NavItem }
+  | { kind: "week"; id: string; weekLabel: string; items: NavItem[] };
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Navigation tree
+   Navigation tree  (semana → temas)
    ───────────────────────────────────────────────────────────────────────────── */
-const TREE: { standalone?: NavItem; group?: NavGroup }[] = [
+const TREE: TreeEntry[] = [
   {
-    standalone: {
-      id: "playground",
-      label: "SQL Playground",
-      icon: <Terminal size={14} />,
-      status: "done",
-    },
+    kind: "standalone",
+    item: { id: "playground", label: "SQL Playground", icon: <Terminal size={14} />, status: "done" },
+  },
+
+  {
+    kind: "week", id: "w1", weekLabel: "Semana 1",
+    items: [
+      { id: "s1", label: "Arquitectura DBMS", icon: <Server size={14} />, status: "done" },
+    ],
   },
   {
-    group: {
-      id: "modulo1",
-      label: "Módulo I · Arquitectura y Almacenamiento",
-      items: [
-        { id: "s1", label: "Sem 1 · Arquitectura DBMS",      icon: <Server size={14} />,    status: "done" },
-        { id: "s2", label: "Sem 2 · Almacenamiento Físico",  icon: <HardDrive size={14} />, status: "planned" },
-        { id: "s3-bptree",  label: "Sem 3 · B+Tree",         icon: <GitBranch size={14} />, status: "planned" },
-        { id: "s3-hash",    label: "Sem 3 · Hash Index",     icon: <Hash size={14} />,      status: "planned" },
-        { id: "s3-adv",     label: "Sem 3 · GIN / GiST / BRIN", icon: <Layers size={14} />, status: "planned" },
-        { id: "s4", label: "Sem 4 · External Algorithms",   icon: <Cpu size={14} />,       status: "planned" },
-        { id: "s5", label: "Sem 5 · Concurrencia",          icon: <Lock size={14} />,      status: "planned" },
-      ],
-    },
+    kind: "week", id: "w2", weekLabel: "Semana 2",
+    items: [
+      { id: "s2", label: "Almacenamiento Físico", icon: <HardDrive size={14} />, status: "planned" },
+    ],
   },
   {
-    group: {
-      id: "modulo2",
-      label: "Módulo II · Motores Especializados",
-      items: [
-        { id: "s6",  label: "Sem 6 · BD Espaciales",        icon: <Map size={14} />,        status: "planned" },
-        { id: "s7",  label: "Sem 7 · Full-Text Search",     icon: <FileSearch size={14} />, status: "planned" },
-        { id: "s8",  label: "Sem 8 · NoSQL",                icon: <Leaf size={14} />,       status: "planned" },
-        { id: "s9",  label: "Sem 9 · OLAP / DW",            icon: <BarChart2 size={14} />,  status: "planned" },
-      ],
-    },
+    kind: "week", id: "w3", weekLabel: "Semana 3 — Índices",
+    items: [
+      { id: "s3-bptree", label: "B+Tree",           icon: <GitBranch size={14} />, status: "planned" },
+      { id: "s3-hash",   label: "Hash Index",        icon: <Hash size={14} />,      status: "planned" },
+      { id: "s3-adv",    label: "GIN / GiST / BRIN", icon: <Layers size={14} />,    status: "planned" },
+    ],
   },
   {
-    group: {
-      id: "modulo3",
-      label: "Módulo III · BD Distribuidas",
-      items: [
-        { id: "s10", label: "Sem 10 · Fragmentación",       icon: <Scissors size={14} />,   status: "planned" },
-        { id: "s11", label: "Sem 11-16 · BD Distribuidas",  icon: <Globe size={14} />,      status: "planned" },
-      ],
-    },
+    kind: "week", id: "w4", weekLabel: "Semana 4",
+    items: [
+      { id: "s4", label: "Algoritmos Externos", icon: <Cpu size={14} />, status: "planned" },
+    ],
+  },
+  {
+    kind: "week", id: "w5", weekLabel: "Semana 5",
+    items: [
+      { id: "s5", label: "Concurrencia", icon: <Lock size={14} />, status: "planned" },
+    ],
+  },
+  {
+    kind: "week", id: "w6", weekLabel: "Semana 6",
+    items: [
+      { id: "s6", label: "BD Espaciales", icon: <Map size={14} />, status: "planned" },
+    ],
+  },
+  {
+    kind: "week", id: "w7", weekLabel: "Semana 7",
+    items: [
+      { id: "s7", label: "Full-Text Search", icon: <FileSearch size={14} />, status: "planned" },
+    ],
+  },
+  {
+    kind: "week", id: "w8", weekLabel: "Semana 8 — NoSQL",
+    items: [
+      { id: "s8", label: "MongoDB · Cassandra · Redis", icon: <Leaf size={14} />, status: "planned" },
+    ],
+  },
+  {
+    kind: "week", id: "w9", weekLabel: "Semana 9",
+    items: [
+      { id: "s9", label: "OLAP / Data Warehousing", icon: <BarChart2 size={14} />, status: "planned" },
+    ],
+  },
+  {
+    kind: "week", id: "w10", weekLabel: "Semana 10",
+    items: [
+      { id: "s10", label: "Fragmentación", icon: <Scissors size={14} />, status: "planned" },
+    ],
+  },
+  {
+    kind: "week", id: "w11", weekLabel: "Semanas 11–16",
+    items: [
+      { id: "s11", label: "BD Distribuidas", icon: <Globe size={14} />, status: "planned" },
+    ],
   },
 ];
 
@@ -114,9 +140,10 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ active, onSelect }: SidebarProps) {
+  /* Semana 1 starts open; everything else collapsed */
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({
-    modulo2: true,
-    modulo3: true,
+    w2: true, w3: true, w4: true, w5: true, w6: true,
+    w7: true, w8: true, w9: true, w10: true, w11: true,
   });
 
   function toggle(id: string) {
@@ -172,62 +199,66 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
 
       {/* Nav */}
       <nav style={{ flex: 1, overflowY: "auto", padding: "8px 6px" }}>
-        {TREE.map((entry, i) => {
-          if (entry.standalone) {
-            const item = entry.standalone;
+        {TREE.map((entry) => {
+          /* ── Standalone (SQL Playground) ── */
+          if (entry.kind === "standalone") {
             return (
               <NavRow
-                key={item.id}
-                item={item}
-                active={active === item.id}
-                onClick={() => onSelect(item.id)}
+                key={entry.item.id}
+                item={entry.item}
+                active={active === entry.item.id}
+                onClick={() => onSelect(entry.item.id)}
               />
             );
           }
 
-          if (entry.group) {
-            const g = entry.group;
-            const isCollapsed = collapsed[g.id] ?? false;
-            return (
-              <div key={g.id} style={{ marginTop: i === 0 ? 0 : 6 }}>
-                <button
-                  onClick={() => toggle(g.id)}
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 4,
-                    padding: "5px 8px",
-                    background: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                    color: "var(--text-muted)",
-                    fontSize: 10,
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                    letterSpacing: 0.6,
-                    fontFamily: "var(--font-ui)",
-                    textAlign: "left",
-                  }}
-                >
-                  {isCollapsed ? <ChevronRight size={11} /> : <ChevronDown size={11} />}
-                  <span style={{ flex: 1 }}>{g.label}</span>
-                </button>
-                {!isCollapsed &&
-                  g.items.map((item) => (
-                    <NavRow
-                      key={item.id}
-                      item={item}
-                      active={active === item.id}
-                      onClick={() => onSelect(item.id)}
-                      indent
-                    />
-                  ))}
-              </div>
-            );
-          }
+          /* ── Week group ── */
+          const w = entry;
+          const isOpen = !(collapsed[w.id] ?? false);
+          const weekActive = w.items.some((it) => it.id === active);
 
-          return null;
+          return (
+            <div key={w.id} style={{ marginTop: 2 }}>
+              {/* Week header */}
+              <button
+                onClick={() => toggle(w.id)}
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  padding: "5px 8px",
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  color: weekActive ? "var(--text-secondary)" : "var(--text-muted)",
+                  fontSize: 10,
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: 0.5,
+                  fontFamily: "var(--font-ui)",
+                  textAlign: "left",
+                }}
+              >
+                {isOpen
+                  ? <ChevronDown size={11} style={{ flexShrink: 0 }} />
+                  : <ChevronRight size={11} style={{ flexShrink: 0 }} />}
+                <span style={{ flex: 1 }}>{w.weekLabel}</span>
+              </button>
+
+              {/* Items */}
+              {isOpen &&
+                w.items.map((item) => (
+                  <NavRow
+                    key={item.id}
+                    item={item}
+                    active={active === item.id}
+                    onClick={() => onSelect(item.id)}
+                    indent
+                  />
+                ))}
+            </div>
+          );
         })}
       </nav>
 
@@ -280,7 +311,7 @@ function NavRow({
         display: "flex",
         alignItems: "center",
         gap: 8,
-        padding: `6px ${indent ? "10px" : "8px"} 6px ${indent ? "18px" : "8px"}`,
+        padding: `5px ${indent ? "8px" : "8px"} 5px ${indent ? "20px" : "8px"}`,
         borderRadius: 6,
         border: "none",
         background: active ? "var(--accent-glow)" : "transparent",

@@ -94,9 +94,10 @@ export function SqlCode({ sql, label }: { sql: string; label?: string }) {
 /* ─────────────────────────────────────────────────────────────────────────────
    Typography
    ───────────────────────────────────────────────────────────────────────────── */
-export function H2({ children }: { children: React.ReactNode }) {
+export function H2({ children, id }: { children: React.ReactNode; id?: string }) {
   return (
     <h2
+      id={id}
       style={{
         fontSize: 22,
         fontWeight: 700,
@@ -105,6 +106,7 @@ export function H2({ children }: { children: React.ReactNode }) {
         paddingBottom: 8,
         borderBottom: "1px solid var(--border)",
         fontFamily: "var(--font-ui)",
+        scrollMarginTop: 28,
       }}
     >
       {children}
@@ -205,7 +207,7 @@ export function Formula({ children }: { children: React.ReactNode }) {
 }
 
 export function Divider() {
-  return <hr style={{ border: "none", borderTop: "1px solid var(--border)", margin: "28px 0" }} />;
+  return <hr style={{ border: "none", borderTop: "1px solid var(--border)", margin: "52px 0" }} />;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
