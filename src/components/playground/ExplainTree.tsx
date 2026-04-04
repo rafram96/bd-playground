@@ -2,36 +2,62 @@
 
 import { useState } from "react";
 import type { ExplainNode } from "@/lib/pglite";
+import {
+    ScanLine,
+    Search,
+    Zap,
+    LayoutGrid,
+    MapPin,
+    Link2,
+    GitMerge,
+    Repeat,
+    ArrowUpDown,
+    Hash,
+    Calculator,
+    Rows3,
+    Scissors,
+    Check,
+    Plus,
+    Package,
+    Clipboard,
+    Fingerprint,
+    Columns3,
+    GitFork,
+    Diamond,
+} from "lucide-react";
 
 interface ExplainTreeProps {
     plan: ExplainNode;
     totalTime: number;
 }
 
-// Node type icons
-const NODE_ICONS: Record<string, string> = {
-    "Seq Scan": "⬛",
-    "Index Scan": "🔍",
-    "Index Only Scan": "⚡",
-    "Bitmap Heap Scan": "🗺️",
-    "Bitmap Index Scan": "📍",
-    "Hash Join": "🔗",
-    "Merge Join": "🔀",
-    "Nested Loop": "🔄",
-    Sort: "↕️",
-    "Hash": "＃",
-    Aggregate: "∑",
-    "Group": "▣",
-    Limit: "✂️",
-    Result: "✓",
-    Append: "➕",
-    "Subquery Scan": "📦",
-    "CTE Scan": "📋",
-    "Unique": "◈",
-    "WindowAgg": "🪟",
-    "Gather": "⚙️",
-    "Gather Merge": "⚙️",
+const ICON_SIZE = 14;
+
+const NODE_ICONS: Record<string, React.ReactNode> = {
+    "Seq Scan":         <ScanLine size={ICON_SIZE} />,
+    "Index Scan":       <Search size={ICON_SIZE} />,
+    "Index Only Scan":  <Zap size={ICON_SIZE} />,
+    "Bitmap Heap Scan": <LayoutGrid size={ICON_SIZE} />,
+    "Bitmap Index Scan":<MapPin size={ICON_SIZE} />,
+    "Hash Join":        <Link2 size={ICON_SIZE} />,
+    "Merge Join":       <GitMerge size={ICON_SIZE} />,
+    "Nested Loop":      <Repeat size={ICON_SIZE} />,
+    Sort:               <ArrowUpDown size={ICON_SIZE} />,
+    "Hash":             <Hash size={ICON_SIZE} />,
+    Aggregate:          <Calculator size={ICON_SIZE} />,
+    "Group":            <Rows3 size={ICON_SIZE} />,
+    Limit:              <Scissors size={ICON_SIZE} />,
+    Result:             <Check size={ICON_SIZE} />,
+    Append:             <Plus size={ICON_SIZE} />,
+    "Subquery Scan":    <Package size={ICON_SIZE} />,
+    "CTE Scan":         <Clipboard size={ICON_SIZE} />,
+    "Unique":           <Fingerprint size={ICON_SIZE} />,
+    "WindowAgg":        <Columns3 size={ICON_SIZE} />,
+    "Gather":           <GitFork size={ICON_SIZE} />,
+    "Gather Merge":     <GitMerge size={ICON_SIZE} />,
 };
+
+const DEFAULT_NODE_ICON = <Diamond size={ICON_SIZE} />;
 
 function getNodeColor(
     node: ExplainNode,
@@ -81,7 +107,7 @@ function NodeCard({ node, maxCost, depth }: NodeCardProps) {
     const [collapsed, setCollapsed] = useState(false);
     const color = getNodeColor(node, maxCost);
     const hasChildren = node["Plans"] && node["Plans"].length > 0;
-    const icon = NODE_ICONS[node["Node Type"]] ?? "◆";
+    const icon = NODE_ICONS[node["Node Type"]] ?? DEFAULT_NODE_ICON;
 
     const actualTime = node["Actual Total Time"];
     const estimatedTime = node["Startup Cost"];
@@ -135,7 +161,7 @@ function NodeCard({ node, maxCost, depth }: NodeCardProps) {
                     }}
                     onClick={() => hasChildren && setCollapsed((c) => !c)}
                 >
-                    <span style={{ fontSize: 16 }}>{icon}</span>
+                    <span style={{ display: "flex", alignItems: "center", opacity: 0.8 }}>{icon}</span>
                     <div style={{ flex: 1 }}>
                         <div
                             style={{

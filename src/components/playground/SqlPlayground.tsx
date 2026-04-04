@@ -7,6 +7,7 @@ import ExplainTree from "./ExplainTree";
 import SnippetPanel from "./SnippetPanel";
 import { runQuery, runExplain, getDB } from "@/lib/pglite";
 import type { ExplainNode } from "@/lib/pglite";
+import { Play, Zap } from "lucide-react";
 
 const SqlEditor = dynamic(() => import("./SqlEditor"), { ssr: false });
 
@@ -140,30 +141,18 @@ export default function SqlPlayground() {
             <div
                 style={{
                     display: "grid",
-                    gridTemplateColumns: "220px 1fr",
+                    gridTemplateColumns: "1fr 220px",
                     gridTemplateRows: "1fr",
                     height: "100%",
                     overflow: "hidden",
                     gap: 0,
                 }}
             >
-                {/* LEFT — Snippet panel */}
-                <div
-                    style={{
-                        borderRight: "1px solid var(--border)",
-                        overflow: "hidden",
-                        display: "flex",
-                        flexDirection: "column",
-                    }}
-                >
-                    <SnippetPanel onSelect={handleSnippetSelect} />
-                </div>
-
-                {/* RIGHT — Editor + Results */}
+                {/* LEFT — Editor + Results */}
                 <div
                     style={{
                         display: "grid",
-                        gridTemplateRows: "auto 1fr auto 1fr",
+                        gridTemplateRows: "auto 2fr auto 1fr",
                         overflow: "hidden",
                     }}
                 >
@@ -193,14 +182,16 @@ export default function SqlPlayground() {
                         />
                         <Btn
                             id="btn-run"
-                            label={isRunning ? "Ejecutando..." : "▶ Ejecutar"}
+                            icon={<Play size={13} />}
+                            label={isRunning ? "Ejecutando..." : "Ejecutar"}
                             primary
                             disabled={isRunning || dbStatus !== "ready"}
                             onClick={handleRun}
                         />
                         <Btn
                             id="btn-explain"
-                            label="⚡ EXPLAIN"
+                            icon={<Zap size={13} />}
+                            label="EXPLAIN"
                             disabled={isRunning || dbStatus !== "ready"}
                             onClick={handleExplain}
                         />
@@ -241,7 +232,8 @@ export default function SqlPlayground() {
                             />
                             {explainResult && (
                                 <TabBtn
-                                    label="⚡ EXPLAIN"
+                                    label="EXPLAIN"
+                                    icon={<Zap size={12} />}
                                     active={resultMode === "explain"}
                                     onClick={() => setResultMode("explain")}
                                 />
@@ -288,6 +280,18 @@ export default function SqlPlayground() {
                         )}
                     </div>
                 </div>
+
+                {/* RIGHT — Snippet panel */}
+                <div
+                    style={{
+                        borderLeft: "1px solid var(--border)",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
+                    }}
+                >
+                    <SnippetPanel onSelect={handleSnippetSelect} />
+                </div>
             </div>
         </>
     );
@@ -299,12 +303,14 @@ function Btn({
     primary,
     disabled,
     id,
+    icon,
 }: {
     label: string;
     onClick: () => void;
     primary?: boolean;
     disabled?: boolean;
     id?: string;
+    icon?: React.ReactNode;
 }) {
     return (
         <button
@@ -312,6 +318,9 @@ function Btn({
             onClick={onClick}
             disabled={disabled}
             style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 5,
                 padding: "6px 16px",
                 borderRadius: 6,
                 border: primary ? "none" : "1px solid var(--border-bright)",
@@ -333,7 +342,7 @@ function Btn({
                 (e.currentTarget as HTMLButtonElement).style.opacity = disabled ? "0.5" : "1";
             }}
         >
-            {label}
+            {icon}{label}
         </button>
     );
 }
@@ -374,15 +383,20 @@ function TabBtn({
     label,
     active,
     onClick,
+    icon,
 }: {
     label: string;
     active: boolean;
     onClick: () => void;
+    icon?: React.ReactNode;
 }) {
     return (
         <button
             onClick={onClick}
             style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 5,
                 padding: "8px 18px",
                 border: "none",
                 borderBottom: active
@@ -397,7 +411,7 @@ function TabBtn({
                 transition: "all 0.15s",
             }}
         >
-            {label}
+            {icon}{label}
         </button>
     );
 }

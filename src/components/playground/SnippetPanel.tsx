@@ -2,6 +2,25 @@
 
 import { useState } from "react";
 import { SNIPPET_GROUPS, type SnippetGroup } from "@/lib/snippets";
+import {
+    Shield,
+    Layers,
+    ArrowUpDown,
+    FlaskConical,
+    Table2,
+    Search,
+    LayoutGrid,
+} from "lucide-react";
+
+const SNIPPET_ICONS: Record<string, React.ReactNode> = {
+    basic:     <Shield size={14} />,
+    index:     <Layers size={14} />,
+    sort:      <ArrowUpDown size={14} />,
+    explain:   <FlaskConical size={14} />,
+    catalog:   <Table2 size={14} />,
+    fts:       <Search size={14} />,
+    partition: <LayoutGrid size={14} />,
+};
 
 interface SnippetPanelProps {
     onSelect: (sql: string) => void;
@@ -81,7 +100,7 @@ export default function SnippetPanel({ onSelect }: SnippetPanelProps) {
                                 }
                             }}
                         >
-                            <span>{group.icon}</span>
+                            <span style={{ display: "flex", opacity: 0.7 }}>{SNIPPET_ICONS[group.icon] ?? <Shield size={14} />}</span>
                             <span style={{ flex: 1, fontWeight: 500 }}>{group.label}</span>
                             <span
                                 style={{

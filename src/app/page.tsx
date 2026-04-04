@@ -5,6 +5,23 @@ import dynamic from "next/dynamic";
 import Sidebar, { type PageId } from "@/components/layout/Sidebar";
 import ComingSoon from "@/components/layout/ComingSoon";
 import S1Guide from "@/components/guide/S1Guide";
+import {
+  HardDrive,
+  GitBranch,
+  Hash,
+  Layers,
+  Cpu,
+  Lock,
+  Globe,
+  FileSearch,
+  Leaf,
+  BarChart2,
+  Scissors,
+  Network,
+  BookOpen,
+  Wrench,
+  Construction,
+} from "lucide-react";
 
 const SqlPlayground = dynamic(
   () => import("@/components/playground/SqlPlayground"),
@@ -17,7 +34,7 @@ const SqlPlayground = dynamic(
 const PLANNED: Record<string, React.ComponentProps<typeof ComingSoon>> = {
   s2: {
     title: "Organización Física y Almacenamiento",
-    emoji: "💾",
+    icon: <HardDrive size={22} color="var(--text-muted)" />,
     semana: "Semana 2 · Módulo I",
     goal: "Entender cómo el diseño físico impacta en el rendimiento.",
     teoria: [
@@ -49,7 +66,7 @@ const PLANNED: Record<string, React.ComponentProps<typeof ComingSoon>> = {
   },
   "s3-bptree": {
     title: "B+Tree en Motores Reales",
-    emoji: "🌲",
+    icon: <GitBranch size={22} color="var(--text-muted)" />,
     semana: "Semana 3 · Módulo I",
     goal: "Evaluar comportamiento práctico del B+Tree agrupado y no agrupado.",
     teoria: [
@@ -77,7 +94,7 @@ const PLANNED: Record<string, React.ComponentProps<typeof ComingSoon>> = {
   },
   "s3-hash": {
     title: "Hash Index — Estático y Extensible",
-    emoji: "＃",
+    icon: <Hash size={22} color="var(--text-muted)" />,
     semana: "Semana 3 · Módulo I",
     goal: "Comprender hashing estático, extensible y lineal con manejo de overflow.",
     teoria: [
@@ -101,7 +118,7 @@ const PLANNED: Record<string, React.ComponentProps<typeof ComingSoon>> = {
   },
   "s3-adv": {
     title: "Índices Avanzados: GIN, GiST, SP-GiST, BRIN",
-    emoji: "🔍",
+    icon: <Layers size={22} color="var(--text-muted)" />,
     semana: "Semana 3 · Módulo I",
     goal: "Seleccionar el tipo de índice adecuado para cada patrón de acceso.",
     teoria: [
@@ -126,7 +143,7 @@ const PLANNED: Record<string, React.ComponentProps<typeof ComingSoon>> = {
   },
   s4: {
     title: "External Algorithms y Buffer Management",
-    emoji: "⚙️",
+    icon: <Cpu size={22} color="var(--text-muted)" />,
     semana: "Semana 4 · Módulo I",
     goal: "Comprender algoritmos para datos que exceden la memoria principal.",
     teoria: [
@@ -155,7 +172,7 @@ const PLANNED: Record<string, React.ComponentProps<typeof ComingSoon>> = {
   },
   s5: {
     title: "Concurrencia y Recuperación",
-    emoji: "🔒",
+    icon: <Lock size={22} color="var(--text-muted)" />,
     semana: "Semana 5 · Módulo I",
     goal: "Comprender cómo se garantiza consistencia bajo carga concurrente.",
     teoria: [
@@ -188,7 +205,7 @@ const PLANNED: Record<string, React.ComponentProps<typeof ComingSoon>> = {
   },
   s6: {
     title: "Bases de Datos Espaciales — PostGIS",
-    emoji: "🌍",
+    icon: <Globe size={22} color="var(--text-muted)" />,
     semana: "Semana 6 · Módulo II",
     goal: "Aplicar indexación multidimensional en motores reales.",
     teoria: [
@@ -219,7 +236,7 @@ const PLANNED: Record<string, React.ComponentProps<typeof ComingSoon>> = {
   },
   s7: {
     title: "Full-Text Search y BD Vectoriales",
-    emoji: "📝",
+    icon: <FileSearch size={22} color="var(--text-muted)" />,
     semana: "Semana 7 · Módulo II",
     goal: "Diseñar sistemas de recuperación de información textual y vectorial.",
     teoria: [
@@ -246,7 +263,7 @@ const PLANNED: Record<string, React.ComponentProps<typeof ComingSoon>> = {
   },
   s8: {
     title: "Modelos NoSQL",
-    emoji: "🍃",
+    icon: <Leaf size={22} color="var(--text-muted)" />,
     semana: "Semana 8 · Módulo II",
     goal: "Comparar modelos NoSQL y sus casos de uso.",
     teoria: [
@@ -273,7 +290,7 @@ const PLANNED: Record<string, React.ComponentProps<typeof ComingSoon>> = {
   },
   s9: {
     title: "OLAP y Data Warehousing",
-    emoji: "📊",
+    icon: <BarChart2 size={22} color="var(--text-muted)" />,
     semana: "Semana 9 · Módulo II",
     goal: "Diseñar arquitecturas analíticas (OLAP, Data Warehousing, HTAP).",
     teoria: [
@@ -299,7 +316,7 @@ const PLANNED: Record<string, React.ComponentProps<typeof ComingSoon>> = {
   },
   s10: {
     title: "Fragmentación de Datos",
-    emoji: "🧩",
+    icon: <Scissors size={22} color="var(--text-muted)" />,
     semana: "Semana 10 · Módulo III",
     goal: "Diseñar esquemas de fragmentación horizontal, vertical y mixta.",
     teoria: [
@@ -323,7 +340,7 @@ const PLANNED: Record<string, React.ComponentProps<typeof ComingSoon>> = {
   },
   s11: {
     title: "Bases de Datos Distribuidas",
-    emoji: "🌐",
+    icon: <Network size={22} color="var(--text-muted)" />,
     semana: "Semanas 11-16 · Módulo III",
     goal: "Diseñar y optimizar consultas distribuidas con replicación y alta disponibilidad.",
     teoria: [
@@ -351,6 +368,16 @@ const PLANNED: Record<string, React.ComponentProps<typeof ComingSoon>> = {
       "PostgreSQL Documentation – Foreign Data Wrappers, Logical Replication",
     ],
   },
+
+  /* ── Utilidades ── */
+  "util-cheatsheet": {
+    title: "SQL Cheat Sheet",
+    icon: <BookOpen size={22} color="var(--text-muted)" />,
+  },
+  "util-tools": {
+    title: "Herramientas",
+    icon: <Wrench size={22} color="var(--text-muted)" />,
+  },
 };
 
 /* ─────────────────────────────────────────────────────
@@ -364,7 +391,7 @@ export default function Home() {
     if (id === "s1")         return <S1Guide />;
     const plan = PLANNED[id];
     if (plan) return <ComingSoon {...plan} />;
-    return <ComingSoon title={id} emoji="🚧" />;
+    return <ComingSoon title={id} icon={<Construction size={22} color="var(--text-muted)" />} />;
   }
 
   return (

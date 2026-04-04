@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Check, AlertTriangle, X } from "lucide-react";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    SQL Syntax Highlighter
@@ -414,7 +415,7 @@ function ParserPanel() {
           ].map((c) => (
             <div key={c.label} style={{ background: c.ok ? "#051a0f" : "#1a0505", border: `1px solid ${c.ok ? "#166534" : "#7f1d1d"}`, borderRadius: 8, padding: "10px 12px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                <span style={{ fontSize: 14 }}>{c.ok ? "✓" : "!"}</span>
+                <span style={{ display: "flex" }}>{c.ok ? <Check size={14} /> : <AlertTriangle size={14} />}</span>
                 <span style={{ fontSize: 12, fontWeight: 600, color: c.ok ? "#4ade80" : "#f87171" }}>{c.label}</span>
               </div>
               <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{c.desc}</div>
@@ -590,9 +591,9 @@ close() → libera recursos
           ].map((s) => (
             <div key={s.name} style={{ background: s.bg, border: `1px solid ${s.color}40`, borderRadius: 8, padding: "12px" }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: s.color, marginBottom: 8 }}>{s.name}</div>
-              <div style={{ fontSize: 11, color: "#4ade80", marginBottom: 4 }}>✓ Ventajas</div>
+              <div style={{ fontSize: 11, color: "#4ade80", marginBottom: 4, display: "flex", alignItems: "center", gap: 4 }}><Check size={11} /> Ventajas</div>
               {s.pros.map((p) => <div key={p} style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 3 }}>• {p}</div>)}
-              <div style={{ fontSize: 11, color: "#f87171", marginTop: 8, marginBottom: 4 }}>✗ Limitaciones</div>
+              <div style={{ fontSize: 11, color: "#f87171", marginTop: 8, marginBottom: 4, display: "flex", alignItems: "center", gap: 4 }}><X size={11} /> Limitaciones</div>
               {s.cons.map((c) => <div key={c} style={{ fontSize: 11, color: "var(--text-secondary)", marginBottom: 3 }}>• {c}</div>)}
               <div style={{ marginTop: 10, padding: "6px 8px", background: "#0d1117", borderRadius: 6, fontSize: 11, color: "var(--text-muted)" }}>
                 Usar cuando: {s.when}

@@ -1,5 +1,7 @@
 "use client";
 
+import { Database } from "lucide-react";
+
 export interface TabDef {
     id: string;
     label: string;
@@ -89,7 +91,7 @@ function NavLogo() {
                     fontSize: 14,
                 }}
             >
-                🗄️
+                <Database size={14} color="#fff" />
             </div>
             <div>
                 <div

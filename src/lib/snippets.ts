@@ -16,7 +16,7 @@ export const SNIPPET_GROUPS: SnippetGroup[] = [
     {
         id: "basic",
         label: "Básico",
-        icon: "🔰",
+        icon: "basic",
         snippets: [
             {
                 id: "select-all-emp",
@@ -82,7 +82,7 @@ ORDER BY manager NULLS FIRST, employee;`,
     {
         id: "modulo1-index",
         label: "Módulo I — Índices",
-        icon: "🗂️",
+        icon: "index",
         snippets: [
             {
                 id: "explain-seq",
@@ -143,7 +143,7 @@ ORDER BY salary DESC;`,
     {
         id: "modulo1-sort",
         label: "Módulo I — Sort & Buffer",
-        icon: "⚙️",
+        icon: "sort",
         snippets: [
             {
                 id: "sort-in-memory",
@@ -188,7 +188,7 @@ ORDER BY dept_id, salary;`,
     {
         id: "lab01-explain",
         label: "Lab 01 — EXPLAIN ANALYZE",
-        icon: "🔬",
+        icon: "explain",
         snippets: [
             {
                 id: "explain-basic",
@@ -253,7 +253,7 @@ ORDER BY avg_salary DESC;`,
     {
         id: "lab01-pgcatalog",
         label: "Lab 01 — pg_catalog",
-        icon: "📖",
+        icon: "catalog",
         snippets: [
             {
                 id: "pgcatalog-tables",
@@ -360,7 +360,7 @@ ORDER BY t.relname, c.contype;`,
     {
         id: "modulo2-fts",
         label: "Módulo II — Full-Text",
-        icon: "🔍",
+        icon: "fts",
         snippets: [
             {
                 id: "fts-basic",
@@ -415,7 +415,7 @@ ORDER BY month;`,
     {
         id: "modulo3-partition",
         label: "Módulo III — Particionamiento",
-        icon: "🧩",
+        icon: "partition",
         snippets: [
             {
                 id: "range-partition-sim",

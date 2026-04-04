@@ -22,6 +22,8 @@ import {
   Circle,
   CheckCircle2,
   Construction,
+  BookOpen,
+  Wrench,
 } from "lucide-react";
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -39,7 +41,8 @@ interface NavItem {
 
 type TreeEntry =
   | { kind: "standalone"; item: NavItem }
-  | { kind: "week"; id: string; weekLabel: string; items: NavItem[] };
+  | { kind: "week"; id: string; weekLabel: string; items: NavItem[] }
+  | { kind: "divider"; id: string };
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Navigation tree  (semana → temas)
@@ -118,6 +121,16 @@ const TREE: TreeEntry[] = [
       { id: "s11", label: "BD Distribuidas", icon: <Globe size={14} />, status: "planned" },
     ],
   },
+
+  { kind: "divider", id: "div-utils" },
+
+  {
+    kind: "week", id: "utils", weekLabel: "Utilidades",
+    items: [
+      { id: "util-cheatsheet", label: "SQL Cheat Sheet", icon: <BookOpen size={14} />, status: "planned" },
+      { id: "util-tools", label: "Herramientas", icon: <Wrench size={14} />, status: "planned" },
+    ],
+  },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -143,7 +156,7 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
   /* Semana 1 starts open; everything else collapsed */
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({
     w2: true, w3: true, w4: true, w5: true, w6: true,
-    w7: true, w8: true, w9: true, w10: true, w11: true,
+    w7: true, w8: true, w9: true, w10: true, w11: true, utils: false,
   });
 
   function toggle(id: string) {
@@ -200,6 +213,20 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
       {/* Nav */}
       <nav style={{ flex: 1, overflowY: "auto", padding: "8px 6px" }}>
         {TREE.map((entry) => {
+          /* ── Divider ── */
+          if (entry.kind === "divider") {
+            return (
+              <div
+                key={entry.id}
+                style={{
+                  height: 1,
+                  background: "var(--border)",
+                  margin: "10px 12px",
+                }}
+              />
+            );
+          }
+
           /* ── Standalone (SQL Playground) ── */
           if (entry.kind === "standalone") {
             return (

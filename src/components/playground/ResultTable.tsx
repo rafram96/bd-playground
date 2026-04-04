@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { XCircle, CheckCircle2 } from "lucide-react";
 
 interface ResultTableProps {
     rows: Record<string, unknown>[];
@@ -80,8 +81,8 @@ export default function ResultTable({
                         whiteSpace: "pre-wrap",
                     }}
                 >
-                    <span style={{ fontWeight: 600, display: "block", marginBottom: 6 }}>
-                        ✖ Error
+                    <span style={{ fontWeight: 600, display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                        <XCircle size={14} /> Error
                     </span>
                     {error}
                 </div>
@@ -131,7 +132,7 @@ export default function ResultTable({
                         fontFamily: "var(--font-code)",
                     }}
                 >
-                    ✓ {rows.length} row{rows.length !== 1 ? "s" : ""}
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><CheckCircle2 size={12} /> {rows.length} row{rows.length !== 1 ? "s" : ""}</span>
                 </span>
                 <span
                     style={{
