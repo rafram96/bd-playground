@@ -62,15 +62,15 @@ const TREE: TreeEntry[] = [
   {
     kind: "week", id: "w2", weekLabel: "Semana 2",
     items: [
-      { id: "s2", label: "Almacenamiento Físico", icon: <HardDrive size={14} />, status: "planned" },
+      { id: "s2", label: "Almacenamiento Físico", icon: <HardDrive size={14} />, status: "done" },
     ],
   },
   {
     kind: "week", id: "w3", weekLabel: "Semana 3 — Índices",
     items: [
-      { id: "s3-bptree", label: "B+Tree",           icon: <GitBranch size={14} />, status: "planned" },
-      { id: "s3-hash",   label: "Hash Index",        icon: <Hash size={14} />,      status: "planned" },
-      { id: "s3-adv",    label: "GIN / GiST / BRIN", icon: <Layers size={14} />,    status: "planned" },
+      { id: "s3-bptree",   label: "B+Tree",           icon: <GitBranch size={14} />, status: "done" },
+      { id: "s3-hash",     label: "Hash Index",        icon: <Hash size={14} />,      status: "planned" },
+      { id: "s3-adv",      label: "GIN / GiST / BRIN", icon: <Layers size={14} />,   status: "planned" },
     ],
   },
   {

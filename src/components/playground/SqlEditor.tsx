@@ -4,9 +4,11 @@ import { useRef, useCallback } from "react";
 import Editor, { loader, type OnMount, type BeforeMount } from "@monaco-editor/react";
 import type { editor, Position } from "monaco-editor";
 
-/* ── Use local monaco-editor to bypass CDN CORS issues with COEP headers ── */
-import * as monacoLib from "monaco-editor";
-loader.config({ monaco: monacoLib });
+/* ── Use local monaco-editor core + SQL only (avoids importing ALL languages) ── */
+// @ts-expect-error — ESM deep import has no .d.ts; runtime is fine
+import * as monacoCore from "monaco-editor/esm/vs/editor/editor.api";
+import "monaco-editor/esm/vs/basic-languages/sql/sql.contribution";
+loader.config({ monaco: monacoCore });
 
 interface SqlEditorProps {
     value: string;

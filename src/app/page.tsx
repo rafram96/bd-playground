@@ -4,7 +4,6 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import Sidebar, { type PageId } from "@/components/layout/Sidebar";
 import ComingSoon from "@/components/layout/ComingSoon";
-import S1Guide from "@/components/guide/S1Guide";
 import {
   HardDrive,
   GitBranch,
@@ -28,70 +27,38 @@ const SqlPlayground = dynamic(
   { ssr: false }
 );
 
+const S1Guide = dynamic(
+  () => import("@/components/guide/S1Guide"),
+);
+
+const S2Guide = dynamic(
+  () => import("@/components/guide/S2Guide"),
+);
+
+const S3Guide = dynamic(
+  () => import("@/components/guide/S3Guide"),
+);
+
+const SlottedPageViz = dynamic(
+  () => import("@/components/visualizer/SlottedPageViz"),
+  { ssr: false }
+);
+
+const BPlusTreeViz = dynamic(
+  () => import("@/components/visualizer/BPlusTreeViz"),
+  { ssr: false }
+);
+
+const CostComparatorViz = dynamic(
+  () => import("@/components/visualizer/CostComparatorViz"),
+  { ssr: false }
+);
+
 /* ─────────────────────────────────────────────────────
    Contenido planeado por página (para ComingSoon)
    ───────────────────────────────────────────────────── */
 const PLANNED: Record<string, React.ComponentProps<typeof ComingSoon>> = {
-  s2: {
-    title: "Organización Física y Almacenamiento",
-    icon: <HardDrive size={22} color="var(--text-muted)" />,
-    semana: "Semana 2 · Módulo I",
-    goal: "Entender cómo el diseño físico impacta en el rendimiento.",
-    teoria: [
-      { label: "Páginas y bloques" },
-      { label: "Heap files" },
-      { label: "Registros de longitud fija y variable" },
-      { label: "Fillfactor" },
-      { label: "Layout físico en disco" },
-      { label: "Costos de I/O" },
-    ],
-    lab: [
-      { label: "Simulación en Python de registros de longitud fija" },
-      { label: "Simulación de registros de longitud variable con offsets" },
-      { label: "Análisis comparativo de costos de I/O" },
-      { label: "Análisis del tamaño real con pg_relation_size y pg_total_relation_size" },
-      { label: "Exploración de páginas con extensión pageinspect" },
-      { label: "Evaluación del impacto del fillfactor en distintas cargas de trabajo" },
-    ],
-    viz: [
-      "Diagrama de página con header / ItemId / tuplas",
-      "Comparativa registros fijo vs variable",
-      "Costo I/O por tipo de organización",
-    ],
-    refs: [
-      "Silberschatz – Database System Concepts (7th Ed.), Chapter 11: Storage and File Structure",
-      "Ramakrishnan – DBMS (3rd Ed.), Chapter 8: Storage and Indexing",
-      "PostgreSQL Documentation (Physical Storage)",
-    ],
-  },
-  "s3-bptree": {
-    title: "B+Tree en Motores Reales",
-    icon: <GitBranch size={22} color="var(--text-muted)" />,
-    semana: "Semana 3 · Módulo I",
-    goal: "Evaluar comportamiento práctico del B+Tree agrupado y no agrupado.",
-    teoria: [
-      { label: "B+Tree en motores reales — estructura interna" },
-      { label: "Índice agrupado (clustered) vs no agrupado" },
-      { label: "Splits y merges en inserciones/eliminaciones" },
-      { label: "Selección de índices según patrón de acceso" },
-    ],
-    lab: [
-      { label: "Simulación de B+Tree agrupado y no agrupado" },
-      { label: "Creación y comparación experimental de índices" },
-      { label: "Análisis de planes de ejecución con EXPLAIN ANALYZE" },
-      { label: "Benchmark de consultas con y sin índice" },
-    ],
-    viz: [
-      "B+Tree interactivo: inserción y split animado",
-      "Comparativa clustered vs non-clustered",
-      "Diagrama de nodos hoja → heap page",
-    ],
-    refs: [
-      "Silberschatz – Database System Concepts (7th Ed.), Chapter 12: Indexing and Hashing",
-      "Ramakrishnan – DBMS (3rd Ed.), Chapters 8-10: Indexing",
-      "PostgreSQL Documentation – Index Types (B-Tree)",
-    ],
-  },
+  /* s2 → S2Guide, s3-bptree → S3Guide */
   "s3-hash": {
     title: "Hash Index — Estático y Extensible",
     icon: <Hash size={22} color="var(--text-muted)" />,
@@ -389,6 +356,11 @@ export default function Home() {
   function renderPage(id: PageId) {
     if (id === "playground") return <SqlPlayground />;
     if (id === "s1")         return <S1Guide />;
+    if (id === "s2")         return <S2Guide />;
+    if (id === "s3-bptree") return <S3Guide />;
+    if (id === "viz-slotted") return <SlottedPageViz />;
+    if (id === "viz-bptree")  return <BPlusTreeViz />;
+    if (id === "viz-costs")   return <CostComparatorViz />;
     const plan = PLANNED[id];
     if (plan) return <ComingSoon {...plan} />;
     return <ComingSoon title={id} icon={<Construction size={22} color="var(--text-muted)" />} />;

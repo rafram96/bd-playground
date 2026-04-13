@@ -130,14 +130,6 @@ export default function SqlPlayground() {
     const hasResult = queryResult || explainResult || error;
 
     return (
-        <>
-            <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.3; }
-        }
-      `}</style>
-
             <div
                 style={{
                     display: "grid",
@@ -293,7 +285,6 @@ export default function SqlPlayground() {
                     <SnippetPanel onSelect={handleSnippetSelect} />
                 </div>
             </div>
-        </>
     );
 }
 
