@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import katex from "katex";
+import "katex/dist/katex.min.css";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    SQL Syntax Highlighter (shared across the app)
@@ -208,6 +210,37 @@ export function Formula({ children }: { children: React.ReactNode }) {
 
 export function Divider() {
   return <hr style={{ border: "none", borderTop: "1px solid var(--border)", margin: "52px 0" }} />;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Math (KaTeX) — real mathematical typesetting
+   Usage: <MathInline>{String.raw`x^2`}</MathInline>  ·  <MathBlock>{String.raw`\frac a b`}</MathBlock>
+   ───────────────────────────────────────────────────────────────────────────── */
+function renderTex(expr: string, displayMode: boolean): string {
+  return katex.renderToString(expr, {
+    displayMode,
+    throwOnError: false,
+    output: "htmlAndMathml",
+    strict: false,
+  });
+}
+
+export function MathInline({ children }: { children: string }) {
+  return (
+    <span
+      style={{ color: "#a78bfa" }}
+      dangerouslySetInnerHTML={{ __html: renderTex(children, false) }}
+    />
+  );
+}
+
+export function MathBlock({ children }: { children: string }) {
+  return (
+    <div
+      style={{ margin: "8px 0", overflowX: "auto", color: "#a78bfa", fontSize: 17 }}
+      dangerouslySetInnerHTML={{ __html: renderTex(children, true) }}
+    />
+  );
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

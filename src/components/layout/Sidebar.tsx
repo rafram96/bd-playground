@@ -17,6 +17,8 @@ import {
   BarChart2,
   Scissors,
   Globe,
+  Binary,
+  GraduationCap,
   ChevronDown,
   ChevronRight,
   Circle,
@@ -92,32 +94,35 @@ const TREE: TreeEntry[] = [
     ],
   },
   {
-    kind: "week", id: "w7", weekLabel: "Semana 7",
+    kind: "week", id: "w8", weekLabel: "Semana 8 — Recuperación Textual",
     items: [
-      { id: "s7", label: "Full-Text Search", icon: <FileSearch size={14} />, status: "planned" },
+      { id: "s8-ir", label: "RI: BoW · TF-IDF · Índice Invertido", icon: <FileSearch size={14} />, status: "done" },
+      { id: "s8-examen", label: "Esencial para el examen", icon: <GraduationCap size={14} />, status: "done" },
     ],
   },
   {
-    kind: "week", id: "w8", weekLabel: "Semana 8 — NoSQL",
+    kind: "week", id: "w9", weekLabel: "Semana 9 — Índice Invertido Optimizado",
     items: [
-      { id: "s8", label: "MongoDB · Cassandra · Redis", icon: <Leaf size={14} />, status: "planned" },
+      { id: "s9-ir", label: "BSBI · SPIMI · GIN/GiST · Motores", icon: <Layers size={14} />, status: "done" },
+      { id: "s9-examen", label: "Esencial para el examen", icon: <GraduationCap size={14} />, status: "done" },
     ],
   },
   {
-    kind: "week", id: "w9", weekLabel: "Semana 9",
+    kind: "week", id: "w10", weekLabel: "Semana 10 — BD Vectoriales",
     items: [
+      { id: "s10-vec", label: "Multimedia · Embeddings · kNN/ANN", icon: <Binary size={14} />, status: "done" },
+      { id: "s10-examen", label: "Esencial para el examen", icon: <GraduationCap size={14} />, status: "done" },
+    ],
+  },
+
+  { kind: "divider", id: "div-otros" },
+
+  {
+    kind: "week", id: "w-otros", weekLabel: "Módulo II–III · Próximos temas",
+    items: [
+      { id: "s8", label: "NoSQL (MongoDB · Cassandra · Redis)", icon: <Leaf size={14} />, status: "planned" },
       { id: "s9", label: "OLAP / Data Warehousing", icon: <BarChart2 size={14} />, status: "planned" },
-    ],
-  },
-  {
-    kind: "week", id: "w10", weekLabel: "Semana 10",
-    items: [
       { id: "s10", label: "Fragmentación", icon: <Scissors size={14} />, status: "planned" },
-    ],
-  },
-  {
-    kind: "week", id: "w11", weekLabel: "Semanas 11–16",
-    items: [
       { id: "s11", label: "BD Distribuidas", icon: <Globe size={14} />, status: "planned" },
     ],
   },
@@ -156,7 +161,7 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
   /* Semana 1 starts open; everything else collapsed */
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({
     w2: true, w3: true, w4: true, w5: true, w6: true,
-    w7: true, w8: true, w9: true, w10: true, w11: true, utils: false,
+    w8: true, w9: true, w10: true, "w-otros": true, utils: false,
   });
 
   function toggle(id: string) {

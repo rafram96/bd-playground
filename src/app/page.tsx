@@ -12,7 +12,6 @@ import {
   Cpu,
   Lock,
   Globe,
-  FileSearch,
   Leaf,
   BarChart2,
   Scissors,
@@ -37,6 +36,30 @@ const S2Guide = dynamic(
 
 const S3Guide = dynamic(
   () => import("@/components/guide/S3Guide"),
+);
+
+const S8Guide = dynamic(
+  () => import("@/components/guide/S8Guide"),
+);
+
+const S8Exam = dynamic(
+  () => import("@/components/guide/S8Exam"),
+);
+
+const S9Guide = dynamic(
+  () => import("@/components/guide/S9Guide"),
+);
+
+const S9Exam = dynamic(
+  () => import("@/components/guide/S9Exam"),
+);
+
+const S10Guide = dynamic(
+  () => import("@/components/guide/S10Guide"),
+);
+
+const S10Exam = dynamic(
+  () => import("@/components/guide/S10Exam"),
 );
 
 const SlottedPageViz = dynamic(
@@ -201,33 +224,6 @@ const PLANNED: Record<string, React.ComponentProps<typeof ComingSoon>> = {
       "PostGIS Documentation – Spatial Functions and Indexing",
     ],
   },
-  s7: {
-    title: "Full-Text Search y BD Vectoriales",
-    icon: <FileSearch size={22} color="var(--text-muted)" />,
-    semana: "Semana 7 · Módulo II",
-    goal: "Diseñar sistemas de recuperación de información textual y vectorial.",
-    teoria: [
-      { label: "Índices invertidos y modelo booleano" },
-      { label: "Algoritmos de ranking y relevancia (TF-IDF, BM25)" },
-      { label: "Full-text search en PostgreSQL: tsvector, tsquery, GIN" },
-      { label: "Embeddings y búsqueda vectorial" },
-      { label: "Índices multidimensionales: IVF y HNSW" },
-    ],
-    lab: [
-      { label: "Full-text search con to_tsvector / to_tsquery" },
-      { label: "ts_rank para ranking por relevancia" },
-      { label: "GIN index para búsqueda textual" },
-      { label: "Búsqueda vectorial con embeddings y pgvector" },
-    ],
-    viz: [
-      "Diagrama de índice invertido",
-      "Pipeline RAG: content → embedding → vector DB → query",
-    ],
-    refs: [
-      "PostgreSQL Documentation – Full Text Search",
-      "Silberschatz – Database System Concepts (7th Ed.), Chapter 23",
-    ],
-  },
   s8: {
     title: "Modelos NoSQL",
     icon: <Leaf size={22} color="var(--text-muted)" />,
@@ -358,6 +354,12 @@ export default function Home() {
     if (id === "s1")         return <S1Guide />;
     if (id === "s2")         return <S2Guide />;
     if (id === "s3-bptree") return <S3Guide />;
+    if (id === "s8-ir")      return <S8Guide />;
+    if (id === "s8-examen")  return <S8Exam />;
+    if (id === "s9-ir")      return <S9Guide />;
+    if (id === "s9-examen")  return <S9Exam />;
+    if (id === "s10-vec")    return <S10Guide />;
+    if (id === "s10-examen") return <S10Exam />;
     if (id === "viz-slotted") return <SlottedPageViz />;
     if (id === "viz-bptree")  return <BPlusTreeViz />;
     if (id === "viz-costs")   return <CostComparatorViz />;
