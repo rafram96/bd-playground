@@ -19,6 +19,7 @@ import {
   Globe,
   Binary,
   GraduationCap,
+  LocateFixed,
   ChevronDown,
   ChevronRight,
   Circle,
@@ -112,6 +113,7 @@ const TREE: TreeEntry[] = [
     items: [
       { id: "s10-vec", label: "Multimedia · Embeddings · kNN/ANN", icon: <Binary size={14} />, status: "done" },
       { id: "s10-examen", label: "Esencial para el examen", icon: <GraduationCap size={14} />, status: "done" },
+      { id: "s10-viz", label: "Visualizador: k-NN & distancias", icon: <LocateFixed size={14} />, status: "done" },
     ],
   },
 
