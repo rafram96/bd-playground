@@ -51,6 +51,10 @@ const S8RankingViz = dynamic(
   { ssr: false }
 );
 
+const SqlSyntaxGuide = dynamic(
+  () => import("@/components/guide/SqlSyntaxGuide"),
+);
+
 const S9Guide = dynamic(
   () => import("@/components/guide/S9Guide"),
 );
@@ -367,6 +371,7 @@ export default function Home() {
     if (id === "s8-ir")      return <S8Guide />;
     if (id === "s8-examen")  return <S8Exam />;
     if (id === "s8-viz")     return <S8RankingViz />;
+    if (id === "util-sintaxis") return <SqlSyntaxGuide />;
     if (id === "s9-ir")      return <S9Guide />;
     if (id === "s9-examen")  return <S9Exam />;
     if (id === "s10-vec")    return <S10Guide />;

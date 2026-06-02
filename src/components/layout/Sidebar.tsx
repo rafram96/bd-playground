@@ -21,6 +21,7 @@ import {
   GraduationCap,
   LocateFixed,
   Sigma,
+  Code2,
   ChevronDown,
   ChevronRight,
   Circle,
@@ -136,6 +137,7 @@ const TREE: TreeEntry[] = [
   {
     kind: "week", id: "utils", weekLabel: "Utilidades",
     items: [
+      { id: "util-sintaxis", label: "Sintaxis SQL", icon: <Code2 size={14} />, status: "done" },
       { id: "util-cheatsheet", label: "SQL Cheat Sheet", icon: <BookOpen size={14} />, status: "planned" },
       { id: "util-tools", label: "Herramientas", icon: <Wrench size={14} />, status: "planned" },
     ],
