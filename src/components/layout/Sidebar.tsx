@@ -20,6 +20,7 @@ import {
   Binary,
   GraduationCap,
   LocateFixed,
+  Sigma,
   ChevronDown,
   ChevronRight,
   Circle,
@@ -99,6 +100,7 @@ const TREE: TreeEntry[] = [
     items: [
       { id: "s8-ir", label: "RI: BoW · TF-IDF · Índice Invertido", icon: <FileSearch size={14} />, status: "done" },
       { id: "s8-examen", label: "Esencial para el examen", icon: <GraduationCap size={14} />, status: "done" },
+      { id: "s8-viz", label: "Visualizador: TF-IDF & coseno", icon: <Sigma size={14} />, status: "wip" },
     ],
   },
   {

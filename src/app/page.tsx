@@ -46,6 +46,11 @@ const S8Exam = dynamic(
   () => import("@/components/guide/S8Exam"),
 );
 
+const S8RankingViz = dynamic(
+  () => import("@/components/visualizer/S8RankingViz"),
+  { ssr: false }
+);
+
 const S9Guide = dynamic(
   () => import("@/components/guide/S9Guide"),
 );
@@ -361,6 +366,7 @@ export default function Home() {
     if (id === "s3-bptree") return <S3Guide />;
     if (id === "s8-ir")      return <S8Guide />;
     if (id === "s8-examen")  return <S8Exam />;
+    if (id === "s8-viz")     return <S8RankingViz />;
     if (id === "s9-ir")      return <S9Guide />;
     if (id === "s9-examen")  return <S9Exam />;
     if (id === "s10-vec")    return <S10Guide />;
