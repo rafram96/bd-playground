@@ -193,7 +193,7 @@ export default function S10Guide() {
                   "Implementación más simple",
                 ],
                 cons: [
-                  "Resumir la parte común (metadatos) de medios distintos es muy difícil — el gran desafío",
+                  "Resumir la parte común (metadatos) de medios distintos es muy difícil",
                 ],
               },
             ]}
@@ -260,7 +260,7 @@ export default function S10Guide() {
           <Divider />
 
           {/* ══ 3. ESQUEMA ══ */}
-          <H2 id="sec-esquema">3. Búsqueda por similitud — esquema general</H2>
+          <H2 id="sec-esquema">3. Búsqueda por similitud (esquema)</H2>
           <Pipeline steps={[
             { label: "Extraer", sub: "objeto → feature vector", color: "#3b82f6" },
             { label: "Indexar", sub: "vectores → base de datos", color: "#8b5cf6" },
@@ -358,7 +358,7 @@ export default function S10Guide() {
           ]} />
           <Callout variant="note" title="Costo computacional">
             Minkowski es <Code>O(D)</Code> (lineal en la dimensión). La forma cuadrática es <Code>O(D²)</Code>{" "}
-            por el producto con la matriz A — más expresiva, pero más cara.
+            por el producto con la matriz A (más expresiva, pero más cara).
           </Callout>
 
           <Divider />
@@ -438,8 +438,8 @@ export default function S10Guide() {
             <>Se mide por el <Bold>costo de búsqueda</Bold>: tiempo de CPU + tiempo de E/S (acceso a disco).</>,
             <>Se acelera con estructuras de datos especializadas:
               <Ul items={[
-                <><Bold>Índices multidimensionales</Bold> (Spatial Access Methods, SAM) — para espacios vectoriales.</>,
-                <><Bold>Índices métricos</Bold> (Metric Access Methods, MAM) — para espacios métricos generales.</>,
+                <><Bold>Índices multidimensionales</Bold> (Spatial Access Methods, SAM), para espacios vectoriales.</>,
+                <><Bold>Índices métricos</Bold> (Metric Access Methods, MAM), para espacios métricos generales.</>,
               ]} />
             </>,
           ]} />
@@ -460,7 +460,7 @@ export default function S10Guide() {
           <Ul items={[
             <><Bold>Precision:</Bold> de lo recuperado, ¿cuánto era relevante?</>,
             <><Bold>Recall:</Bold> de lo relevante, ¿cuánto se recuperó?</>,
-            <>Relación empírica: <Bold>suelen estar en tensión</Bold> — subir recall (traer más) baja precision (más ruido).</>,
+            <>Relación empírica: <Bold>suelen estar en tensión</Bold>; subir recall (traer más) baja precision (más ruido).</>,
           ]} />
           <Callout variant="note" title="Colecciones de referencia (benchmarks)">
             Para evaluar modelos de RI se usan colecciones con objetos + consultas + relevancias conocidas:{" "}
@@ -550,14 +550,13 @@ export default function S10Guide() {
           <Ul items={[
             <><Bold>Segmentación de video</Bold>: indexar conferencias por cambios de diapositiva + texto de las
               slides, y buscar el segmento relevante por palabras clave o por similitud de contenido.</>,
-            <><Bold>Audio musical</Bold>: calcular vectores espectrales (<Bold>MFCC</Bold> — coeficientes
-              cepstrales en frecuencias de Mel), cuantizarlos en un histograma de audio y comparar. (No conserva
+            <><Bold>Audio musical</Bold>: calcular vectores espectrales (<Bold>MFCC</Bold>), cuantizarlos en un histograma de audio y comparar. (No conserva
               el orden temporal de los sonidos.)</>,
             <><Bold>Representación temporal</Bold>: el video puede modelarse como <Bold>series de tiempo</Bold>{" "}
               (ej.: trayectoria de un gesto), comparables con distancias entre series.</>,
           ]} />
 
-          <Callout variant="lab" title="Laboratorio 10 — pgvector">
+          <Callout variant="lab" title="Pgvector">
             En PostgreSQL, la extensión <Code>pgvector</Code> añade un tipo <Code>vector</Code> y operadores de
             distancia para hacer búsqueda por similitud (kNN) directamente en SQL.
           </Callout>
@@ -576,7 +575,7 @@ ORDER BY emb <-> '[...]'
 LIMIT 5;
 -- Operadores: <-> L2,  <=> coseno,  <#> producto punto (negativo)`} />
 
-          <Callout variant="note" title="Cierre del Módulo II">
+          <Callout variant="note" title="Cierre">
             Con esto cerramos los motores especializados: <Bold>espacial</Bold> (S6), <Bold>textual</Bold>{" "}
             (S8-S9) y <Bold>vectorial/multimedia</Bold> (S10). El hilo común es siempre el mismo: una buena
             <Bold> representación</Bold> + una <Bold>medida de similitud</Bold> + un <Bold>índice</Bold> que

@@ -211,18 +211,22 @@ export default function CostComparatorViz() {
         color: 'var(--text-primary)',
         fontFamily: 'var(--font-ui)',
         padding: '32px',
-        borderRadius: '8px',
-        minHeight: '100vh',
+        height: '100%',
+        overflow: 'auto',
       }}
     >
       {/* Header */}
       <div style={{ marginBottom: '40px' }}>
+        <div style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-code)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+          Semana 3 · Módulo I — Visualizador interactivo
+        </div>
         <h1
           style={{
-            fontSize: '28px',
-            fontWeight: 600,
+            fontSize: '26px',
+            fontWeight: 800,
             margin: '0 0 8px 0',
             color: 'var(--text-primary)',
+            lineHeight: 1.2,
           }}
         >
           Comparador de Costos I/O

@@ -386,8 +386,11 @@ export default function BPlusTreeViz() {
     }}>
       {/* Header */}
       <div style={{ padding: "24px 32px 16px", borderBottom: "1px solid var(--border)", flexShrink: 0 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0 }}>B+Tree Interactivo</h1>
-        <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: "6px 0 0", lineHeight: 1.5 }}>
+        <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-code)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
+          Semana 3 · Módulo I — Visualizador interactivo
+        </div>
+        <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, fontFamily: "var(--font-ui)", lineHeight: 1.2 }}>B+Tree Interactivo</h1>
+        <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: "8px 0 0", lineHeight: 1.6 }}>
           Inserta claves y observa cómo el árbol crece con splits. Busca claves para ver el camino de la raíz a la hoja.
           Las hojas están enlazadas (leaf chaining) para range queries eficientes.
         </p>

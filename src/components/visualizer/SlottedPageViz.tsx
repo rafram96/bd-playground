@@ -106,10 +106,13 @@ export default function SlottedPageViz() {
     }}>
       {/* ── Header ── */}
       <div style={{ padding: "24px 32px 16px", borderBottom: "1px solid var(--border)", flexShrink: 0 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0 }}>
+        <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-code)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
+          Semana 2 · Módulo I — Visualizador interactivo
+        </div>
+        <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, fontFamily: "var(--font-ui)", lineHeight: 1.2 }}>
           Slotted Page · 8 KB
         </h1>
-        <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: "6px 0 0", lineHeight: 1.5 }}>
+        <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: "8px 0 0", lineHeight: 1.6 }}>
           Estructura interna de una página PostgreSQL. Inserta registros y observa cómo crece el ItemId Array
           desde arriba y las tuplas desde abajo. Elimina registros para crear dead tuples, luego compacta.
         </p>

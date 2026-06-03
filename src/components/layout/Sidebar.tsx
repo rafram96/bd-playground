@@ -22,6 +22,9 @@ import {
   LocateFixed,
   Sigma,
   Code2,
+  Workflow,
+  Share2,
+  ListChecks,
   ChevronDown,
   ChevronRight,
   Circle,
@@ -74,6 +77,7 @@ const TREE: TreeEntry[] = [
     kind: "week", id: "w3", weekLabel: "Semana 3 — Índices",
     items: [
       { id: "s3-bptree",   label: "B+Tree",           icon: <GitBranch size={14} />, status: "done" },
+      { id: "viz-bptree",  label: "B+Tree (viz)",      icon: <Workflow size={14} />,  status: "done" },
       { id: "s3-hash",     label: "Hash Index",        icon: <Hash size={14} />,      status: "planned" },
       { id: "s3-adv",      label: "GIN / GiST / BRIN", icon: <Layers size={14} />,   status: "planned" },
     ],
@@ -138,6 +142,8 @@ const TREE: TreeEntry[] = [
     kind: "week", id: "utils", weekLabel: "Utilidades",
     items: [
       { id: "util-sintaxis", label: "Sintaxis SQL", icon: <Code2 size={14} />, status: "done" },
+      { id: "util-fd", label: "Dependencias Funcionales", icon: <Share2 size={14} />, status: "done" },
+      { id: "util-norm", label: "Normalización", icon: <ListChecks size={14} />, status: "done" },
       { id: "util-cheatsheet", label: "SQL Cheat Sheet", icon: <BookOpen size={14} />, status: "planned" },
       { id: "util-tools", label: "Herramientas", icon: <Wrench size={14} />, status: "planned" },
     ],

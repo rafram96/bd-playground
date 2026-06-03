@@ -27,23 +27,23 @@ const SqlPlayground = dynamic(
 );
 
 const S1Guide = dynamic(
-  () => import("@/components/guide/S1Guide"),
+  () => import("@/components/guide/S1/S1Guide"),
 );
 
 const S2Guide = dynamic(
-  () => import("@/components/guide/S2Guide"),
+  () => import("@/components/guide/S2/S2Guide"),
 );
 
 const S3Guide = dynamic(
-  () => import("@/components/guide/S3Guide"),
+  () => import("@/components/guide/S3/S3Guide"),
 );
 
 const S8Guide = dynamic(
-  () => import("@/components/guide/S8Guide"),
+  () => import("@/components/guide/S8/S8Guide"),
 );
 
 const S8Exam = dynamic(
-  () => import("@/components/guide/S8Exam"),
+  () => import("@/components/guide/S8/S8Exam"),
 );
 
 const S8RankingViz = dynamic(
@@ -55,20 +55,28 @@ const SqlSyntaxGuide = dynamic(
   () => import("@/components/guide/SqlSyntaxGuide"),
 );
 
+const FuncionalDepsGuide = dynamic(
+  () => import("@/components/guide/FuncionalDepsGuide"),
+);
+
+const NormalizacionGuide = dynamic(
+  () => import("@/components/guide/NormalizacionGuide"),
+);
+
 const S9Guide = dynamic(
-  () => import("@/components/guide/S9Guide"),
+  () => import("@/components/guide/S9/S9Guide"),
 );
 
 const S9Exam = dynamic(
-  () => import("@/components/guide/S9Exam"),
+  () => import("@/components/guide/S9/S9Exam"),
 );
 
 const S10Guide = dynamic(
-  () => import("@/components/guide/S10Guide"),
+  () => import("@/components/guide/S10/S10Guide"),
 );
 
 const S10Exam = dynamic(
-  () => import("@/components/guide/S10Exam"),
+  () => import("@/components/guide/S10/S10Exam"),
 );
 
 const S10KnnViz = dynamic(
@@ -372,6 +380,8 @@ export default function Home() {
     if (id === "s8-examen")  return <S8Exam />;
     if (id === "s8-viz")     return <S8RankingViz />;
     if (id === "util-sintaxis") return <SqlSyntaxGuide />;
+    if (id === "util-fd")       return <FuncionalDepsGuide />;
+    if (id === "util-norm")     return <NormalizacionGuide />;
     if (id === "s9-ir")      return <S9Guide />;
     if (id === "s9-examen")  return <S9Exam />;
     if (id === "s10-vec")    return <S10Guide />;
