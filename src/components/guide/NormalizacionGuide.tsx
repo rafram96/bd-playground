@@ -54,9 +54,9 @@ export default function NormalizacionGuide() {
           Una relación está en 1FN si <Bold>todos los atributos contienen valores atómicos</Bold> (no
           repetitivos ni multivaluados). <Bold>Objetivo:</Bold> eliminar campos con listas, arreglos o tablas internas.
         </Callout>
-        <SqlCode label="❌ No cumple 1FN — atributo multivaluado" sql={`Alumno(id, nombre, cursos)
+        <SqlCode label="No cumple 1FN · atributo multivaluado" sql={`Alumno(id, nombre, cursos)
 (1, Ana, [BD, Redes])`} />
-        <SqlCode label="✅ Convertido a 1FN — una fila por valor" sql={`Alumno(id, nombre, curso)
+        <SqlCode label="Corregido · ya en 1FN, una fila por valor" sql={`Alumno(id, nombre, curso)
 (1, Ana, BD)
 (1, Ana, Redes)`} />
 
@@ -69,7 +69,7 @@ export default function NormalizacionGuide() {
           dependen completamente de toda la clave primaria</Bold> (no de una parte de ella). Solo aplica si
           la <Bold>clave primaria es compuesta</Bold>.
         </Callout>
-        <SqlCode label="❌ No cumple 2FN — dependencia parcial" sql={`CursoAlumno(id_curso, id_alumno, nombre_curso)
+        <SqlCode label="No cumple 2FN · dependencia parcial" sql={`CursoAlumno(id_curso, id_alumno, nombre_curso)
 
 -- nombre_curso depende SOLO de id_curso, no de la clave completa`} />
         <P><Bold>Convertido a 2FN</Bold> — se separa lo que depende de parte de la clave:</P>
@@ -87,7 +87,7 @@ export default function NormalizacionGuide() {
           entre atributos no clave. <Bold>Objetivo:</Bold> eliminar columnas que dependen de otras columnas
           no clave, en lugar de depender directamente de la clave primaria.
         </Callout>
-        <SqlCode label="❌ No cumple 3FN — dependencia transitiva" sql={`Empleado(id_emp, nombre, id_depto, nombre_depto)
+        <SqlCode label="No cumple 3FN · dependencia transitiva" sql={`Empleado(id_emp, nombre, id_depto, nombre_depto)
 
 -- nombre_depto depende de id_depto, que depende de id_emp
 -- id_emp → id_depto → nombre_depto`} />
@@ -110,7 +110,7 @@ export default function NormalizacionGuide() {
           Es una versión más <Bold>estricta</Bold> que 3FN; se aplica en casos donde 3FN no elimina ciertas
           anomalías lógicas.
         </P>
-        <SqlCode label="❌ No cumple BCNF" sql={`Profesor(materia, aula, profesor)
+        <SqlCode label="No cumple BCNF" sql={`Profesor(materia, aula, profesor)
 
 DF:  materia → aula
      aula    → profesor
@@ -129,7 +129,7 @@ DF:  materia → aula
           no triviales</Bold>. Una dependencia multivaluada ocurre cuando un atributo tiene{" "}
           <Bold>múltiples valores independientes</Bold> para una clave.
         </Callout>
-        <SqlCode label="❌ No cumple 4FN — multivaluadas independientes" sql={`AutorLibro(id_autor, libro, idioma)
+        <SqlCode label="No cumple 4FN · multivaluadas independientes" sql={`AutorLibro(id_autor, libro, idioma)
 
 -- un autor escribe varios libros Y habla varios idiomas,
 -- de forma independiente entre sí`} />

@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import {
-  H2, H3, P, Bold, Code, Formula, Divider,
+  H2, H3, P, Bold, Code, Divider,
   Ul, Ol, Callout, Table,
-  Collapse, Pipeline, DiagramPlaceholder, SqlCode, MathBlock,
+  Collapse, Pipeline, DiagramPlaceholder, SqlCode, MathBlock, Pseudo,
 } from "@/components/guide/blocks";
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -172,7 +172,7 @@ export default function S8Guide() {
             En una base de datos relacional, el campo textual suele ser un atributo de tipo{" "}
             <Code>text</Code>, y la búsqueda se hace con el operador <Code>LIKE</Code> o <Code>ILIKE</Code>:
           </P>
-          <SqlCode label="Búsqueda con ILIKE — funciona en demo, falla en producción" sql={`SELECT * FROM news
+          <SqlCode label="Búsqueda con ILIKE — funciona en demo, falla en producción (creanme D:)" sql={`SELECT * FROM news
 WHERE content ILIKE '%keyword1%'
   AND content ILIKE '%keyword2%';`} />
 
@@ -219,7 +219,7 @@ WHERE content ILIKE '%keyword1%'
           <P>
             Sobre una base de datos multimedia, IR se materializa principalmente como{" "}
             <Bold>Full-Text Search</Bold> (texto) y <Bold>Content-Based Image Search</Bold> (imágenes).
-            Esta semana nos enfocamos en texto; la búsqueda vectorial/multimedia es la Semana 10.
+            Esta semana nos enfocamos en texto.
           </P>
 
           <H3>Entrada y salida de un sistema IR</H3>
@@ -629,18 +629,17 @@ WHERE content ILIKE '%keyword1%'
             avanzando el que apunta al docID menor. <Bold>Esto solo funciona si están ordenadas.</Bold>
           </Callout>
           <Collapse title="Pseudocódigo: INTERSECT (consulta AND)" defaultOpen>
-            <Formula>
-              INTERSECT(p₁, p₂){"\n"}
-              1   answer ← ⟨ ⟩{"\n"}
-              2   while p₁ ≠ NIL and p₂ ≠ NIL{"\n"}
-              3     do if docID(p₁) = docID(p₂){"\n"}
-              4          then ADD(answer, docID(p₁)){"\n"}
-              5               p₁ ← next(p₁);  p₂ ← next(p₂){"\n"}
-              6        else if docID(p₁) &lt; docID(p₂){"\n"}
-              7          then p₁ ← next(p₁){"\n"}
-              8          else p₂ ← next(p₂){"\n"}
-              9   return answer
-            </Formula>
+            <Pseudo>{`INTERSECT(p₁, p₂)
+ 1  answer = ⟨⟩
+ 2  while p₁ ≠ NIL and p₂ ≠ NIL
+ 3      if p₁.docID == p₂.docID
+ 4          ADD(answer, p₁.docID)
+ 5          p₁ = p₁.next
+ 6          p₂ = p₂.next
+ 7      elseif p₁.docID < p₂.docID
+ 8          p₁ = p₁.next
+ 9      else p₂ = p₂.next
+10  return answer`}</Pseudo>
             <P>
               <Code>OR</Code> (unión): mismo recorrido pero se agregan <Bold>todos</Bold> los docID.{" "}
               <Code>AND NOT</Code>: se agregan los de <Code>p₁</Code> que <Bold>no</Bold> están en{" "}
@@ -654,19 +653,18 @@ WHERE content ILIKE '%keyword1%'
             contienen algún término de la consulta, acumulando scores parciales.
           </P>
           <Collapse title="Pseudocódigo: CosineScore(q)">
-            <Formula>
-              COSINESCORE(q){"\n"}
-              1   float Scores[N] = 0{"\n"}
-              2   float Length[N]{"\n"}
-              3   for each query term t{"\n"}
-              4     do calcular w(t,q) y obtener la posting list de t{"\n"}
-              5        for each (d, tf(t,d)) en la posting list{"\n"}
-              6          do Scores[d] += w(t,d) × w(t,q){"\n"}
-              7   leer el arreglo Length{"\n"}
-              8   for each d{"\n"}
-              9     do Scores[d] = Scores[d] / Length[d]   (normalización){"\n"}
-              10  return Top-K de Scores[]
-            </Formula>
+            <Pseudo>{`COSINE-SCORE(q)
+ 1  let Scores[1..N] and Length[1..N] be new arrays
+ 2  for d = 1 to N
+ 3      Scores[d] = 0
+ 4  for each query term t
+ 5      calcular w(t,q) y obtener la posting list de t
+ 6      for each (d, tf(t,d)) en la posting list de t
+ 7          Scores[d] = Scores[d] + w(t,d) · w(t,q)
+ 8  leer el arreglo Length
+ 9  for d = 1 to N
+10      Scores[d] = Scores[d] / Length[d]    // normalización por longitud
+11  return los K mayores componentes de Scores`}</Pseudo>
           </Collapse>
 
           <Callout variant="lab" title="Laboratorios 8.1 y 8.2">

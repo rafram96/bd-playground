@@ -213,6 +213,32 @@ export function Divider() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   Pseudo — pseudocódigo estilo CLRS (Cormen, 3.ª ed.): monospace con la
+   indentación preservada (white-space: pre). Pasar el código como template string.
+   ───────────────────────────────────────────────────────────────────────────── */
+export function Pseudo({ children }: { children: string }) {
+  return (
+    <pre
+      style={{
+        margin: "12px 0",
+        padding: "12px 16px",
+        background: "var(--bg-elevated)",
+        borderLeft: "3px solid var(--accent)",
+        borderRadius: "0 6px 6px 0",
+        fontFamily: "var(--font-code)",
+        fontSize: 12.5,
+        color: "var(--text-secondary)",
+        lineHeight: 1.65,
+        whiteSpace: "pre",
+        overflowX: "auto",
+      }}
+    >
+      {children}
+    </pre>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    Math (KaTeX) — real mathematical typesetting
    Usage: <MathInline>{String.raw`x^2`}</MathInline>  ·  <MathBlock>{String.raw`\frac a b`}</MathBlock>
    ───────────────────────────────────────────────────────────────────────────── */

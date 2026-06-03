@@ -282,8 +282,8 @@ export default function S9Exam() {
             headers={["Operación", "Coste", "Nota"]}
             rows={[
               ["Entrada BSBI", "≈ 8 bytes", "(termID, docID)"],
-              ["Mezcla binaria", "log₂(b) niveles", "b = nº de bloques"],
-              ["Selección en multi-way", "O(log b) por paso", "con cola de prioridad / heap"],
+              ["Mezcla binaria", "lg(b) niveles", "b = nº de bloques"],
+              ["Selección en multi-way", "O(lg b) por paso", "con cola de prioridad / heap"],
               ["Merge de 2 posting lists", "O(n + m)", "listas ordenadas por docID (igual que S8)"],
             ]}
           />
@@ -302,7 +302,7 @@ export default function S9Exam() {
               ["Caso ideal", "Search engines, muchas lecturas", "CMS, muchas escrituras"],
             ]}
           />
-          <SqlCode label="Sintaxis (memorizar)" sql={`-- GIN
+          <SqlCode label="Sintaxis" sql={`-- GIN
 CREATE INDEX idx ON news USING GIN (to_tsvector('spanish', content));
 -- GiST
 CREATE INDEX idx ON news USING GIST (to_tsvector('spanish', content));

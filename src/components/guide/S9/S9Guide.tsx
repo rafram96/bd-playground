@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import {
-  H2, H3, P, Bold, Code, Formula, Divider,
+  H2, H3, P, Bold, Code, Divider,
   Ul, Ol, Callout, Table, CompareCards,
-  Collapse, Pipeline, DiagramPlaceholder, SqlCode,
+  Collapse, Pipeline, DiagramPlaceholder, SqlCode, Pseudo,
 } from "@/components/guide/blocks";
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -194,16 +194,14 @@ export default function S9Guide() {
           ]} />
 
           <Collapse title="Pseudocódigo: BSBIndexConstruction" defaultOpen>
-            <Formula>
-              BSBIndexConstruction(){"\n"}
-              1   n ← 0{"\n"}
-              2   while (quedan documentos por procesar){"\n"}
-              3     do n ← n + 1{"\n"}
-              4        block ← ParseNextBlock(){"\n"}
-              5        BSBI-Invert(block)            ← ordenar y construir índice local{"\n"}
-              6        WriteBlockToDisk(block, fₙ){"\n"}
-              7   MergeBlocks(f₁, …, fₙ ; f_merged)
-            </Formula>
+            <Pseudo>{`BSBI-INDEX-CONSTRUCTION()
+1  n = 0
+2  while quedan documentos por procesar
+3      n = n + 1
+4      block = PARSE-NEXT-BLOCK()
+5      BSBI-INVERT(block)               // ordena y construye el índice local
+6      WRITE-BLOCK-TO-DISK(block, fₙ)
+7  MERGE-BLOCKS(f₁, …, fₙ, f_merged)`}</Pseudo>
           </Collapse>
           <DiagramPlaceholder label="Diagrama: bloques 1..6 → índices locales (ordenados por termID) en disk blocks" height={180} />
 
@@ -257,22 +255,20 @@ export default function S9Guide() {
           ]} />
 
           <Collapse title="Pseudocódigo: SPIMI-Invert">
-            <Formula>
-              SPIMI-Invert(token_stream){"\n"}
-              1   output_file = NewFile(){"\n"}
-              2   dictionary  = NewHash(){"\n"}
-              3   while (hay memoria libre){"\n"}
-              4     do token ← next(token_stream){"\n"}
-              5        if term(token) ∉ dictionary{"\n"}
-              6          then postings_list = AddToDictionary(dictionary, term(token)){"\n"}
-              7          else postings_list = GetPostingsList(dictionary, term(token)){"\n"}
-              8        if full(postings_list){"\n"}
-              9          then postings_list = DoublePostingsList(dictionary, term(token)){"\n"}
-              10       AddToPostingsList(postings_list, docID(token)){"\n"}
-              11  sorted_terms ← SortTerms(dictionary){"\n"}
-              12  WriteBlockToDisk(sorted_terms, dictionary, output_file){"\n"}
-              13  return output_file
-            </Formula>
+            <Pseudo>{`SPIMI-INVERT(token_stream)
+ 1  output_file = NEW-FILE()
+ 2  dictionary = NEW-HASH()
+ 3  while hay memoria libre
+ 4      token = NEXT(token_stream)
+ 5      if token.term ∉ dictionary
+ 6          postings_list = ADD-TO-DICTIONARY(dictionary, token.term)
+ 7      else postings_list = GET-POSTINGS-LIST(dictionary, token.term)
+ 8      if FULL(postings_list)
+ 9          postings_list = DOUBLE-POSTINGS-LIST(dictionary, token.term)
+10      ADD-TO-POSTINGS-LIST(postings_list, token.docID)
+11  sorted_terms = SORT-TERMS(dictionary)
+12  WRITE-BLOCK-TO-DISK(sorted_terms, dictionary, output_file)
+13  return output_file`}</Pseudo>
             <P>
               El ordenamiento (línea 11) ocurre <Bold>una sola vez al final del bloque</Bold>, no en cada
               inserción — por eso es "single-pass".

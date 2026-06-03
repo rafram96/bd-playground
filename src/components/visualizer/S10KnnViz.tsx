@@ -170,7 +170,7 @@ export default function S10KnnViz() {
           </h1>
           <p style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.7, margin: 0, fontFamily: "var(--font-ui)" }}>
             Arrastra el punto de consulta <b style={{ color: "var(--accent)" }}>q</b> o cualquier objeto.
-            Cambia la métrica y observa cómo cambian los vecinos más cercanos y la forma de la “bola” de rango.
+            Cambia la métrica y observa cómo cambian los vecinos más cercanos y la forma del rango.
           </p>
         </div>
 
@@ -323,7 +323,7 @@ export default function S10KnnViz() {
 
         {/* Nota didáctica */}
         <div style={{ marginTop: 20, padding: "12px 16px", background: "#0c1a26", border: "1px solid #1d4ed8", borderRadius: 8, fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.7, maxWidth: 820 }}>
-          <b style={{ color: "#60a5fa" }}>Qué observar:</b> cambia entre métricas y mira la forma de la bola de rango —
+          <b style={{ color: "#60a5fa" }}>Qué observar:</b> cambia entre métricas y mira la forma del rango;
           <b> círculo</b> (Euclidiana), <b>rombo</b> (Manhattan), <b>cuadrado</b> (Chebyshev). El <b>coseno</b> mide el
           ángulo desde el origen, así que su región es un <b>sector angular</b>: un objeto lejano sobre la misma
           dirección que <b style={{ color: "var(--accent)" }}>q</b> resulta “muy similar” aunque su distancia euclidiana sea grande.
