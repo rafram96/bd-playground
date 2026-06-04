@@ -332,7 +332,7 @@ WHERE content ILIKE '%keyword1%'
           <H3>Esquemas de ponderación (weighting)</H3>
           <P>El valor de cada celda del vector puede ser:</P>
           <Ul items={[
-            <><Bold>Incidencia (1/0):</Bold> ¿aparece o no? — matriz binaria.</>,
+            <><Bold>Incidencia (1/0):</Bold> ¿aparece o no? (matriz binaria).</>,
             <><Bold>Conteo (count):</Bold> número de veces que aparece el término (frecuencia).</>,
             <><Bold>TF-IDF:</Bold> el esquema más usado, que veremos en la sección 8.</>,
           ]} />
@@ -669,7 +669,7 @@ WHERE content ILIKE '%keyword1%'
             <P>
               <Code>OR</Code> (unión): mismo recorrido pero se agregan <Bold>todos</Bold> los docID.{" "}
               <Code>AND NOT</Code>: se agregan los de <Code>p₁</Code> que <Bold>no</Bold> están en{" "}
-              <Code>p₂</Code> — también en O(n+m).
+              <Code>p₂</Code>, también en O(n+m).
             </P>
           </Collapse>
 

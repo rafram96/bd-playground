@@ -577,7 +577,7 @@ export default function S10Guide() {
             <><Bold>Segmentación de video</Bold>: indexar conferencias por cambios de diapositiva + texto de las
               slides, y buscar el segmento relevante por palabras clave o por similitud de contenido.</>,
             <><Bold>Audio musical</Bold>: calcular vectores espectrales (<Bold>MFCC</Bold>), cuantizarlos en un histograma de audio y comparar. (No conserva
-              el orden temporal de los sonidos.)</>,
+              el orden temporal de los sonidos)</>,
             <><Bold>Representación temporal</Bold>: el video puede modelarse como <Bold>series de tiempo</Bold>{" "}
               (ej.: trayectoria de un gesto), comparables con distancias entre series.</>,
           ]} />

@@ -162,9 +162,9 @@ export default function S9Guide() {
             </h1>
             <P>
               En la Semana 8 entendimos <Bold>qué</Bold> es un índice invertido. Ahora resolvemos el
-              problema de ingeniería: <Bold>¿cómo se construye cuando la colección no cabe en memoria?</Bold>{" "}
-              Veremos dos algoritmos clásicos —<Bold>BSBI</Bold> y <Bold>SPIMI</Bold>— y cómo lo
-              implementan los motores reales: PostgreSQL (GIN/GiST), MongoDB, Solr y Elasticsearch.
+              problema: <Bold>¿cómo se construye cuando la colección no cabe en memoria?</Bold>{" "}
+              Veremos dos algoritmos clásicos (<Bold>BSBI</Bold> y <Bold>SPIMI</Bold>) y cómo lo
+              implementan los motores reales: Postgres (GIN/GiST), MongoDB, Solr y Elasticsearch.
             </P>
           </div>
 
@@ -198,10 +198,10 @@ export default function S9Guide() {
           <Divider />
 
           {/* ══ 2. BSBI ══ */}
-          <H2 id="sec-bsbi">2. BSBI — Blocked Sort-Based Indexing</H2>
+          <H2 id="sec-bsbi">2. BSBI  (Blocked Sort-Based Indexing)</H2>
           <P>
             BSBI representa cada ocurrencia como una entrada <Code>(termID, docID)</Code> de tamaño fijo
-            (≈ 8 bytes), generada a medida que se parsea cada documento.
+            (aprox 8 bytes), generada a medida que se parsea cada documento.
           </P>
           <Pipeline steps={[
             { label: "Parsear bloque", sub: "generar (termID, docID)", color: "#3b82f6" },
@@ -242,8 +242,8 @@ export default function S9Guide() {
 
           <H3>Opción A: mezclas binarias</H3>
           <Ul items={[
-            <>Mezclar de a pares, en un árbol de mezcla de <Code>log₂(nº bloques)</Code> niveles.</>,
-            <>Ej.: 10 bloques → <Code>log₂(10) ≈ 4</Code> niveles. En cada nivel se lee, fusiona y reescribe.</>,
+            <>Mezclar de a pares, en un árbol de mezcla de <Code>lg(nº bloques)</Code> niveles.</>,
+            <>Ej.: 10 bloques → <Code>lg(10) = 4 (aproxmadamente)</Code> niveles. En cada nivel se lee, fusiona y reescribe.</>,
           ]} />
 
           <H3>Opción B: mezcla multi-way (mejor)</H3>
@@ -266,7 +266,7 @@ export default function S9Guide() {
           <Divider />
 
           {/* ══ 4. SPIMI ══ */}
-          <H2 id="sec-spimi">4. SPIMI — Single-Pass In-Memory Indexing</H2>
+          <H2 id="sec-spimi">4. SPIMI  (Single-Pass In-Memory Indexing)</H2>
           <P>
             SPIMI mejora BSBI con dos ideas: trabajar <Bold>directamente con el término</Bold> (sin mapeo
             term→termID) y <Bold>no ordenar</Bold> durante la construcción del bloque.
@@ -297,17 +297,17 @@ export default function S9Guide() {
 13  return output_file`}</Pseudo>
             <P>
               El ordenamiento (línea 11) ocurre <Bold>una sola vez al final del bloque</Bold>, no en cada
-              inserción — por eso es "single-pass".
+              inserción.
             </P>
           </Collapse>
 
           <Divider />
 
           {/* ══ 5. SPIMI POSTINGS ══ */}
-          <H2 id="sec-spimi-post">5. SPIMI — Posting lists dinámicas y merge</H2>
+          <H2 id="sec-spimi-post">5. SPIMI: Posting lists dinámicas y merge</H2>
           <Ul items={[
             <><Bold>Posting list de tamaño dinámico:</Bold> mantiene un tamaño inicial fijo; si se llena,{" "}
-              <Bold>duplica</Bold> su tamaño (<Code>DoublePostingsList</Code>) — amortiza el costo de crecer.</>,
+              <Bold>duplica</Bold> su tamaño (<Code>DoublePostingsList</Code>), amortiza el costo de crecer.</>,
             <><Bold>Vaciado a disco:</Bold> cuando el diccionario local se llena, se escribe (se vacía) a disco
               y se empieza un bloque nuevo.</>,
             <><Bold>Buckets independientes:</Bold> las posting lists pueden almacenarse en buckets separados.</>,
@@ -325,7 +325,7 @@ export default function S9Guide() {
           <P>
             Tras el merge tenemos posting lists en muchos buckets. ¿Cómo localizar <Bold>eficientemente</Bold>{" "}
             el bucket de un término específico (y cómo agregar documentos nuevos)? Aquí reaparecen las
-            estructuras del Módulo I:
+            estructuras ya vistas: <Bold>B+Tree</Bold> vs <Bold>hash extendible</Bold>. La elección depende de los requisitos de la aplicación:
           </P>
           <CompareCards
             items={[
@@ -359,7 +359,7 @@ export default function S9Guide() {
             ]}
           />
           <Callout variant="note">
-            La pregunta de examen típica: <Bold>¿cómo agregar un nuevo documento al índice ya construido?</Bold>{" "}
+            La pregunta típica: <Bold>¿cómo agregar un nuevo documento al índice ya construido?</Bold>{" "}
             Se localiza cada término del documento (vía B+Tree o hash) y se hace append a su posting list,
             manteniendo el orden por docID.
           </Callout>
@@ -367,7 +367,7 @@ export default function S9Guide() {
           <Divider />
 
           {/* ══ 7. GIN ══ */}
-          <H2 id="sec-gin">7. PostgreSQL: GIN — el índice invertido real</H2>
+          <H2 id="sec-gin">7. Postgres: GIN (el índice invertido real)</H2>
           <P>
             <Code>GIN</Code> (<Bold>Generalized Inverted Index</Bold>) es, literalmente, el índice
             invertido que construimos. PostgreSQL lo crea a partir de la representación vectorial
@@ -438,7 +438,7 @@ db.articulos.find({ $text: { $search: "big data y análisis de datos",
                               $caseSensitive: true } })`} />
           <Callout variant="note">
             MongoDB usa <Bold>BM25</Bold>, una versión mejorada de TF-IDF que normaliza por longitud de
-            documento y satura la frecuencia de términos — el estándar moderno de ranking.
+            documento y satura la frecuencia de términos (el estándar moderno).
           </Callout>
 
           <H3>Solr y Elasticsearch</H3>
@@ -451,7 +451,7 @@ db.articulos.find({ $text: { $search: "big data y análisis de datos",
 
           <Callout variant="lab" title="Laboratorio 9">
             Implementarás BSBI y SPIMI sobre una colección de documentos, y compararás el desempeño de la
-            búsqueda textual (indexado vs no-indexado) en PostgreSQL con <Code>EXPLAIN ANALYZE</Code>.
+            búsqueda textual (indexado vs no-indexado) en Postgres con <Code>EXPLAIN ANALYZE</Code>.
           </Callout>
 
           <Callout variant="note" title="Siguiente: Semana 10">

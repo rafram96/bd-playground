@@ -226,7 +226,7 @@ export default function S9Exam() {
           <Callout variant="note" title="Lo más preguntado">
             (1) <Bold>Diferencia BSBI vs SPIMI</Bold>, (2) por qué SPIMI <Bold>no usa termID</Bold> y{" "}
             <Bold>no ordena</Bold> mientras parsea, (3) la <Bold>mezcla multi-way con cola de prioridad</Bold>,
-            (4) <Bold>GIN vs GiST</Bold>, (5) que <Bold>GIN = índice invertido</Bold> en PostgreSQL.
+            (4) <Bold>GIN vs GiST</Bold>, (5) que <Bold>GIN = índice invertido</Bold> en Postgres.
           </Callout>
 
           <Divider />
@@ -283,7 +283,7 @@ export default function S9Exam() {
           <Table
             headers={["", "BSBI", "SPIMI"]}
             rows={[
-              ["Unidad de trabajo", "(termID, docID)", "(término, docID) — sin termID"],
+              ["Unidad de trabajo", "(termID, docID)", "(término, docID), sin termID"],
               ["Mapeo term → termID", "Sí (en RAM)", "No lo necesita"],
               ["¿Ordena al parsear?", "Sí, por termID en cada bloque", "No; ordena 1 vez al final del bloque"],
               ["Postings", "Tras ordenar entradas", "Append directo, lista que duplica tamaño"],
@@ -298,8 +298,8 @@ export default function S9Exam() {
           <H2 id="ex-merge">5. Mezcla y complejidad</H2>
           <H3>Mezcla binaria vs multi-way</H3>
           <Ul items={[
-            <><Bold>Binaria:</Bold> mezclar de a pares en un árbol de <Code>log₂(nº bloques)</Code> niveles
-              (ej. 10 bloques → ~4 niveles). Se relee todo en cada nivel.</>,
+            <><Bold>Binaria:</Bold> mezclar de a pares en un árbol de <Code>lg(nº bloques)</Code> niveles
+              (ej. 10 bloques → 4 niveles (aprox)). Se relee todo en cada nivel.</>,
             <><Bold>Multi-way (mejor):</Bold> abrir <Bold>todos</Bold> los bloques a la vez, un buffer de
               lectura por bloque, y usar una <Bold>cola de prioridad (min-heap)</Bold> para elegir en cada
               paso el termID más bajo y combinar sus postings.</>,
@@ -307,7 +307,7 @@ export default function S9Exam() {
           <Table
             headers={["Operación", "Coste", "Nota"]}
             rows={[
-              ["Entrada BSBI", "≈ 8 bytes", "(termID, docID)"],
+              ["Entrada BSBI", "8 bytes (aprox)", "(termID, docID)"],
               ["Mezcla binaria", "lg(b) niveles", "b = nº de bloques"],
               ["Selección en multi-way", "O(lg b) por paso", "con cola de prioridad / heap"],
               ["Merge de 2 posting lists", "O(n + m)", "listas ordenadas por docID (igual que S8)"],
