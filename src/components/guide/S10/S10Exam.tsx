@@ -142,6 +142,23 @@ function DefList({ items }: { items: [React.ReactNode, React.ReactNode][] }) {
    Right-side Table of Contents
    ───────────────────────────────────────────────────────────────────────────── */
 function Toc({ active }: { active: string }) {
+  const [open, setOpen] = useState(true);
+
+  if (!open) {
+    return (
+      <aside style={{ width: 36, flexShrink: 0, borderLeft: "1px solid var(--border)", padding: "36px 0", display: "flex", justifyContent: "center" }}>
+        <button
+          onClick={() => setOpen(true)}
+          title="Mostrar índice"
+          aria-label="Mostrar índice"
+          style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text-secondary)", cursor: "pointer", width: 30, height: 30, fontSize: 15, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center" }}
+        >
+          ☰
+        </button>
+      </aside>
+    );
+  }
+
   return (
     <aside
       style={{
@@ -152,18 +169,27 @@ function Toc({ active }: { active: string }) {
         overflowY: "auto",
       }}
     >
-      <div
-        style={{
-          fontSize: 10,
-          fontWeight: 700,
-          color: "var(--text-muted)",
-          textTransform: "uppercase",
-          letterSpacing: 1,
-          marginBottom: 14,
-          fontFamily: "var(--font-ui)",
-        }}
-      >
-        En esta página
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+        <span
+          style={{
+            fontSize: 10,
+            fontWeight: 700,
+            color: "var(--text-muted)",
+            textTransform: "uppercase",
+            letterSpacing: 1,
+            fontFamily: "var(--font-ui)",
+          }}
+        >
+          En esta página
+        </span>
+        <button
+          onClick={() => setOpen(false)}
+          title="Ocultar índice"
+          aria-label="Ocultar índice"
+          style={{ background: "transparent", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text-secondary)", cursor: "pointer", width: 26, height: 24, fontSize: 13, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+        >
+          ☰
+        </button>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
         {SECTIONS.map((s) => {

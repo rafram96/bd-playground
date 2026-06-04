@@ -175,9 +175,41 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
     w2: true, w3: true, w4: true, w5: true, w6: true,
     w8: true, w9: true, w10: true, "w-otros": true, utils: false,
   });
+  const [open, setOpen] = useState(true);
 
   function toggle(id: string) {
     setCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
+  }
+
+  if (!open) {
+    return (
+      <aside
+        style={{
+          width: 48,
+          flexShrink: 0,
+          height: "100%",
+          background: "var(--bg-surface)",
+          borderRight: "1px solid var(--border)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          padding: "16px 0",
+          gap: 12,
+        }}
+      >
+        <div style={{ width: 28, height: 28, borderRadius: 6, background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <Database size={14} color="#fff" />
+        </div>
+        <button
+          onClick={() => setOpen(true)}
+          title="Mostrar menú"
+          aria-label="Mostrar menú"
+          style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text-secondary)", cursor: "pointer", width: 30, height: 30, fontSize: 15, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center" }}
+        >
+          ☰
+        </button>
+      </aside>
+    );
   }
 
   return (
@@ -225,6 +257,14 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
             CS2042 · UTEC
           </div>
         </div>
+        <button
+          onClick={() => setOpen(false)}
+          title="Ocultar menú"
+          aria-label="Ocultar menú"
+          style={{ marginLeft: "auto", background: "transparent", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text-secondary)", cursor: "pointer", width: 26, height: 24, fontSize: 13, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+        >
+          ☰
+        </button>
       </div>
 
       {/* Nav */}
