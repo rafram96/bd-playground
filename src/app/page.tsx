@@ -92,6 +92,11 @@ const S11Exam = dynamic(
   () => import("@/components/guide/S11/S11Exam"),
 );
 
+const S11CurseViz = dynamic(
+  () => import("@/components/visualizer/S11CurseViz"),
+  { ssr: false }
+);
+
 const SlottedPageViz = dynamic(
   () => import("@/components/visualizer/SlottedPageViz"),
   { ssr: false }
@@ -397,6 +402,7 @@ export default function Home() {
     if (id === "s10-viz")    return <S10KnnViz />;
     if (id === "s11-eff")    return <S11Guide />;
     if (id === "s11-examen") return <S11Exam />;
+    if (id === "s11-viz")    return <S11CurseViz />;
     if (id === "viz-slotted") return <SlottedPageViz />;
     if (id === "viz-bptree")  return <BPlusTreeViz />;
     if (id === "viz-costs")   return <CostComparatorViz />;
