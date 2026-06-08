@@ -27,7 +27,7 @@ export default function NormalizacionGuide() {
 
         <Callout variant="note" title="Requisito previo">
           La normalización se apoya en las <Bold>dependencias funcionales</Bold>, superclaves y atributos
-          primos — repásalos en la página de <Bold>Dependencias Funcionales</Bold>.
+          primos: repásalos en la página de <Bold>Dependencias Funcionales</Bold>.
         </Callout>
 
         <Divider />
@@ -72,7 +72,7 @@ export default function NormalizacionGuide() {
         <SqlCode label="No cumple 2FN · dependencia parcial" sql={`CursoAlumno(id_curso, id_alumno, nombre_curso)
 
 -- nombre_curso depende SOLO de id_curso, no de la clave completa`} />
-        <P><Bold>Convertido a 2FN</Bold> — se separa lo que depende de parte de la clave:</P>
+        <P><Bold>Convertido a 2FN:</Bold> se separa lo que depende de parte de la clave:</P>
         <Ul items={[
           <><Code>Curso(id_curso, nombre_curso)</Code></>,
           <><Code>CursoAlumno(id_curso, id_alumno)</Code></>,
@@ -133,7 +133,7 @@ DF:  materia → aula
 
 -- un autor escribe varios libros Y habla varios idiomas,
 -- de forma independiente entre sí`} />
-        <P><Bold>Solución</Bold> — separar las dos relaciones independientes:</P>
+        <P><Bold>Solución:</Bold> separar las dos relaciones independientes:</P>
         <Ul items={[
           <><Code>AutorLibro(id_autor, libro)</Code></>,
           <><Code>AutorIdioma(id_autor, idioma)</Code></>,

@@ -402,7 +402,7 @@ export default function S10Exam() {
               [<>k</>, <>número de vecinos a devolver</>],
               [<>C</>, <>conjunto resultado (los k más cercanos)</>],
             ]}
-            note={<>Siempre devuelve k resultados — no hay que adivinar un radio.</>}
+            note={<>Siempre devuelve k resultados: no hay que adivinar un radio.</>}
           />
           <Callout variant="note" title="Ranking incremental (give-me-more)">
             Cuando no se conoce ni un radio ni un k razonable: <Code>getnext(k)</Code> devuelve los siguientes

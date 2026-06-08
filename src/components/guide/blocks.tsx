@@ -651,7 +651,7 @@ export function DiagramPlaceholder({ label, height = 200 }: { label: string; hei
         <polyline points="21 15 16 10 5 21" />
       </svg>
       <div style={{ fontSize: 13, fontWeight: 600 }}>{label}</div>
-      <div style={{ fontSize: 11, color: "#6d28d9" }}>Diagrama Excalidraw — pendiente</div>
+      <div style={{ fontSize: 11, color: "#6d28d9" }}>Diagrama Excalidraw (pendiente)</div>
     </div>
   );
 }

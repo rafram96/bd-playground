@@ -321,7 +321,7 @@ export default function S8Exam() {
           />
           <Callout variant="warning" title="Trampa frecuente">
             El stemming es lo que <Bold>une <Code>programar</Code>, <Code>programación</Code> y{" "}
-            <Code>programador</Code></Bold> — la razón principal por la que <Code>LIKE</Code> falla:{" "}
+            <Code>programador</Code></Bold>, la razón principal por la que <Code>LIKE</Code> falla:{" "}
             <Code>LIKE '%programación%'</Code> no encuentra <Code>programador</Code>.
           </Callout>
 
@@ -521,7 +521,7 @@ LIMIT 10;`} />
           <Callout variant="warning" title="Lo que más se equivoca en el examen">
             <Ul items={[
               <><Bold>Confundir tf con df:</Bold> tf = veces en UN documento; df = en CUÁNTOS documentos. La idf usa df, no tf.</>,
-              <><Bold>Creer que la relevancia es lineal:</Bold> 10 apariciones NO valen 10× — por eso el log.</>,
+              <><Bold>Creer que la relevancia es lineal:</Bold> 10 apariciones NO valen 10×, por eso el log.</>,
               <><Bold>Usar distancia euclidiana</Bold> para comparar documentos: penaliza longitud → usar coseno.</>,
               <><Bold>Olvidar el orden de las postings:</Bold> sin orden por docID, el merge NO es O(n+m).</>,
               <><Bold>Pensar que B+Tree o Hash aceleran <Code>LIKE '%...%'</Code>:</Bold> no sirven para subcadenas dentro del texto; se necesita índice invertido (GIN).</>,

@@ -84,6 +84,14 @@ const S10KnnViz = dynamic(
   { ssr: false }
 );
 
+const S11Guide = dynamic(
+  () => import("@/components/guide/S11/S11Guide"),
+);
+
+const S11Exam = dynamic(
+  () => import("@/components/guide/S11/S11Exam"),
+);
+
 const SlottedPageViz = dynamic(
   () => import("@/components/visualizer/SlottedPageViz"),
   { ssr: false }
@@ -387,6 +395,8 @@ export default function Home() {
     if (id === "s10-vec")    return <S10Guide />;
     if (id === "s10-examen") return <S10Exam />;
     if (id === "s10-viz")    return <S10KnnViz />;
+    if (id === "s11-eff")    return <S11Guide />;
+    if (id === "s11-examen") return <S11Exam />;
     if (id === "viz-slotted") return <SlottedPageViz />;
     if (id === "viz-bptree")  return <BPlusTreeViz />;
     if (id === "viz-costs")   return <CostComparatorViz />;

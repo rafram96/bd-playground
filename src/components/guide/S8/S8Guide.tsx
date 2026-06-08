@@ -304,7 +304,7 @@ WHERE content ILIKE '%keyword1%'
           <Callout variant="example">
             <P><Bold>Texto:</Bold> "Mis amigas y amigos peruanos son estudiosos."</P>
             <P><Bold>Tras tokenizar + quitar stop words:</Bold> [amigas, amigos, peruanos, estudiosos]</P>
-            <P><Bold>Tras stemming:</Bold> [amig, peruan, estudi] — note cómo <Code>amigas</Code> y{" "}
+            <P><Bold>Tras stemming:</Bold> [amig, peruan, estudi], note cómo <Code>amigas</Code> y{" "}
               <Code>amigos</Code> colapsan en un solo término.</P>
           </Callout>
 
@@ -378,8 +378,8 @@ WHERE content ILIKE '%keyword1%'
             es <Bold>mala para la mayoría de usuarios</Bold>:
           </P>
           <Ul items={[
-            <>La mayoría no sabe (o no quiere) escribir consultas booleanas.</>,
-            <>Nadie quiere revisar miles de resultados sin ordenar — especialmente en la web.</>,
+            <>La mayoría no sabe (o no quiere, sobretodo este caso) escribir consultas booleanas.</>,
+            <>Nadie quiere revisar miles de resultados sin ordenar (especialmente en web).</>,
             <>Las consultas dan <Bold>muy pocos (0)</Bold> o <Bold>demasiados (miles)</Bold> resultados.</>,
           ]} />
           <Callout variant="warning" title="El dilema AND / OR">
@@ -540,7 +540,7 @@ WHERE content ILIKE '%keyword1%'
           <H3>La fórmula del coseno</H3>
           <MathBlock>{String.raw`\cos(q,d) = \frac{q\cdot d}{\lVert q\rVert\,\lVert d\rVert} = \frac{\sum_i q_i d_i}{\sqrt{\sum_i q_i^{2}}\,\sqrt{\sum_i d_i^{2}}}`}</MathBlock>
           <Ul items={[
-            <><Bold>Numerador (q · d):</Bold> producto punto — mide cuánto se solapan.</>,
+            <><Bold>Numerador (q · d):</Bold> producto punto, mide cuánto se solapan.</>,
             <><Bold>Denominador:</Bold> normaliza por la longitud (norma) de cada vector → los convierte
               en vectores unitarios. Así documentos largos y cortos tienen pesos comparables.</>,
           ]} />
@@ -611,7 +611,7 @@ WHERE content ILIKE '%keyword1%'
             <><Bold>Diccionario (Dictionary):</Bold> los términos, en memoria. Para cada uno: su{" "}
               <Code>df</Code> y un puntero a su posting list.</>,
             <><Bold>Listas de publicaciones (Postings):</Bold> de tamaño variable, <Bold>ordenadas por
-              docID</Bold> (crucial — veremos por qué). En disco: lectura continua; en memoria: listas
+              docID</Bold> (crucial: veremos por qué). En disco: lectura continua; en memoria: listas
               enlazadas o vectores dinámicos.</>,
           ]} />
           <DiagramPlaceholder label="Diagrama: Diccionario (términos) → Posting Lists ordenadas por docID" height={190} />

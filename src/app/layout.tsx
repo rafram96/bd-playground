@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "DB Visualizer — CS2042 Base de Datos II",
+  title: "Guía BD2",
   description:
     "Herramienta de aprendizaje visual para el curso CS2042 de UTEC. SQL Playground con PGlite + visualizaciones interactivas de estructuras de datos.",
 };

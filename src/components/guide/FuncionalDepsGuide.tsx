@@ -143,7 +143,7 @@ id_emp → nombre, salario, depto`} />
           <>Un atributo <Code>D</Code> que no participe en ninguna clave sería <Bold>no primo</Bold>.</>,
         ]} />
         <Callout variant="note">
-          Esta distinción primo / no primo es clave para la <Bold>2FN y 3FN</Bold> — ve la página de{" "}
+          Esta distinción primo / no primo es clave para la <Bold>2FN y 3FN</Bold>: ve la página de{" "}
           <Bold>Normalización</Bold>.
         </Callout>
 
