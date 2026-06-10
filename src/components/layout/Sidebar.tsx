@@ -16,7 +16,6 @@ import {
   Leaf,
   BarChart2,
   Scissors,
-  Globe,
   Binary,
   GraduationCap,
   LocateFixed,
@@ -131,6 +130,13 @@ const TREE: TreeEntry[] = [
       { id: "s11-examen", label: "Esencial para el examen", icon: <GraduationCap size={14} />, status: "done" },
     ],
   },
+  {
+    kind: "week", id: "w12", weekLabel: "Semana 12 — BD Distribuidas",
+    items: [
+      { id: "s12-bdd", label: "Distribuidas · Fragmentación Horizontal", icon: <Scissors size={14} />, status: "done" },
+      { id: "s12-examen", label: "Esencial para el examen", icon: <GraduationCap size={14} />, status: "done" },
+    ],
+  },
 
   { kind: "divider", id: "div-otros" },
 
@@ -139,8 +145,6 @@ const TREE: TreeEntry[] = [
     items: [
       { id: "s8", label: "NoSQL (MongoDB · Cassandra · Redis)", icon: <Leaf size={14} />, status: "planned" },
       { id: "s9", label: "OLAP / Data Warehousing", icon: <BarChart2 size={14} />, status: "planned" },
-      { id: "s10", label: "Fragmentación", icon: <Scissors size={14} />, status: "planned" },
-      { id: "s11", label: "BD Distribuidas", icon: <Globe size={14} />, status: "planned" },
     ],
   },
 
@@ -181,7 +185,7 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
   /* Semana 1 starts open; everything else collapsed */
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({
     w2: true, w3: true, w4: true, w5: true, w6: true,
-    w8: true, w9: true, w10: true, w11: true, "w-otros": true, utils: false,
+    w8: true, w9: true, w10: true, w11: true, w12: true, "w-otros": true, utils: false,
   });
   const [open, setOpen] = useState(true);
 
