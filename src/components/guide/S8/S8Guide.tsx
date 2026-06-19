@@ -163,7 +163,7 @@ export default function S8Guide() {
           {/* Page header */}
           <div style={{ marginBottom: 24 }}>
             <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-code)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-              Semana 8 · Módulo II — Motores Especializados
+              Semana 8 · Módulo II · Motores Especializados
             </div>
             <h1 style={{ fontSize: 30, fontWeight: 800, color: "var(--text-primary)", margin: "0 0 10px", fontFamily: "var(--font-ui)", lineHeight: 1.2 }}>
               Recuperación de Información Textual
@@ -198,7 +198,7 @@ export default function S8Guide() {
             En una base de datos relacional, el campo textual suele ser un atributo de tipo{" "}
             <Code>text</Code>, y la búsqueda se hace con el operador <Code>LIKE</Code> o <Code>ILIKE</Code>:
           </P>
-          <SqlCode label="Búsqueda con ILIKE — funciona en demo, falla en producción (creanme D:)" sql={`SELECT * FROM news
+          <SqlCode label="Búsqueda con ILIKE: funciona en demo, falla en producción (creanme D:)" sql={`SELECT * FROM news
 WHERE content ILIKE '%keyword1%'
   AND content ILIKE '%keyword2%';`} />
 
@@ -452,7 +452,7 @@ WHERE content ILIKE '%keyword1%'
             Para esto usamos la <Bold>frecuencia de documento</Bold> <Code>df(t)</Code>.
           </P>
 
-          <Callout variant="definition" title="IDF — Inverse Document Frequency">
+          <Callout variant="definition" title="IDF: Inverse Document Frequency">
             <Code>df(t)</Code> = número de documentos que contienen <Code>t</Code> (es una medida inversa
             de la informatividad; df(t) ≤ N). Definimos el idf como:
           </Callout>

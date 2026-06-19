@@ -16,7 +16,7 @@ const SECTIONS = [
   { id: "ex-estructuras",label: "4. Estructuras de datos" },
   { id: "ex-algoritmos", label: "5. Algoritmos y complejidad" },
   { id: "ex-tablas",     label: "6. Tablas comparativas" },
-  { id: "ex-postgres",   label: "7. PostgreSQL — comandos" },
+  { id: "ex-postgres",   label: "7. PostgreSQL: comandos" },
   { id: "ex-trampas",    label: "8. Errores comunes (trampas)" },
   { id: "ex-ejercicios", label: "9. Ejercicios resueltos" },
 ];
@@ -332,7 +332,7 @@ export default function S8Exam() {
           <P>Las 5 fórmulas del examen. Entiende qué hace cada variable, no las memorices a ciegas.</P>
 
           <FormulaCard
-            title="① TF — Log-frequency weight"
+            title="① TF: Log-frequency weight"
             formula={<MathBlock>{String.raw`w_{t,d} = \begin{cases} 1 + \log_{10}\mathrm{tf}_{t,d} & \text{si } \mathrm{tf}_{t,d} > 0 \\[2pt] 0 & \text{si } \mathrm{tf}_{t,d} = 0 \end{cases}`}</MathBlock>}
             legend={[
               [<>tf(t,d)</>, <>frecuencia: nº de veces que el término <Code>t</Code> aparece en el documento <Code>d</Code></>],
@@ -342,7 +342,7 @@ export default function S8Exam() {
           />
 
           <FormulaCard
-            title="② IDF — Inverse Document Frequency"
+            title="② IDF: Inverse Document Frequency"
             formula={<MathBlock>{String.raw`\mathrm{idf}_t = \log_{10}\!\frac{N}{\mathrm{df}_t}`}</MathBlock>}
             legend={[
               [<>N</>, <>número <Bold>total</Bold> de documentos en la colección</>],
@@ -353,7 +353,7 @@ export default function S8Exam() {
           />
 
           <FormulaCard
-            title="③ TF-IDF — el peso definitivo"
+            title="③ TF-IDF: el peso definitivo"
             formula={<MathBlock>{String.raw`w_{t,d} \;=\; \bigl(1 + \log_{10}\mathrm{tf}_{t,d}\bigr)\times\log_{10}\frac{N}{\mathrm{df}_t} \;=\; \mathrm{tf}_{t,d}\times\mathrm{idf}_t`}</MathBlock>}
             legend={[
               [<>TF</>, <>sube con la frecuencia <Bold>dentro</Bold> del documento</>],
@@ -443,7 +443,7 @@ export default function S8Exam() {
             ]}
           />
 
-          <Callout variant="note" title="CosineScore — idea del algoritmo">
+          <Callout variant="note" title="CosineScore: idea del algoritmo">
             <Ul items={[
               <>Acumulador <Code>Scores[d] = 0</Code> para cada doc.</>,
               <>Por cada término <Code>t</Code> de la query: recorrer su posting list y hacer{" "}
@@ -494,7 +494,7 @@ export default function S8Exam() {
           <Divider />
 
           {/* ══ 7. POSTGRESQL ══ */}
-          <H2 id="ex-postgres">7. PostgreSQL — comandos clave</H2>
+          <H2 id="ex-postgres">7. PostgreSQL: comandos clave</H2>
           <DefList items={[
             [<Code>to_tsvector</Code>, <>texto → documento procesado (lexemas normalizados + posiciones). Es el Bag of Words.</>],
             [<Code>to_tsquery</Code>, <>texto → consulta de lexemas con <Code>&amp;</Code> (AND), <Code>|</Code> (OR), <Code>!</Code> (NOT).</>],
@@ -536,35 +536,35 @@ LIMIT 10;`} />
           <H2 id="ex-ejercicios">9. Ejercicios resueltos</H2>
           <P>Tapa la solución e intenta primero.</P>
 
-          <Callout variant="example" title="Ejercicio 1 — IDF">
+          <Callout variant="example" title="Ejercicio 1: IDF">
             <P><Bold>Colección de N = 1,000,000 documentos. El término "animal" aparece en df = 100. ¿Cuál es su idf?</Bold></P>
             <P>
               idf = log₁₀(N / df) = log₁₀(1,000,000 / 100) = log₁₀(10,000) = <Bold>4</Bold>.
             </P>
           </Callout>
 
-          <Callout variant="example" title="Ejercicio 2 — TF (log weight)">
+          <Callout variant="example" title="Ejercicio 2: TF (log weight)">
             <P><Bold>El término "datos" aparece tf = 100 veces en un documento. ¿Cuál es su peso log-frecuencia?</Bold></P>
             <P>
               w = 1 + log₁₀(tf) = 1 + log₁₀(100) = 1 + 2 = <Bold>3</Bold>.
             </P>
           </Callout>
 
-          <Callout variant="example" title="Ejercicio 3 — TF-IDF">
+          <Callout variant="example" title="Ejercicio 3: TF-IDF">
             <P><Bold>Con los dos resultados anteriores (w_tf = 3 para "datos", idf = 4 para "animal"): si un término tiene tf-peso = 3 e idf = 4, ¿su tf-idf?</Bold></P>
             <P>
               tf-idf = tf × idf = 3 × 4 = <Bold>12</Bold>. (Frecuente en el doc y relativamente raro → peso alto.)
             </P>
           </Callout>
 
-          <Callout variant="example" title="Ejercicio 4 — Booleano">
+          <Callout variant="example" title="Ejercicio 4: Booleano">
             <P><Bold>Postings: Brutus = [1,2,4,11,31] · Caesar = [1,2,4,5,6]. Resultado de Brutus AND Caesar.</Bold></P>
             <P>
               Intersección (merge con 2 punteros): <Bold>[1, 2, 4]</Bold>. Coste O(n+m) = O(5+5) = O(10).
             </P>
           </Callout>
 
-          <Callout variant="example" title="Ejercicio 5 — Coseno">
+          <Callout variant="example" title="Ejercicio 5: Coseno">
             <P><Bold>q = (1, 0, 1), d = (1, 1, 1). ¿cos(q, d)?</Bold></P>
             <P>
               q·d = 1·1 + 0·1 + 1·1 = 2. &nbsp; |q| = √(1+0+1) = √2. &nbsp; |d| = √(1+1+1) = √3.

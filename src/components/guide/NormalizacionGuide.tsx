@@ -49,7 +49,7 @@ export default function NormalizacionGuide() {
         <Divider />
 
         {/* ── 1FN ── */}
-        <H2>1FN — Primera Forma Normal</H2>
+        <H2>1FN: Primera Forma Normal</H2>
         <Callout variant="definition" title="Regla">
           Una relación está en 1FN si <Bold>todos los atributos contienen valores atómicos</Bold> (no
           repetitivos ni multivaluados). <Bold>Objetivo:</Bold> eliminar campos con listas, arreglos o tablas internas.
@@ -63,7 +63,7 @@ export default function NormalizacionGuide() {
         <Divider />
 
         {/* ── 2FN ── */}
-        <H2>2FN — Segunda Forma Normal</H2>
+        <H2>2FN: Segunda Forma Normal</H2>
         <Callout variant="definition" title="Regla">
           Una relación está en 2FN si está en <Bold>1FN</Bold> y <Bold>todos los atributos no clave
           dependen completamente de toda la clave primaria</Bold> (no de una parte de ella). Solo aplica si
@@ -81,7 +81,7 @@ export default function NormalizacionGuide() {
         <Divider />
 
         {/* ── 3FN ── */}
-        <H2>3FN — Tercera Forma Normal</H2>
+        <H2>3FN: Tercera Forma Normal</H2>
         <Callout variant="definition" title="Regla">
           Una relación está en 3FN si está en <Bold>2FN</Bold> y <Bold>no hay dependencias transitivas</Bold>{" "}
           entre atributos no clave. <Bold>Objetivo:</Bold> eliminar columnas que dependen de otras columnas
@@ -100,7 +100,7 @@ export default function NormalizacionGuide() {
         <Divider />
 
         {/* ── BCNF ── */}
-        <H2>BCNF — Forma Normal de Boyce-Codd</H2>
+        <H2>BCNF: Forma Normal de Boyce-Codd</H2>
         <Callout variant="definition" title="Regla">
           Una relación está en BCNF si para <Bold>toda</Bold> dependencia funcional <Code>X → Y</Code>,{" "}
           <Bold>X es una superclave</Bold>.
@@ -123,7 +123,7 @@ DF:  materia → aula
         <Divider />
 
         {/* ── 4FN ── */}
-        <H2>4FN — Cuarta Forma Normal</H2>
+        <H2>4FN: Cuarta Forma Normal</H2>
         <Callout variant="definition" title="Regla">
           Una relación está en 4FN si está en <Bold>BCNF</Bold> y <Bold>no tiene dependencias multivaluadas
           no triviales</Bold>. Una dependencia multivaluada ocurre cuando un atributo tiene{" "}
@@ -142,7 +142,7 @@ DF:  materia → aula
         <Divider />
 
         {/* ── 5FN ── */}
-        <H2>5FN — Quinta Forma Normal (Proyección-Unión)</H2>
+        <H2>5FN: Quinta Forma Normal (Proyección-Unión)</H2>
         <Callout variant="definition" title="Regla">
           Una relación está en 5FN si <Bold>no puede descomponerse en subrelaciones más pequeñas sin perder
           información</Bold> al hacer <Code>JOIN</Code>. Se refiere a <Bold>dependencias de join</Bold>; es
