@@ -33,6 +33,7 @@ import {
   BookOpen,
   Wrench,
 } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Types
@@ -220,6 +221,7 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
         >
           ☰
         </button>
+        <ThemeToggle />
       </aside>
     );
   }
@@ -269,14 +271,17 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
             CS2042 · UTEC
           </div>
         </div>
-        <button
-          onClick={() => setOpen(false)}
-          title="Ocultar menú"
-          aria-label="Ocultar menú"
-          style={{ marginLeft: "auto", background: "transparent", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text-secondary)", cursor: "pointer", width: 26, height: 24, fontSize: 13, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
-        >
-          ☰
-        </button>
+        <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
+          <ThemeToggle />
+          <button
+            onClick={() => setOpen(false)}
+            title="Ocultar menú"
+            aria-label="Ocultar menú"
+            style={{ background: "transparent", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text-secondary)", cursor: "pointer", width: 26, height: 24, fontSize: 13, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+          >
+            ☰
+          </button>
+        </div>
       </div>
 
       {/* Nav */}

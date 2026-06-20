@@ -17,8 +17,79 @@
   --text-muted: #4a4a6a;
   --border: rgba(255, 255, 255, 0.07);
   --border-bright: rgba(255, 255, 255, 0.13);
+
+  /* Código en línea y fórmulas matemáticas */
+  --code-text: #a5d6ff;
+  --math-text: #a78bfa;
+
+  /* Bloques de código (fondo, borde y resaltado de sintaxis) */
+  --code-bg: #0d1117;
+  --code-border: rgba(255, 255, 255, 0.08);
+  --code-line: rgba(255, 255, 255, 0.06);
+  --syntax-keyword: #ff7b72;
+  --syntax-fn: #d2a8ff;
+  --syntax-string: #a5d6ff;
+  --syntax-number: #79c0ff;
+  --syntax-comment: #6e7681;
+  --syntax-op: #e6edf3;
+  --syntax-plain: #c9d1d9;
+
+  /* Callouts: fondo / borde / etiqueta, por variante */
+  --cal-example-bg: #051a0f;    --cal-example-border: #166534;          --cal-example-label: #4ade80;
+  --cal-note-bg: #0c1a26;       --cal-note-border: #1d4ed8;             --cal-note-label: #60a5fa;
+  --cal-warning-bg: #1a0f05;    --cal-warning-border: #92400e;          --cal-warning-label: #fbbf24;
+  --cal-definition-bg: #1a0a2e; --cal-definition-border: #6d28d9;       --cal-definition-label: #a78bfa;
+  --cal-quote-bg: #111118;      --cal-quote-border: rgba(255,255,255,0.1); --cal-quote-label: #4a4a6a;
+  --cal-lab-bg: #0c1a26;        --cal-lab-border: #0e7490;              --cal-lab-label: #22d3ee;
+
+  /* Pros / Cons */
+  --pros-bg: #051a0f; --pros-border: #166534; --pros-label: #4ade80;
+  --cons-bg: #1a0505; --cons-border: #7f1d1d; --cons-label: #f87171;
+
   --font-code: "JetBrains Mono", monospace;
   --font-ui: "DM Sans", system-ui, sans-serif;
+}
+
+html[data-theme="light"] {
+  --bg-base: #f6f7fb;
+  --bg-surface: #ffffff;
+  --bg-elevated: #eef0f6;
+  --bg-hover: #e7e9f2;
+  --accent: #6849e6;
+  --accent-dim: #5a4fd4;
+  --accent-glow: rgba(104, 73, 230, 0.12);
+  --success: #0f9d6e;
+  --warning: #b7791f;
+  --error: #dc2626;
+  --text-primary: #1b1b29;
+  --text-secondary: #54546e;
+  --text-muted: #9090a6;
+  --border: rgba(20, 20, 40, 0.12);
+  --border-bright: rgba(20, 20, 40, 0.2);
+
+  --code-text: #0550ae;
+  --math-text: #6d28d9;
+
+  --code-bg: #f6f8fa;
+  --code-border: rgba(20, 20, 40, 0.12);
+  --code-line: rgba(20, 20, 40, 0.09);
+  --syntax-keyword: #cf222e;
+  --syntax-fn: #8250df;
+  --syntax-string: #0a3069;
+  --syntax-number: #0550ae;
+  --syntax-comment: #6e7781;
+  --syntax-op: #1f2328;
+  --syntax-plain: #1f2328;
+
+  --cal-example-bg: #ecfdf3;    --cal-example-border: #a7f3d0;          --cal-example-label: #15803d;
+  --cal-note-bg: #eff6ff;       --cal-note-border: #bfdbfe;             --cal-note-label: #1d4ed8;
+  --cal-warning-bg: #fffbeb;    --cal-warning-border: #fde68a;          --cal-warning-label: #b45309;
+  --cal-definition-bg: #f5f3ff; --cal-definition-border: #ddd6fe;       --cal-definition-label: #6d28d9;
+  --cal-quote-bg: #f3f4f8;      --cal-quote-border: rgba(20,20,40,0.12);--cal-quote-label: #9090a6;
+  --cal-lab-bg: #ecfeff;        --cal-lab-border: #a5f3fc;              --cal-lab-label: #0e7490;
+
+  --pros-bg: #ecfdf3; --pros-border: #a7f3d0; --pros-label: #15803d;
+  --cons-bg: #fef2f2; --cons-border: #fecaca; --cons-label: #dc2626;
 }
 
 * {
@@ -37,6 +108,7 @@ body {
   font-family: var(--font-ui);
   height: 100%;
   overflow: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 #__next,

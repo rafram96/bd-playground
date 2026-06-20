@@ -5,7 +5,13 @@ import { H2, P, Bold, Code, Callout, Divider, Pipeline, SqlCode } from "@/compon
 /* ─────────────────────────────────────────────────────────────────────────────
    Colores (mismos del resaltador SQL del proyecto)
    ───────────────────────────────────────────────────────────────────────────── */
-const C = { kw: "#ff7b72", fn: "#d2a8ff", str: "#a5d6ff", num: "#79c0ff", plain: "#c9d1d9" };
+const C = {
+  kw: "var(--syntax-keyword)",
+  fn: "var(--syntax-fn)",
+  str: "var(--syntax-string)",
+  num: "var(--syntax-number)",
+  plain: "var(--syntax-plain)",
+};
 const Str = ({ children }: { children: React.ReactNode }) => <span style={{ color: C.str }}>{children}</span>;
 const Fn = ({ children }: { children: React.ReactNode }) => <span style={{ color: C.fn }}>{children}</span>;
 const Num = ({ children }: { children: React.ReactNode }) => <span style={{ color: C.num }}>{children}</span>;
@@ -16,7 +22,7 @@ const Kw = ({ children }: { children: React.ReactNode }) => <span style={{ color
    ───────────────────────────────────────────────────────────────────────────── */
 function Clause({ kw, code, desc, last }: { kw: string; code: React.ReactNode; desc: React.ReactNode; last?: boolean }) {
   return (
-    <div style={{ padding: "12px 16px", borderBottom: last ? "none" : "1px solid rgba(255,255,255,0.06)" }}>
+    <div style={{ padding: "12px 16px", borderBottom: last ? "none" : "1px solid var(--code-line)" }}>
       <div style={{ display: "flex", alignItems: "baseline", gap: 10, fontFamily: "var(--font-code)", fontSize: 14, flexWrap: "wrap" }}>
         <span style={{
           padding: "2px 9px", borderRadius: 5, background: "rgba(255,123,114,0.12)",
@@ -36,7 +42,7 @@ function Clause({ kw, code, desc, last }: { kw: string; code: React.ReactNode; d
 
 function QueryCard({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ background: "#0d1117", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, margin: "14px 0", overflow: "hidden" }}>
+    <div style={{ background: "var(--code-bg)", border: "1px solid var(--code-border)", borderRadius: 10, margin: "14px 0", overflow: "hidden" }}>
       {children}
     </div>
   );

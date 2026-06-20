@@ -16,13 +16,13 @@ const FN = new Set(
   "SUM COUNT AVG MIN MAX RANK DENSE_RANK ROW_NUMBER LEAD LAG ROUND COALESCE CAST NULLIF LENGTH LOWER UPPER TRIM TO_CHAR NOW DATE_TRUNC EXTRACT ARRAY_TO_STRING GENERATE_SUBSCRIPTS FORMAT_TYPE PG_GET_INDEXDEF".split(" ")
 );
 const TC: Record<TokenType, string> = {
-  keyword: "#ff7b72",
-  fn: "#d2a8ff",
-  string: "#a5d6ff",
-  number: "#79c0ff",
-  comment: "#6e7681",
-  op: "#e6edf3",
-  plain: "#c9d1d9",
+  keyword: "var(--syntax-keyword)",
+  fn: "var(--syntax-fn)",
+  string: "var(--syntax-string)",
+  number: "var(--syntax-number)",
+  comment: "var(--syntax-comment)",
+  op: "var(--syntax-op)",
+  plain: "var(--syntax-plain)",
 };
 
 function tokenize(sql: string): { type: TokenType; text: string }[] {
@@ -72,8 +72,8 @@ export function SqlCode({ sql, label }: { sql: string; label?: string }) {
       )}
       <div
         style={{
-          background: "#0d1117",
-          border: "1px solid rgba(255,255,255,0.08)",
+          background: "var(--code-bg)",
+          border: "1px solid var(--code-border)",
           borderRadius: 8,
           padding: "14px 18px",
           fontFamily: "var(--font-code)",
@@ -180,7 +180,7 @@ export function Code({ children }: { children: React.ReactNode }) {
         border: "1px solid var(--border)",
         borderRadius: 4,
         padding: "1px 6px",
-        color: "#a5d6ff",
+        color: "var(--code-text)",
       }}
     >
       {children}
@@ -199,7 +199,7 @@ export function Formula({ children }: { children: React.ReactNode }) {
         borderRadius: "0 6px 6px 0",
         fontFamily: "var(--font-code)",
         fontSize: 13,
-        color: "#a78bfa",
+        color: "var(--math-text)",
         lineHeight: 1.6,
       }}
     >
@@ -254,7 +254,7 @@ function renderTex(expr: string, displayMode: boolean): string {
 export function MathInline({ children }: { children: string }) {
   return (
     <span
-      style={{ color: "#a78bfa" }}
+      style={{ color: "var(--math-text)" }}
       dangerouslySetInnerHTML={{ __html: renderTex(children, false) }}
     />
   );
@@ -263,7 +263,7 @@ export function MathInline({ children }: { children: string }) {
 export function MathBlock({ children }: { children: string }) {
   return (
     <div
-      style={{ margin: "8px 0", overflowX: "auto", color: "#a78bfa", fontSize: 17 }}
+      style={{ margin: "8px 0", overflowX: "auto", color: "var(--math-text)", fontSize: 17 }}
       dangerouslySetInnerHTML={{ __html: renderTex(children, true) }}
     />
   );
@@ -302,12 +302,12 @@ export function Ol({ items }: { items: (string | React.ReactNode)[] }) {
 type CalloutVariant = "example" | "note" | "warning" | "definition" | "quote" | "lab";
 
 const CALLOUT_STYLES: Record<CalloutVariant, { bg: string; border: string; label: string; labelColor: string }> = {
-  example:    { bg: "#051a0f", border: "#166534", label: "Ejemplo",    labelColor: "#4ade80" },
-  note:       { bg: "#0c1a26", border: "#1d4ed8", label: "Nota",       labelColor: "#60a5fa" },
-  warning:    { bg: "#1a0f05", border: "#92400e", label: "Importante", labelColor: "#fbbf24" },
-  definition: { bg: "#1a0a2e", border: "#6d28d9", label: "Definicion", labelColor: "#a78bfa" },
-  quote:      { bg: "#111118", border: "rgba(255,255,255,0.1)", label: "",  labelColor: "var(--text-muted)" },
-  lab:        { bg: "#0c1a26", border: "#0e7490", label: "Laboratorio",labelColor: "#22d3ee" },
+  example:    { bg: "var(--cal-example-bg)",    border: "var(--cal-example-border)",    label: "Ejemplo",     labelColor: "var(--cal-example-label)" },
+  note:       { bg: "var(--cal-note-bg)",       border: "var(--cal-note-border)",       label: "Nota",        labelColor: "var(--cal-note-label)" },
+  warning:    { bg: "var(--cal-warning-bg)",    border: "var(--cal-warning-border)",    label: "Importante",  labelColor: "var(--cal-warning-label)" },
+  definition: { bg: "var(--cal-definition-bg)", border: "var(--cal-definition-border)", label: "Definicion",  labelColor: "var(--cal-definition-label)" },
+  quote:      { bg: "var(--cal-quote-bg)",      border: "var(--cal-quote-border)",      label: "",            labelColor: "var(--cal-quote-label)" },
+  lab:        { bg: "var(--cal-lab-bg)",        border: "var(--cal-lab-border)",        label: "Laboratorio", labelColor: "var(--cal-lab-label)" },
 };
 
 export function Callout({
@@ -346,19 +346,19 @@ export function Callout({
 export function ProsCons({ pros, cons }: { pros: string[]; cons: string[] }) {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, margin: "12px 0" }}>
-      <div style={{ background: "#051a0f", border: "1px solid #166534", borderRadius: 8, padding: "12px 14px" }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#4ade80", marginBottom: 8 }}>Ventajas</div>
+      <div style={{ background: "var(--pros-bg)", border: "1px solid var(--pros-border)", borderRadius: 8, padding: "12px 14px" }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--pros-label)", marginBottom: 8 }}>Ventajas</div>
         {pros.map((p, i) => (
           <div key={i} style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 5, display: "flex", gap: 6 }}>
-            <span style={{ color: "#4ade80", flexShrink: 0 }}>+</span> {p}
+            <span style={{ color: "var(--pros-label)", flexShrink: 0 }}>+</span> {p}
           </div>
         ))}
       </div>
-      <div style={{ background: "#1a0505", border: "1px solid #7f1d1d", borderRadius: 8, padding: "12px 14px" }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#f87171", marginBottom: 8 }}>Desventajas</div>
+      <div style={{ background: "var(--cons-bg)", border: "1px solid var(--cons-border)", borderRadius: 8, padding: "12px 14px" }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--cons-label)", marginBottom: 8 }}>Desventajas</div>
         {cons.map((c, i) => (
           <div key={i} style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 5, display: "flex", gap: 6 }}>
-            <span style={{ color: "#f87171", flexShrink: 0 }}>-</span> {c}
+            <span style={{ color: "var(--cons-label)", flexShrink: 0 }}>-</span> {c}
           </div>
         ))}
       </div>
@@ -429,14 +429,14 @@ export function CompareCards({
   return (
     <div style={{ display: "grid", gridTemplateColumns: `repeat(${items.length}, 1fr)`, gap: 12, margin: "12px 0" }}>
       {items.map((item) => (
-        <div key={item.label} style={{ background: item.bg, border: `1px solid ${item.color}40`, borderRadius: 10, padding: "14px" }}>
+        <div key={item.label} style={{ background: `color-mix(in srgb, ${item.color} 9%, var(--bg-surface))`, border: `1px solid ${item.color}40`, borderRadius: 10, padding: "14px" }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: item.color, marginBottom: 10 }}>{item.label}</div>
           <div style={{ fontSize: 11, color: "#4ade80", marginBottom: 4 }}>Ventajas</div>
           {item.pros.map((p, i) => <div key={i} style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 4 }}>• {p}</div>)}
           <div style={{ fontSize: 11, color: "#f87171", marginTop: 8, marginBottom: 4 }}>Limitaciones</div>
           {item.cons.map((c, i) => <div key={i} style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 4 }}>• {c}</div>)}
           {item.when && (
-            <div style={{ marginTop: 10, padding: "6px 8px", background: "#0d1117", borderRadius: 6, fontSize: 11, color: "var(--text-muted)" }}>
+            <div style={{ marginTop: 10, padding: "6px 8px", background: "var(--bg-elevated)", borderRadius: 6, fontSize: 11, color: "var(--text-muted)" }}>
               Usar cuando: {item.when}
             </div>
           )}
@@ -513,7 +513,7 @@ export function AcidCards() {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, margin: "12px 0" }}>
       {cards.map((c) => (
-        <div key={c.letter} style={{ background: c.bg, border: `1px solid ${c.color}50`, borderRadius: 8, padding: "12px 14px" }}>
+        <div key={c.letter} style={{ background: `color-mix(in srgb, ${c.color} 10%, var(--bg-surface))`, border: `1px solid ${c.color}50`, borderRadius: 8, padding: "12px 14px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
             <div style={{ width: 30, height: 30, borderRadius: "50%", background: c.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 800, color: "#fff" }}>
               {c.letter}

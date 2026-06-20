@@ -276,7 +276,7 @@ export default function BPlusTreeViz() {
       lines.push(
         <line key={`l-${ln.node.uid}-${ch.node.uid}`}
           x1={px} y1={py} x2={cx} y2={cy}
-          stroke={isHl ? "#f0c060" : "rgba(255,255,255,0.12)"}
+          stroke={isHl ? "#f0c060" : "var(--border-bright)"}
           strokeWidth={isHl ? 2.5 : 1.5}
           style={{ transition: "stroke 0.4s, stroke-width 0.4s" }}
         />
@@ -328,7 +328,7 @@ export default function BPlusTreeViz() {
       <g key={`n-${ln.node.uid}`}>
         <rect
           x={ln.x} y={ln.y} width={nw} height={nh} rx={7}
-          fill={ln.node.isLeaf ? "#111118" : "#1a1a26"}
+          fill={ln.node.isLeaf ? "var(--bg-surface)" : "var(--bg-elevated)"}
           stroke={isHl ? "#f0c060" : borderColor}
           strokeWidth={isHl ? 2.5 : 1.5}
           style={{ transition: "stroke 0.4s, stroke-width 0.4s" }}
@@ -348,7 +348,7 @@ export default function BPlusTreeViz() {
               <text
                 x={kx + KEY_W / 2 - 1} y={ky + KEY_H / 2 + 1}
                 textAnchor="middle" dominantBaseline="middle"
-                fill={isKeyHl ? "#0a0a0f" : "#e8e8f0"}
+                fill={isKeyHl ? "#0a0a0f" : "var(--text-primary)"}
                 fontSize={13} fontFamily="JetBrains Mono, monospace" fontWeight={500}
                 style={{ transition: "fill 0.3s" }}
               >
@@ -357,7 +357,7 @@ export default function BPlusTreeViz() {
               {/* separator */}
               {i < ln.node.keys.length - 1 && (
                 <line x1={kx + KEY_W - 1} y1={ky + 4} x2={kx + KEY_W - 1} y2={ky + KEY_H - 4}
-                  stroke="rgba(255,255,255,0.08)" strokeWidth={1}
+                  stroke="var(--border)" strokeWidth={1}
                 />
               )}
             </g>
