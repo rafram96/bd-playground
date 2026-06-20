@@ -455,14 +455,14 @@ export function TokenTable() {
     { type: "IDENTIFIER", ex: "employees, e.name, dept_id, salary",      color: TC.plain,   bg: "#0d1117" },
     { type: "LITERAL",    ex: "'2020-01-01', 50000, TRUE, NULL",          color: TC.string,  bg: "#051520" },
     { type: "OPERATOR",   ex: "> < = != AND OR NOT LIKE",                color: TC.op,      bg: "#111" },
-    { type: "DELIMITER",  ex: "( ) , ; .",                               color: "#e2e8f0",  bg: "#0d1117" },
+    { type: "DELIMITER",  ex: "( ) , ; .",                               color: "var(--syntax-op)",  bg: "#0d1117" },
     { type: "WHITESPACE", ex: "espacios, tabs, newlines → ignorados",     color: TC.comment, bg: "#0d1117" },
   ];
   return (
     <div style={{ margin: "12px 0", display: "flex", flexDirection: "column", gap: 6 }}>
       {tokens.map((t) => (
         <div key={t.type} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ minWidth: 88, padding: "3px 8px", borderRadius: 4, background: t.bg, border: `1px solid ${t.color}`, color: t.color, fontSize: 11, fontFamily: "var(--font-code)", fontWeight: 700, textAlign: "center" }}>
+          <span style={{ minWidth: 88, padding: "3px 8px", borderRadius: 4, background: `color-mix(in srgb, ${t.color} 12%, var(--bg-surface))`, border: `1px solid ${t.color}`, color: t.color, fontSize: 11, fontFamily: "var(--font-code)", fontWeight: 700, textAlign: "center" }}>
             {t.type}
           </span>
           <span style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-code)" }}>{t.ex}</span>
@@ -490,7 +490,7 @@ export function LatencyChart() {
       {rows.map((r) => (
         <div key={r.label} style={{ display: "grid", gridTemplateColumns: "130px 1fr 72px", gap: 8, alignItems: "center" }}>
           <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>{r.label}</span>
-          <div style={{ background: "#1f2937", borderRadius: 3, height: 16, overflow: "hidden" }}>
+          <div style={{ background: "var(--bg-elevated)", borderRadius: 3, height: 16, overflow: "hidden" }}>
             <div style={{ width: `${r.pct}%`, height: "100%", background: r.color, borderRadius: 3 }} />
           </div>
           <span style={{ fontSize: 11, color: r.color, fontFamily: "var(--font-code)", textAlign: "right" }}>{r.value}</span>

@@ -200,12 +200,12 @@ function ArchDiagram() {
         {/* SQL pill */}
         <div style={{
           padding: "7px 28px",
-          background: "#1f2937",
-          border: "1px solid #374151",
+          background: "var(--bg-elevated)",
+          border: "1px solid var(--border-bright)",
           borderRadius: 20,
           fontSize: 12,
           fontFamily: "var(--font-code)",
-          color: "#9ca3af",
+          color: "var(--text-secondary)",
         }}>
           SQL Query String
         </div>
