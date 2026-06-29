@@ -472,81 +472,48 @@ function H4Like({ children }: { children: React.ReactNode }) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Diagrama del algoritmo distribuido (P3.2): flujo coordinador → esclavos →
-   mezcla → resultado (estilo MapReduce / agregación distribuida).
+   Diagrama del algoritmo distribuido (P3.2): pipeline de fases de la consulta
+   distribuida (particionar → procesar local → unir → mezclar → resultado).
    ───────────────────────────────────────────────────────────────────────────── */
-function FlowBox({
-  tone = "slave",
-  title,
-  sub,
-}: {
-  tone?: "coord" | "slave" | "result";
-  title: React.ReactNode;
-  sub?: React.ReactNode;
-}) {
-  const tones: Record<string, { border: string; bg: string }> = {
-    coord:  { border: "var(--accent)",        bg: "color-mix(in srgb, var(--accent) 10%, var(--bg-surface))" },
-    slave:  { border: "var(--border-bright)", bg: "var(--bg-surface)" },
-    result: { border: "var(--success)",       bg: "color-mix(in srgb, var(--success) 13%, var(--bg-surface))" },
-  };
-  const t = tones[tone] ?? tones.slave;
-  return (
-    <div style={{ border: `1.5px solid ${t.border}`, background: t.bg, borderRadius: 10, padding: "10px 14px", textAlign: "center" }}>
-      <div style={{ fontWeight: 700, fontSize: 12.5, color: "var(--text-primary)", fontFamily: "var(--font-ui)" }}>{title}</div>
-      {sub && <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 3, lineHeight: 1.45, fontFamily: "var(--font-ui)" }}>{sub}</div>}
-    </div>
-  );
-}
-
-function HArrow({ label }: { label?: React.ReactNode }) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, minWidth: 52 }}>
-      {label && (
-        <span style={{ fontSize: 10.5, color: "var(--text-muted)", textAlign: "center", lineHeight: 1.35, fontFamily: "var(--font-ui)", maxWidth: 150 }}>
-          {label}
-        </span>
-      )}
-      <span style={{ fontSize: 24, color: "var(--text-muted)", lineHeight: 1 }}>⟶</span>
-    </div>
-  );
-}
-
 function DistribDiagram() {
+  const stages: { v: string; s: string; c: string }[] = [
+    { v: "Particionar",    s: "datos fragmentados en los 3 nodos (fecha / hash)",     c: "#3b82f6" },
+    { v: "Procesar local", s: "cada nodo agrega por ciudad → parciales (#Rep, Σ Monto)", c: "#8b5cf6" },
+    { v: "Unir",           s: "el coordinador junta los parciales de los 3 nodos",    c: "#a855f7" },
+    { v: "Mezclar",        s: "suma por ciudad + ORDER BY MontoTotal DESC",           c: "#10b981" },
+    { v: "Resultado",      s: "(Ciudad, TotalRepartidores, MontoTotal)",              c: "var(--accent)" },
+  ];
   return (
-    <div style={{ margin: "16px 0", padding: "18px 16px", border: "1px solid var(--border)", borderRadius: 12, background: "var(--bg-base)", overflowX: "auto" }}>
-      <div style={{ fontSize: 11.5, color: "var(--text-muted)", marginBottom: 14, textAlign: "center", fontFamily: "var(--font-ui)" }}>
-        <b style={{ color: "var(--accent)" }}>①</b> El coordinador dispersa la subconsulta a los 3 esclavos (en paralelo)
-      </div>
-
-      {/* Flujo horizontal: esclavos → mezcla → resultado */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, flexWrap: "wrap" }}>
-
-        {/* Izquierda: los 3 esclavos */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {[1, 2, 3].map((j) => (
-            <div key={j} style={{ border: "1.5px solid var(--border-bright)", background: "var(--bg-surface)", borderRadius: 9, padding: "8px 11px", minWidth: 144 }}>
-              <div style={{ fontWeight: 700, fontSize: 12, color: "var(--text-primary)", fontFamily: "var(--font-ui)" }}>Esclavo S{j}</div>
-              <div style={{ fontSize: 10.5, color: "var(--text-muted)", marginTop: 2, fontFamily: "var(--font-ui)" }}>Pedidos_s{j} · Repartidores_s{j}</div>
-              <div style={{ fontSize: 10.5, color: "var(--accent)", fontFamily: "var(--font-code)", marginTop: 4 }}>AGG local por ciudad</div>
+    <div style={{ margin: "16px 0", padding: "18px 14px", border: "1px solid var(--border)", borderRadius: 12, background: "var(--bg-base)", overflowX: "auto" }}>
+      <div style={{ display: "flex", alignItems: "stretch", justifyContent: "center", minWidth: "min-content" }}>
+        {stages.map((st, i) => (
+          <div key={st.v} style={{ display: "flex", alignItems: "center" }}>
+            <div
+              style={{
+                width: 118,
+                flexShrink: 0,
+                alignSelf: "stretch",
+                border: `1.5px solid ${st.c}`,
+                background: `color-mix(in srgb, ${st.c} 9%, var(--bg-surface))`,
+                borderRadius: 10,
+                padding: "10px 11px",
+                display: "flex",
+                flexDirection: "column",
+                gap: 4,
+              }}
+            >
+              <div style={{ fontWeight: 700, fontSize: 12, color: st.c, fontFamily: "var(--font-ui)" }}>
+                {i + 1}. {st.v}
+              </div>
+              <div style={{ fontSize: 10.5, color: "var(--text-muted)", lineHeight: 1.4, fontFamily: "var(--font-ui)" }}>
+                {st.s}
+              </div>
             </div>
-          ))}
-        </div>
-
-        {/* Flecha 2: parciales */}
-        <HArrow label={<><b style={{ color: "var(--accent)" }}>②</b> parciales<br />(Ciudad, #Rep, Σ Monto)</>} />
-
-        {/* Centro: mezcla del coordinador */}
-        <div style={{ maxWidth: 186 }}>
-          <FlowBox tone="coord" title="Coordinador: mezcla" sub="suma parciales por ciudad · ORDER BY MontoTotal DESC" />
-        </div>
-
-        {/* Flecha 3 */}
-        <HArrow label={<><b style={{ color: "var(--accent)" }}>③</b> ensambla</>} />
-
-        {/* Derecha: resultado */}
-        <div style={{ maxWidth: 158 }}>
-          <FlowBox tone="result" title={<span style={{ fontFamily: "var(--font-code)", fontWeight: 600, fontSize: 11 }}>(Ciudad,<br />TotalRepartidores,<br />MontoTotal)</span>} />
-        </div>
+            {i < stages.length - 1 && (
+              <span style={{ color: "var(--text-muted)", fontSize: 20, padding: "0 4px", flexShrink: 0 }}>⟶</span>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
