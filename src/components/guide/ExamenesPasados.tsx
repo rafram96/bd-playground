@@ -498,54 +498,55 @@ function FlowBox({
   );
 }
 
-function StepArrow({ n, text }: { n: number; text: string }) {
+function HArrow({ label }: { label?: React.ReactNode }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 9, justifyContent: "center", margin: "9px 0" }}>
-      <span style={{ fontSize: 17, color: "var(--text-muted)", lineHeight: 1 }}>▼</span>
-      <span style={{ fontSize: 11.5, color: "var(--text-muted)", fontFamily: "var(--font-ui)", textAlign: "left", maxWidth: 520 }}>
-        <b style={{ color: "var(--accent)" }}>{n}.</b> {text}
-      </span>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, minWidth: 52 }}>
+      {label && (
+        <span style={{ fontSize: 10.5, color: "var(--text-muted)", textAlign: "center", lineHeight: 1.35, fontFamily: "var(--font-ui)", maxWidth: 150 }}>
+          {label}
+        </span>
+      )}
+      <span style={{ fontSize: 24, color: "var(--text-muted)", lineHeight: 1 }}>⟶</span>
     </div>
   );
 }
 
 function DistribDiagram() {
   return (
-    <div style={{ margin: "16px 0", padding: "18px 16px", border: "1px solid var(--border)", borderRadius: 12, background: "var(--bg-base)" }}>
-      <div style={{ maxWidth: 470, margin: "0 auto" }}>
-        <FlowBox tone="coord" title="Servidor Central (coordinador)" sub="recibe la consulta global" />
+    <div style={{ margin: "16px 0", padding: "18px 16px", border: "1px solid var(--border)", borderRadius: 12, background: "var(--bg-base)", overflowX: "auto" }}>
+      <div style={{ fontSize: 11.5, color: "var(--text-muted)", marginBottom: 14, textAlign: "center", fontFamily: "var(--font-ui)" }}>
+        <b style={{ color: "var(--accent)" }}>①</b> El coordinador dispersa la subconsulta a los 3 esclavos (en paralelo)
       </div>
 
-      <StepArrow n={1} text="dispersa la subconsulta a los 3 esclavos (en paralelo)" />
+      {/* Flujo horizontal: esclavos → mezcla → resultado */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, flexWrap: "wrap" }}>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
-        {[1, 2, 3].map((j) => (
-          <FlowBox
-            key={j}
-            tone="slave"
-            title={`Esclavo S${j}`}
-            sub={
-              <>
-                Pedidos_s{j} · Repartidores_s{j}
-                <div style={{ marginTop: 6, color: "var(--accent)", fontFamily: "var(--font-code)", fontSize: 10.5 }}>
-                  AGG local por ciudad
-                </div>
-              </>
-            }
-          />
-        ))}
-      </div>
+        {/* Izquierda: los 3 esclavos */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {[1, 2, 3].map((j) => (
+            <div key={j} style={{ border: "1.5px solid var(--border-bright)", background: "var(--bg-surface)", borderRadius: 9, padding: "8px 11px", minWidth: 144 }}>
+              <div style={{ fontWeight: 700, fontSize: 12, color: "var(--text-primary)", fontFamily: "var(--font-ui)" }}>Esclavo S{j}</div>
+              <div style={{ fontSize: 10.5, color: "var(--text-muted)", marginTop: 2, fontFamily: "var(--font-ui)" }}>Pedidos_s{j} · Repartidores_s{j}</div>
+              <div style={{ fontSize: 10.5, color: "var(--accent)", fontFamily: "var(--font-code)", marginTop: 4 }}>AGG local por ciudad</div>
+            </div>
+          ))}
+        </div>
 
-      <StepArrow n={2} text="cada esclavo agrega por ciudad y devuelve SOLO los parciales: (Ciudad, #Repartidores, Σ Monto)" />
+        {/* Flecha 2: parciales */}
+        <HArrow label={<><b style={{ color: "var(--accent)" }}>②</b> parciales<br />(Ciudad, #Rep, Σ Monto)</>} />
 
-      <div style={{ maxWidth: 470, margin: "0 auto" }}>
-        <FlowBox tone="coord" title="Mezcla en el coordinador" sub="suma los parciales por ciudad  ·  ORDER BY MontoTotal DESC" />
-      </div>
+        {/* Centro: mezcla del coordinador */}
+        <div style={{ maxWidth: 186 }}>
+          <FlowBox tone="coord" title="Coordinador: mezcla" sub="suma parciales por ciudad · ORDER BY MontoTotal DESC" />
+        </div>
 
-      <StepArrow n={3} text="ensambla y devuelve el resultado final" />
+        {/* Flecha 3 */}
+        <HArrow label={<><b style={{ color: "var(--accent)" }}>③</b> ensambla</>} />
 
-      <div style={{ maxWidth: 380, margin: "0 auto" }}>
-        <FlowBox tone="result" title={<span style={{ fontFamily: "var(--font-code)", fontWeight: 600 }}>(Ciudad, TotalRepartidores, MontoTotal)</span>} />
+        {/* Derecha: resultado */}
+        <div style={{ maxWidth: 158 }}>
+          <FlowBox tone="result" title={<span style={{ fontFamily: "var(--font-code)", fontWeight: 600, fontSize: 11 }}>(Ciudad,<br />TotalRepartidores,<br />MontoTotal)</span>} />
+        </div>
       </div>
     </div>
   );
