@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import {
   H2, H3, P, Bold, Code, Divider,
-  Ul, Ol, Callout, Table, Pseudo, SqlCode,
+  Ul, Ol, Callout, Table, Pseudo, SqlCode, Collapse,
 } from "@/components/guide/blocks";
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -371,6 +371,10 @@ def Lower_Bounding_KNN(Q, K):
             conteos parciales. Los fragmentos de <Code>Pedidos</Code> son disjuntos, así que los montos se suman
             sin doble conteo. Estrategia: push-down de la agregación (Map) + mezcla en el coordinador (Reduce).
           </P>
+
+          <DistribDiagram />
+
+          <Collapse title="Pseudocódigo equivalente (estilo CLRS)">
           <Pseudo>{`LOCAL-AGG(Sj)                          // en cada esclavo j, sobre sus fragmentos
  1  Rj = mapa vacío                    // repartidores por ciudad (fragmento local)
  2  for each r in Repartidores_j
@@ -396,6 +400,7 @@ DISTRIBUTED-CITY-REPORT()              // en el servidor central (coordinador)
 13      ADD(result, (c, R[c], M[c]))
 14  ORDER-BY-DESC(result, MontoTotal)  // ordena por M[c]
 15  return result`}</Pseudo>
+          </Collapse>
           <Ul items={[
             <><Bold>Agregación parcial en el origen:</Bold> solo viajan los agregados, no las filas.</>,
             <><Bold>Evita el join distribuido</Bold> y el doble conteo del monto.</>,
@@ -462,6 +467,86 @@ function H4Like({ children }: { children: React.ReactNode }) {
   return (
     <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-secondary)", margin: "16px 0 6px", textTransform: "uppercase", letterSpacing: 0.5, fontFamily: "var(--font-ui)" }}>
       {children}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Diagrama del algoritmo distribuido (P3.2): flujo coordinador → esclavos →
+   mezcla → resultado (estilo MapReduce / agregación distribuida).
+   ───────────────────────────────────────────────────────────────────────────── */
+function FlowBox({
+  tone = "slave",
+  title,
+  sub,
+}: {
+  tone?: "coord" | "slave" | "result";
+  title: React.ReactNode;
+  sub?: React.ReactNode;
+}) {
+  const tones: Record<string, { border: string; bg: string }> = {
+    coord:  { border: "var(--accent)",        bg: "color-mix(in srgb, var(--accent) 10%, var(--bg-surface))" },
+    slave:  { border: "var(--border-bright)", bg: "var(--bg-surface)" },
+    result: { border: "var(--success)",       bg: "color-mix(in srgb, var(--success) 13%, var(--bg-surface))" },
+  };
+  const t = tones[tone] ?? tones.slave;
+  return (
+    <div style={{ border: `1.5px solid ${t.border}`, background: t.bg, borderRadius: 10, padding: "10px 14px", textAlign: "center" }}>
+      <div style={{ fontWeight: 700, fontSize: 12.5, color: "var(--text-primary)", fontFamily: "var(--font-ui)" }}>{title}</div>
+      {sub && <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 3, lineHeight: 1.45, fontFamily: "var(--font-ui)" }}>{sub}</div>}
+    </div>
+  );
+}
+
+function StepArrow({ n, text }: { n: number; text: string }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 9, justifyContent: "center", margin: "9px 0" }}>
+      <span style={{ fontSize: 17, color: "var(--text-muted)", lineHeight: 1 }}>▼</span>
+      <span style={{ fontSize: 11.5, color: "var(--text-muted)", fontFamily: "var(--font-ui)", textAlign: "left", maxWidth: 520 }}>
+        <b style={{ color: "var(--accent)" }}>{n}.</b> {text}
+      </span>
+    </div>
+  );
+}
+
+function DistribDiagram() {
+  return (
+    <div style={{ margin: "16px 0", padding: "18px 16px", border: "1px solid var(--border)", borderRadius: 12, background: "var(--bg-base)" }}>
+      <div style={{ maxWidth: 470, margin: "0 auto" }}>
+        <FlowBox tone="coord" title="Servidor Central (coordinador)" sub="recibe la consulta global" />
+      </div>
+
+      <StepArrow n={1} text="dispersa la subconsulta a los 3 esclavos (en paralelo)" />
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+        {[1, 2, 3].map((j) => (
+          <FlowBox
+            key={j}
+            tone="slave"
+            title={`Esclavo S${j}`}
+            sub={
+              <>
+                Pedidos_s{j} · Repartidores_s{j}
+                <div style={{ marginTop: 6, color: "var(--accent)", fontFamily: "var(--font-code)", fontSize: 10.5 }}>
+                  AGG local por ciudad
+                </div>
+              </>
+            }
+          />
+        ))}
+      </div>
+
+      <StepArrow n={2} text="cada esclavo agrega por ciudad y devuelve SOLO los parciales: (Ciudad, #Repartidores, Σ Monto)" />
+
+      <div style={{ maxWidth: 470, margin: "0 auto" }}>
+        <FlowBox tone="coord" title="Mezcla en el coordinador" sub="suma los parciales por ciudad  ·  ORDER BY MontoTotal DESC" />
+      </div>
+
+      <StepArrow n={3} text="ensambla y devuelve el resultado final" />
+
+      <div style={{ maxWidth: 380, margin: "0 auto" }}>
+        <FlowBox tone="result" title={<span style={{ fontFamily: "var(--font-code)", fontWeight: 600 }}>(Ciudad, TotalRepartidores, MontoTotal)</span>} />
+      </div>
     </div>
   );
 }
