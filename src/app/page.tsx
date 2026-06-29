@@ -63,6 +63,10 @@ const NormalizacionGuide = dynamic(
   () => import("@/components/guide/NormalizacionGuide"),
 );
 
+const ExamenesPasados = dynamic(
+  () => import("@/components/guide/ExamenesPasados"),
+);
+
 const S9Guide = dynamic(
   () => import("@/components/guide/S9/S9Guide"),
 );
@@ -411,6 +415,7 @@ export default function Home() {
     if (id === "util-sintaxis") return <SqlSyntaxGuide />;
     if (id === "util-fd")       return <FuncionalDepsGuide />;
     if (id === "util-norm")     return <NormalizacionGuide />;
+    if (id === "util-examenes") return <ExamenesPasados />;
     if (id === "s9-ir")      return <S9Guide />;
     if (id === "s9-examen")  return <S9Exam />;
     if (id === "s10-vec")    return <S10Guide />;
