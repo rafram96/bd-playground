@@ -12,8 +12,8 @@ import {
    ───────────────────────────────────────────────────────────────────────────── */
 const SECTIONS = [
   { id: "sec-fundamentos",      label: "1. Fundamentos de Indexación" },
-  { id: "sec-bptree-estructura", label: "2. B+Tree — Estructura" },
-  { id: "sec-bptree-ops",        label: "3. B+Tree — Operaciones" },
+  { id: "sec-bptree-estructura", label: "2. B+Tree: Estructura" },
+  { id: "sec-bptree-ops",        label: "3. B+Tree: Operaciones" },
   { id: "sec-clustered",         label: "4. Clustered vs Unclustered" },
   { id: "sec-bitmap",            label: "5. Bitmap Index Scan" },
   { id: "sec-hash",              label: "6. Hash Index" },
@@ -160,7 +160,7 @@ export default function S3Guide() {
           {/* Page header */}
           <div style={{ marginBottom: 24 }}>
             <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-code)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-              Semana 3 · Módulo II — Técnicas de Indexación
+              Semana 3 · Módulo II · Técnicas de Indexación
             </div>
             <h1 style={{ fontSize: 30, fontWeight: 800, color: "var(--text-primary)", margin: "0 0 10px", fontFamily: "var(--font-ui)", lineHeight: 1.2 }}>
               Técnicas de Indexación
@@ -192,7 +192,7 @@ export default function S3Guide() {
 
           <H3>¿Por qué necesitamos índices?</H3>
           <P>
-            Sin índices, cualquier búsqueda requiere un <Bold>full table scan</Bold> — examinar
+            Sin índices, cualquier búsqueda requiere un <Bold>full table scan</Bold>: examinar
             cada fila de la tabla secuencialmente. Si una tabla contiene N registros, la búsqueda
             es O(n) en tiempo. Para tablas grandes (millones de filas), esto es prohibitivamente costoso.
           </P>
@@ -237,7 +237,7 @@ export default function S3Guide() {
           <Divider />
 
           {/* ══ 2. B+TREE ESTRUCTURA ══ */}
-          <H2 id="sec-bptree-estructura">2. B+Tree — Estructura</H2>
+          <H2 id="sec-bptree-estructura">2. B+Tree: Estructura</H2>
           <P>
             El B+Tree es la estructura de índice más común en DBMS modernos (PostgreSQL, MySQL/InnoDB,
             SQL Server, Oracle). Es un árbol balanceado multicamino optimizado para acceso a disco.
@@ -281,7 +281,7 @@ export default function S3Guide() {
           <Divider />
 
           {/* ══ 3. B+TREE OPERACIONES ══ */}
-          <H2 id="sec-bptree-ops">3. B+Tree — Operaciones</H2>
+          <H2 id="sec-bptree-ops">3. B+Tree: Operaciones</H2>
           <P>
             Las operaciones de B+Tree (búsqueda, inserción, eliminación) mantienen las propiedades
             de balanceo y ocupación mínima a través de rotaciones y divisiones de nodos.
@@ -318,12 +318,12 @@ export default function S3Guide() {
 
           <Collapse title="Ejemplo: split de hoja">
             <P>Supón una hoja llena con orden n=3:</P>
-            <Code>Hoja: [10, 20, 30] — capacidad llena</Code>
+            <Code>Hoja: [10, 20, 30] (capacidad llena)</Code>
             <div style={{ marginTop: 8 }}>
               <P>Insertar 25:</P>
             </div>
             <Code>Hoja (antes): [10, 20, 30]</Code>
-            <Code>Hoja (después inserción): [10, 20, 25, 30] — ¡desbordamiento!</Code>
+            <Code>Hoja (después inserción): [10, 20, 25, 30] → ¡desbordamiento!</Code>
             <div style={{ marginTop: 8 }}>
               <P>Split en mediana 25:</P>
             </div>

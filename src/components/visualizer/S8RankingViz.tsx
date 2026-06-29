@@ -103,8 +103,8 @@ export default function S8RankingViz() {
               Ranked Retrieval: TF-IDF y similitud de coseno
             </h1>
             <span style={{
-              fontSize: 11, fontWeight: 700, color: "#fbbf24", background: "#1a0f05",
-              border: "1px solid #92400e", borderRadius: 999, padding: "3px 10px",
+              fontSize: 11, fontWeight: 700, color: "var(--cal-warning-label)", background: "var(--cal-warning-bg)",
+              border: "1px solid var(--cal-warning-border)", borderRadius: 999, padding: "3px 10px",
               fontFamily: "var(--font-ui)", textTransform: "uppercase", letterSpacing: 0.5, whiteSpace: "nowrap",
             }}>
               Working On
@@ -224,8 +224,8 @@ export default function S8RankingViz() {
         </div>
 
         {/* Nota */}
-        <div style={{ marginTop: 20, padding: "12px 16px", background: "#0c1a26", border: "1px solid #1d4ed8", borderRadius: 8, fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.7 }}>
-          <b style={{ color: "#60a5fa" }}>Prueba esto:</b> cambia a <b>“Solo TF”</b> y observa cómo,
+        <div style={{ marginTop: 20, padding: "12px 16px", background: "var(--cal-note-bg)", border: "1px solid var(--cal-note-border)", borderRadius: 8, fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.7 }}>
+          <b style={{ color: "var(--cal-note-label)" }}>Prueba esto:</b> cambia a <b>“Solo TF”</b> y observa cómo,
           sin idf, los términos comunes pesan igual que los raros y el ranking puede empeorar. Vuelve a
           <b> TF-IDF</b>: los términos que aparecen en <b>todos</b> los documentos tienen idf = 0 (no
           discriminan), y los <b>raros</b> dominan el score. Agrega un documento o edita la consulta y mira

@@ -258,7 +258,7 @@ export default function S10KnnViz() {
                   </button>
                 ))}
               </div>
-              <div style={{ marginTop: 8, fontFamily: "var(--font-code)", fontSize: 12, color: "#a78bfa" }}>
+              <div style={{ marginTop: 8, fontFamily: "var(--font-code)", fontSize: 12, color: "var(--math-text)" }}>
                 δ = {info.formula}
               </div>
             </Control>
@@ -298,9 +298,9 @@ export default function S10KnnViz() {
                     <div key={p.id} style={{
                       display: "flex", justifyContent: "space-between", alignItems: "center",
                       fontSize: 12, padding: "4px 8px", borderRadius: 6,
-                      background: on ? "#0c2a1c" : "transparent",
-                      border: `1px solid ${on ? "#10b981" : "var(--border)"}`,
-                      color: on ? "#4ade80" : "var(--text-muted)",
+                      background: on ? "var(--cal-example-bg)" : "transparent",
+                      border: `1px solid ${on ? "var(--success)" : "var(--border)"}`,
+                      color: on ? "var(--cal-example-label)" : "var(--text-muted)",
                     }}>
                       <span style={{ fontFamily: "var(--font-code)" }}>
                         {mode === "knn" && on ? `#${i + 1}` : "·"} &nbsp;objeto {p.id}
@@ -322,8 +322,8 @@ export default function S10KnnViz() {
         </div>
 
         {/* Nota didáctica */}
-        <div style={{ marginTop: 20, padding: "12px 16px", background: "#0c1a26", border: "1px solid #1d4ed8", borderRadius: 8, fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.7, maxWidth: 820 }}>
-          <b style={{ color: "#60a5fa" }}>Qué observar:</b> cambia entre métricas y mira la forma del rango;
+        <div style={{ marginTop: 20, padding: "12px 16px", background: "var(--cal-note-bg)", border: "1px solid var(--cal-note-border)", borderRadius: 8, fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.7, maxWidth: 820 }}>
+          <b style={{ color: "var(--cal-note-label)" }}>Qué observar:</b> cambia entre métricas y mira la forma del rango;
           <b> círculo</b> (Euclidiana), <b>rombo</b> (Manhattan), <b>cuadrado</b> (Chebyshev). El <b>coseno</b> mide el
           ángulo desde el origen, así que su región es un <b>sector angular</b>: un objeto lejano sobre la misma
           dirección que <b style={{ color: "var(--accent)" }}>q</b> resulta “muy similar” aunque su distancia euclidiana sea grande.

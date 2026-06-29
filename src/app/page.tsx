@@ -97,6 +97,22 @@ const S11CurseViz = dynamic(
   { ssr: false }
 );
 
+const S12Guide = dynamic(
+  () => import("@/components/guide/S12/S12Guide"),
+);
+
+const S12Exam = dynamic(
+  () => import("@/components/guide/S12/S12Exam"),
+);
+
+const S13Guide = dynamic(
+  () => import("@/components/guide/S13/S13Guide"),
+);
+
+const S13Exam = dynamic(
+  () => import("@/components/guide/S13/S13Exam"),
+);
+
 const SlottedPageViz = dynamic(
   () => import("@/components/visualizer/SlottedPageViz"),
   { ssr: false }
@@ -403,6 +419,10 @@ export default function Home() {
     if (id === "s11-eff")    return <S11Guide />;
     if (id === "s11-examen") return <S11Exam />;
     if (id === "s11-viz")    return <S11CurseViz />;
+    if (id === "s12-bdd")    return <S12Guide />;
+    if (id === "s12-examen") return <S12Exam />;
+    if (id === "s13-vert")   return <S13Guide />;
+    if (id === "s13-examen") return <S13Exam />;
     if (id === "viz-slotted") return <SlottedPageViz />;
     if (id === "viz-bptree")  return <BPlusTreeViz />;
     if (id === "viz-costs")   return <CostComparatorViz />;

@@ -373,7 +373,7 @@ export default function S10Exam() {
               ["No-negatividad", "d(x,y) ≥ 0", "Nunca negativa"],
               ["Reflexividad", "d(x,y) = 0 ⟺ x = y", "0 solo consigo mismo"],
               ["Simetría", "d(x,y) = d(y,x)", "El orden no importa"],
-              ["Desigualdad triangular", "d(x,z) ≤ d(x,y) + d(y,z)", "El atajo nunca es más largo — habilita los índices métricos"],
+              ["Desigualdad triangular", "d(x,z) ≤ d(x,y) + d(y,z)", "El atajo nunca es más largo: habilita los índices métricos"],
             ]}
           />
           <Callout variant="note">

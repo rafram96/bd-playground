@@ -16,7 +16,7 @@ import {
   Leaf,
   BarChart2,
   Scissors,
-  Globe,
+  Columns3,
   Binary,
   GraduationCap,
   LocateFixed,
@@ -35,6 +35,7 @@ import {
   BookOpen,
   Wrench,
 } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Types
@@ -133,6 +134,20 @@ const TREE: TreeEntry[] = [
       { id: "s11-viz", label: "Visualizador: maldición dimensión", icon: <Boxes size={14} />, status: "done" },
     ],
   },
+  {
+    kind: "week", id: "w12", weekLabel: "Semana 12 — BD Distribuidas",
+    items: [
+      { id: "s12-bdd", label: "Distribuidas · Fragmentación Horizontal", icon: <Scissors size={14} />, status: "done" },
+      { id: "s12-examen", label: "Esencial para el examen", icon: <GraduationCap size={14} />, status: "done" },
+    ],
+  },
+  {
+    kind: "week", id: "w13", weekLabel: "Semana 13 — Fragmentación Vertical",
+    items: [
+      { id: "s13-vert", label: "Vertical · Matriz de Afinidad", icon: <Columns3 size={14} />, status: "done" },
+      { id: "s13-examen", label: "Esencial para el examen", icon: <GraduationCap size={14} />, status: "done" },
+    ],
+  },
 
   { kind: "divider", id: "div-otros" },
 
@@ -141,8 +156,6 @@ const TREE: TreeEntry[] = [
     items: [
       { id: "s8", label: "NoSQL (MongoDB · Cassandra · Redis)", icon: <Leaf size={14} />, status: "planned" },
       { id: "s9", label: "OLAP / Data Warehousing", icon: <BarChart2 size={14} />, status: "planned" },
-      { id: "s10", label: "Fragmentación", icon: <Scissors size={14} />, status: "planned" },
-      { id: "s11", label: "BD Distribuidas", icon: <Globe size={14} />, status: "planned" },
     ],
   },
 
@@ -183,7 +196,7 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
   /* Semana 1 starts open; everything else collapsed */
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({
     w2: true, w3: true, w4: true, w5: true, w6: true,
-    w8: true, w9: true, w10: true, w11: true, "w-otros": true, utils: false,
+    w8: true, w9: true, w10: true, w11: true, w12: true, w13: true, "w-otros": true, utils: false,
   });
   const [open, setOpen] = useState(true);
 
@@ -218,6 +231,7 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
         >
           ☰
         </button>
+        <ThemeToggle />
       </aside>
     );
   }
@@ -267,14 +281,17 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
             CS2042 · UTEC
           </div>
         </div>
-        <button
-          onClick={() => setOpen(false)}
-          title="Ocultar menú"
-          aria-label="Ocultar menú"
-          style={{ marginLeft: "auto", background: "transparent", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text-secondary)", cursor: "pointer", width: 26, height: 24, fontSize: 13, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
-        >
-          ☰
-        </button>
+        <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
+          <ThemeToggle />
+          <button
+            onClick={() => setOpen(false)}
+            title="Ocultar menú"
+            aria-label="Ocultar menú"
+            style={{ background: "transparent", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text-secondary)", cursor: "pointer", width: 26, height: 24, fontSize: 13, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+          >
+            ☰
+          </button>
+        </div>
       </div>
 
       {/* Nav */}

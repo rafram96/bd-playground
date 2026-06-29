@@ -161,7 +161,7 @@ export default function S2Guide() {
           {/* Page header */}
           <div style={{ marginBottom: 24 }}>
             <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-code)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-              Semana 2 · Módulo I — Almacenamiento y Registros
+              Semana 2 · Módulo I · Almacenamiento y Registros
             </div>
             <h1 style={{ fontSize: 30, fontWeight: 800, color: "var(--text-primary)", margin: "0 0 10px", fontFamily: "var(--font-ui)", lineHeight: 1.2 }}>
               Organización Física y Almacenamiento
@@ -285,7 +285,7 @@ export default function S2Guide() {
             es trivial: <Formula>offset = i × record_size</Formula>
           </P>
           <P>
-            Complejidad: <Bold>O(1)</Bold> — una única operación aritmética y un read de página.
+            Complejidad: <Bold>O(1)</Bold> (una única operación aritmética y un read de página).
           </P>
 
           <H3>Problemas de Registros Fijos</H3>
@@ -305,13 +305,13 @@ export default function S2Guide() {
                   <Bold>Shift (Desplazamiento):</Bold> correr todos los registros posteriores hacia atrás.
                   <Ul items={[
                     "Ventaja: no deja huecos, mantiene densidad.",
-                    "Desventaja: O(n) — costoso con muchos registros.",
+                    "Desventaja: O(n) (costoso con muchos registros).",
                   ]} />
                 </>,
                 <>
                   <Bold>Mover Último Registro:</Bold> intercambiar eliminado con el último.
                   <Ul items={[
-                    "Ventaja: O(1) — una copia.",
+                    "Ventaja: O(1) (una copia).",
                     "Desventaja: cambia orden de registros, RID (Record ID) no es persistente.",
                   ]} />
                 </>,
@@ -328,7 +328,7 @@ export default function S2Guide() {
 
           <H3>Free List con Linked List</H3>
           <P>
-            La estrategia más eficiente es mantener una <Bold>Free List</Bold> — una lista enlazada de espacios
+            La estrategia más eficiente es mantener una <Bold>Free List</Bold>: una lista enlazada de espacios
             libres que se reutilizan en inserciones.
           </P>
           <Pipeline
@@ -359,12 +359,12 @@ export default function S2Guide() {
 
           <H3>Campos de Longitud Variable en PostgreSQL</H3>
           <Ul items={[
-            <><Code>VARCHAR(n)</Code> — cadena de hasta n caracteres.</>,
-            <><Code>TEXT</Code> — cadena de longitud arbitraria.</>,
-            <><Code>BYTEA</Code> — datos binarios de longitud variable.</>,
-            <><Code>JSON / JSONB</Code> — documentos semiestructurados.</>,
-            <><Code>ARRAY</Code> — arreglos heterogéneos.</>,
-            <><Code>NUMERIC</Code> — números con precisión arbitraria.</>,
+            <><Code>VARCHAR(n)</Code>: cadena de hasta n caracteres.</>,
+            <><Code>TEXT</Code>: cadena de longitud arbitraria.</>,
+            <><Code>BYTEA</Code>: datos binarios de longitud variable.</>,
+            <><Code>JSON / JSONB</Code>: documentos semiestructurados.</>,
+            <><Code>ARRAY</Code>: arreglos heterogéneos.</>,
+            <><Code>NUMERIC</Code>: números con precisión arbitraria.</>,
           ]} />
 
           <H3>Métodos de Almacenamiento</H3>
@@ -480,8 +480,8 @@ export default function S2Guide() {
             Algunos sistemas usan archivo separado para metadatos:
           </P>
           <Ul items={[
-            <><Code>Header.dat</Code> — array de (offset, tamaño) para cada tupla.</>,
-            <><Code>Datos.txt</Code> — tuplas en orden.</>,
+            <><Code>Header.dat</Code>: array de (offset, tamaño) para cada tupla.</>,
+            <><Code>Datos.txt</Code>: tuplas en orden.</>,
           ]} />
           <P>
             Acceso: leer Header.dat para obtener offset, luego leer Datos.txt en O(1).
@@ -503,12 +503,12 @@ export default function S2Guide() {
               ],
               [
                 "Acceso a campo i",
-                "O(1) — cálculo directo de offset",
-                "O(i) — debe parsear desde inicio (texto) u O(1) con Slotted Page (binario)"
+                "O(1): cálculo directo de offset",
+                "O(i): debe parsear desde inicio (texto) u O(1) con Slotted Page (binario)"
               ],
               [
                 "Acceso por slot/RID",
-                "O(1) — offset = i × size",
+                "O(1): offset = i × size",
                 "O(1) con Slotted Page, ItemId array"
               ],
               [
@@ -518,8 +518,8 @@ export default function S2Guide() {
               ],
               [
                 "Actualizaciones",
-                "O(1) — sobrescribir en lugar",
-                "Compleja — puede no caber, requiere relocalización"
+                "O(1): sobrescribir en lugar",
+                "Compleja: puede no caber, requiere relocalización"
               ],
               [
                 "Compactación",
@@ -558,7 +558,7 @@ export default function S2Guide() {
           <H3>Características</H3>
           <Ul items={[
             "Registros se insertan en primer espacio libre disponible (First Fit).",
-            "Sin índice de búsqueda integrado — requiere Full Table Scan para búsquedas.",
+            "Sin índice de búsqueda integrado: requiere Full Table Scan para búsquedas.",
             <>Ideal para <Code>INSERT</Code> muy rápido.</>,
           ]} />
 
@@ -616,7 +616,7 @@ export default function S2Guide() {
               "Localidad espacial: registros similares en mismas páginas",
             ]}
             cons={[
-              "Inserciones costosas: O(n) — puede requerir shift de registros",
+              "Inserciones costosas: O(n) (puede requerir shift de registros)",
               "Eliminaciones costosas: O(n) si se mantiene orden",
               "Reorganización periódica: overhead O(n log n) sorting",
               "Sobrevida limitada: orden se corrompe con actualizaciones",

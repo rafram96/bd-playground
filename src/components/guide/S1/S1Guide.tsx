@@ -192,7 +192,7 @@ function ArchDiagram() {
     }}>
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-code)", textTransform: "uppercase", letterSpacing: 1 }}>
-          Pipeline de procesamiento — haz click para ir a cada sección
+          Pipeline de procesamiento · haz click para ir a cada sección
         </div>
       </div>
 
@@ -200,12 +200,12 @@ function ArchDiagram() {
         {/* SQL pill */}
         <div style={{
           padding: "7px 28px",
-          background: "#1f2937",
-          border: "1px solid #374151",
+          background: "var(--bg-elevated)",
+          border: "1px solid var(--border-bright)",
           borderRadius: 20,
           fontSize: 12,
           fontFamily: "var(--font-code)",
-          color: "#9ca3af",
+          color: "var(--text-secondary)",
         }}>
           SQL Query String
         </div>
@@ -280,13 +280,13 @@ export default function S1Guide() {
           {/* Page header */}
           <div style={{ marginBottom: 24 }}>
             <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-code)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-              Semana 1 · Módulo I — Arquitectura y Almacenamiento
+              Semana 1 · Módulo I · Arquitectura y Almacenamiento
             </div>
             <h1 style={{ fontSize: 30, fontWeight: 800, color: "var(--text-primary)", margin: "0 0 10px", fontFamily: "var(--font-ui)", lineHeight: 1.2 }}>
               Arquitectura de un DBMS
             </h1>
             <P>
-              Un DBMS no ejecuta consultas SQL directamente — las procesa a través de una cadena de
+              Un DBMS no ejecuta consultas SQL directamente: las procesa a través de una cadena de
               componentes especializados. Entender este pipeline es fundamental para optimizar consultas,
               diagnosticar cuellos de botella y diseñar sistemas de base de datos eficientes.
             </P>
@@ -313,7 +313,7 @@ export default function S1Guide() {
 
           <DiagramPlaceholder label="Diagrama: SQL string → tokens → AST → logical plan" height={160} />
 
-          <H3>Fase 1 — Análisis Léxico (Tokenizer)</H3>
+          <H3>Fase 1: Análisis Léxico (Tokenizer)</H3>
           <P>
             El lexer recorre el texto carácter por carácter y produce una secuencia de <Bold>tokens</Bold>.
             Cada token tiene un tipo y un valor.
@@ -327,7 +327,7 @@ export default function S1Guide() {
             <Code>OP(&gt;)</Code> <Code>NUM(50000)</Code>
           </Callout>
 
-          <H3>Fase 2 — Análisis Sintáctico (Parser)</H3>
+          <H3>Fase 2: Análisis Sintáctico (Parser)</H3>
           <P>
             Verifica que los tokens siguen la gramática SQL (BNF / EBNF) y construye un
             <Bold> Abstract Syntax Tree (AST)</Bold>. Si la consulta tiene errores de sintaxis
@@ -346,7 +346,7 @@ export default function S1Guide() {
             />
           </Collapse>
 
-          <H3>Fase 3 — Análisis Semántico</H3>
+          <H3>Fase 3: Análisis Semántico</H3>
           <P>
             Valida el AST contra el <Bold>catálogo del sistema</Bold> (<Code>pg_catalog</Code>).
             Comprueba que las tablas y columnas existen, que los tipos son compatibles y que el
@@ -369,8 +369,7 @@ LIMIT  20;`} />
           {/* ══ 2. OPTIMIZER ══ */}
           <H2 id="sec-optimizer">2. Query Optimizer</H2>
           <P>
-            El Optimizer toma el plan lógico del Parser y produce el <Bold>plan físico óptimo</Bold>
-            — la estrategia concreta de acceso a datos que minimiza el costo estimado (I/Os + CPU).
+            El Optimizer toma el plan lógico del Parser y produce el <Bold>plan físico óptimo</Bold>: la estrategia concreta de acceso a datos que minimiza el costo estimado (I/Os + CPU).
             Es el componente más complejo del DBMS.
           </P>
 
@@ -382,7 +381,7 @@ LIMIT  20;`} />
             { label: "Plan Físico",    sub: "nodos + costos",        color: "#f59e0b" },
           ]} />
 
-          <H3>Paso 1 — Simplificación y Pushdown</H3>
+          <H3>Paso 1: Simplificación y Pushdown</H3>
           <P>
             Aplica reglas algebraicas para mover los filtros (<Code>WHERE</Code>) lo más abajo
             posible en el árbol, reduciendo el número de filas que fluyen hacia arriba.
@@ -393,7 +392,7 @@ LIMIT  20;`} />
             el número de filas a combinar.
           </Callout>
 
-          <H3>Paso 2 — Estimación de Cardinalidad</H3>
+          <H3>Paso 2: Estimación de Cardinalidad</H3>
           <P>
             El Optimizer consulta <Code>pg_statistic</Code> para estimar cuántas filas producirá
             cada operación. Una estimación incorrecta genera planes subóptimos.
@@ -409,7 +408,7 @@ FROM   pg_stats
 WHERE  tablename = 'employees'
 ORDER  BY attname;`} />
 
-          <H3>Paso 3 — Enumeración de Planes y Selección de Costo</H3>
+          <H3>Paso 3: Enumeración de Planes y Selección de Costo</H3>
           <P>
             Para cada operación, el Optimizer evalúa múltiples algoritmos y elige el de menor costo.
             El costo se mide en unidades de I/O de página (configurables con <Code>seq_page_cost</Code>,
@@ -425,7 +424,7 @@ ORDER  BY attname;`} />
             ]}
           />
 
-          <H3>Paso 4 — Plan Final: EXPLAIN ANALYZE</H3>
+          <H3>Paso 4 · Plan Final: EXPLAIN ANALYZE</H3>
           <SqlCode label="Ver el plan de ejecución real" sql={`EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)
 SELECT e.name, d.name AS dept, e.salary
 FROM   employees e
@@ -444,17 +443,17 @@ ORDER  BY e.salary DESC;`} />
           <Divider />
 
           {/* ══ 3. EXECUTOR ══ */}
-          <H2 id="sec-executor">3. Executor — Modelo Volcano / Iterator</H2>
+          <H2 id="sec-executor">3. Executor: Modelo Volcano / Iterator</H2>
           <P>
             El Executor recibe el plan físico y lo ejecuta. PostgreSQL usa el
             <Bold> modelo Volcano</Bold> (también llamado Iterator): cada nodo del plan
-            implementa tres operaciones — <Code>open()</Code>, <Code>next()</Code>, <Code>close()</Code>.
+            implementa tres operaciones: <Code>open()</Code>, <Code>next()</Code>, <Code>close()</Code>.
           </P>
 
           <Callout variant="definition" title="Modelo Volcano (Graefe, 1994)">
             Cada operador es un iterador. El nodo raíz llama a <Code>next()</Code> en sus
             hijos, que a su vez llaman a los suyos. Las tuplas fluyen de abajo hacia arriba
-            <Bold> una a una</Bold> (o en lotes en versiones modernas — "vectorized execution").
+            <Bold> una a una</Bold> (o en lotes en versiones modernas: "vectorized execution").
             Esto permite composición arbitraria de operadores sin materialización intermedia.
           </Callout>
 
@@ -512,7 +511,7 @@ ORDER  BY e.salary DESC;`} />
             En PostgreSQL, el buffer pool se configura con <Code>shared_buffers</Code> (default: 128 MB).
           </P>
 
-          <DiagramPlaceholder label="Diagrama: Buffer Pool — page table con frame, pin count, dirty bit" height={180} />
+          <DiagramPlaceholder label="Diagrama: Buffer Pool · page table con frame, pin count, dirty bit" height={180} />
 
           <H3>Estructura del Buffer Pool</H3>
           <Ul items={[
@@ -529,7 +528,7 @@ ORDER  BY e.salary DESC;`} />
               ["LRU (Least Recently Used)", "Desaloja la página menos recientemente accedida", "General, default en muchos DBMS"],
               ["Clock / Clock-Sweep", "Aproximación a LRU con bit de uso y puntero circular", "PostgreSQL (clock sweep)"],
               ["2Q (Two-Queue)", "Separa accesos recientes de frecuentes; protege de scans grandes", "MySQL InnoDB, Oracle"],
-              ["MRU (Most Recently Used)", "Desaloja la más reciente — óptimo para ciertos scans", "Scans secuenciales largos"],
+              ["MRU (Most Recently Used)", "Desaloja la más reciente: óptimo para ciertos scans", "Scans secuenciales largos"],
             ]}
           />
 
@@ -551,10 +550,10 @@ LIMIT  15;`} />
           <Divider />
 
           {/* ══ 5. FILE MANAGER ══ */}
-          <H2 id="sec-file">5. File Manager — Almacenamiento Físico</H2>
+          <H2 id="sec-file">5. File Manager: Almacenamiento Físico</H2>
           <P>
             El File Manager gestiona cómo los datos se organizan en disco. PostgreSQL usa
-            <Bold> heap files</Bold> — archivos de páginas de tamaño fijo (8 KB) donde las tuplas
+            <Bold> heap files</Bold>: archivos de páginas de tamaño fijo (8 KB) donde las tuplas
             se almacenan sin orden particular.
           </P>
 
@@ -568,7 +567,7 @@ LIMIT  15;`} />
           ]} />
 
           <H3>Estructura de una Página (8 KB)</H3>
-          <DiagramPlaceholder label="Diagrama: layout de página — PageHeader / ItemId[] / espacio libre / tuplas" height={160} />
+          <DiagramPlaceholder label="Diagrama: layout de página · PageHeader / ItemId[] / espacio libre / tuplas" height={160} />
           <Table
             headers={["Zona", "Tamaño", "Contenido"]}
             rows={[
@@ -588,7 +587,7 @@ LIMIT  15;`} />
           </P>
           <Formula>TID = (blkno: uint32, offno: uint16)  →  identifica exactamente 1 versión de tupla</Formula>
 
-          <Callout variant="lab" title="Lab — Inspeccionar páginas con pageinspect">
+          <Callout variant="lab" title="Lab: Inspeccionar páginas con pageinspect">
             <SqlCode sql={`-- Ver items en la primera página del heap
 SELECT * FROM heap_page_items(get_raw_page('employees', 0));
 
@@ -602,13 +601,13 @@ SELECT * FROM page_header(get_raw_page('employees', 0));`} />
           <H2 id="sec-tx">6. Transaction Manager</H2>
           <P>
             El Transaction Manager garantiza que las operaciones sobre la base de datos sean
-            <Bold> ACID</Bold> — incluso ante fallos del sistema, accesos concurrentes o errores
+            <Bold> ACID</Bold>: incluso ante fallos del sistema, accesos concurrentes o errores
             de la aplicación.
           </P>
 
           <AcidCards />
 
-          <H3>Control de Concurrencia — MVCC en PostgreSQL</H3>
+          <H3>Control de Concurrencia: MVCC en PostgreSQL</H3>
           <P>
             PostgreSQL implementa <Bold>MVCC (Multi-Version Concurrency Control)</Bold> en lugar
             del locking tradicional (2PL). Cada tupla tiene metadatos de versión:
@@ -635,7 +634,7 @@ SELECT * FROM page_header(get_raw_page('employees', 0));`} />
             <P>* En PostgreSQL, REPEATABLE READ también previene phantoms gracias a MVCC.</P>
           </Callout>
 
-          <H3>WAL — Write-Ahead Logging</H3>
+          <H3>WAL: Write-Ahead Logging</H3>
           <P>
             Antes de modificar cualquier dato en disco, PostgreSQL escribe un
             <Bold> registro WAL</Bold> (log record). Esto garantiza la durabilidad (D de ACID)
@@ -647,10 +646,10 @@ SELECT * FROM page_header(get_raw_page('employees', 0));`} />
             El WAL se escribe con <Code>fsync</Code> antes del COMMIT. Si el sistema falla
             después del COMMIT, el WAL contiene suficiente información para <Bold>rehacer</Bold>
             (redo) todos los cambios. Las páginas del heap pueden escribirse asincrónicamente
-            después — el WAL es la fuente de verdad.
+            después: el WAL es la fuente de verdad.
           </Callout>
 
-          <H3>Crash Recovery — Proceso ARIES simplificado</H3>
+          <H3>Crash Recovery: Proceso ARIES simplificado</H3>
           <Ol items={[
             <><Bold>Fase de Análisis:</Bold> recorre el WAL desde el último checkpoint; identifica qué transacciones estaban activas al momento del crash</>,
             <><Bold>Fase Redo:</Bold> repite todas las operaciones registradas en el WAL (incluso las de transacciones que fallaron) para traer las páginas al estado en que estaban al crash</>,

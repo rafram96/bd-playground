@@ -12,10 +12,10 @@ import {
    ───────────────────────────────────────────────────────────────────────────── */
 const SECTIONS = [
   { id: "sec-reto",       label: "1. El reto: indexar a escala" },
-  { id: "sec-bsbi",       label: "2. BSBI — construcción por bloques" },
-  { id: "sec-bsbi-merge", label: "3. BSBI — mezcla de bloques" },
-  { id: "sec-spimi",      label: "4. SPIMI — single-pass" },
-  { id: "sec-spimi-post", label: "5. SPIMI — postings dinámicas" },
+  { id: "sec-bsbi",       label: "2. BSBI: construcción por bloques" },
+  { id: "sec-bsbi-merge", label: "3. BSBI: mezcla de bloques" },
+  { id: "sec-spimi",      label: "4. SPIMI: single-pass" },
+  { id: "sec-spimi-post", label: "5. SPIMI: postings dinámicas" },
   { id: "sec-dict-disco", label: "6. Diccionario en disco" },
   { id: "sec-gin",        label: "7. PostgreSQL: GIN" },
   { id: "sec-gist",       label: "8. GiST y GIN vs GiST" },
@@ -155,7 +155,7 @@ export default function S9Guide() {
           {/* Header */}
           <div style={{ marginBottom: 24 }}>
             <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-code)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-              Semana 9 · Módulo II — Motores Especializados
+              Semana 9 · Módulo II · Motores Especializados
             </div>
             <h1 style={{ fontSize: 30, fontWeight: 800, color: "var(--text-primary)", margin: "0 0 10px", fontFamily: "var(--font-ui)", lineHeight: 1.2 }}>
               Índice Invertido Optimizado
@@ -234,7 +234,7 @@ export default function S9Guide() {
           <Divider />
 
           {/* ══ 3. BSBI MERGE ══ */}
-          <H2 id="sec-bsbi-merge">3. BSBI — Mezcla de bloques</H2>
+          <H2 id="sec-bsbi-merge">3. BSBI: Mezcla de bloques</H2>
           <P>
             Cada índice local está ordenado, pero <Bold>un mismo término puede aparecer en varios bloques</Bold>.
             La fase de merge debe combinar sus posting lists en una sola, manteniendo el orden por docID.
@@ -406,7 +406,7 @@ SELECT * FROM news
 WHERE to_tsvector('spanish', content) @@ plainto_tsquery('spanish', 'inteligencia artificial')
 LIMIT 10;`} />
 
-          <H3>GIN vs GiST — ¿cuál elegir?</H3>
+          <H3>GIN vs GiST: ¿cuál elegir?</H3>
           <Table
             headers={["Criterio", "GIN", "GiST"]}
             rows={[
@@ -432,7 +432,7 @@ LIMIT 10;`} />
             Soporte nativo de full-text search con consultas en lenguaje natural; gestiona el
             procesamiento de texto y el índice invertido automáticamente.
           </P>
-          <SqlCode label="MongoDB — text index" sql={`db.articulos.createIndex({ "campoTexto": "text" })
+          <SqlCode label="MongoDB: text index" sql={`db.articulos.createIndex({ "campoTexto": "text" })
 
 db.articulos.find({ $text: { $search: "big data y análisis de datos",
                               $caseSensitive: true } })`} />

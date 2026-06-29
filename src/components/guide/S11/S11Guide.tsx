@@ -155,7 +155,7 @@ export default function S11Guide() {
           {/* Header */}
           <div style={{ marginBottom: 24 }}>
             <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-code)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-              Semana 11 · Módulo II — Motores Especializados
+              Semana 11 · Módulo II · Motores Especializados
             </div>
             <h1 style={{ fontSize: 30, fontWeight: 800, color: "var(--text-primary)", margin: "0 0 10px", fontFamily: "var(--font-ui)", lineHeight: 1.2 }}>
               Búsqueda Eficiente y Descriptores Locales

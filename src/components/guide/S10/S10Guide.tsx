@@ -156,7 +156,7 @@ export default function S10Guide() {
           {/* Header */}
           <div style={{ marginBottom: 24 }}>
             <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-code)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-              Semana 10 · Módulo II — Motores Especializados
+              Semana 10 · Módulo II · Motores Especializados
             </div>
             <h1 style={{ fontSize: 30, fontWeight: 800, color: "var(--text-primary)", margin: "0 0 10px", fontFamily: "var(--font-ui)", lineHeight: 1.2 }}>
               Bases de Datos Vectoriales y Recuperación Multimedia
@@ -459,7 +459,7 @@ export default function S10Guide() {
 
           {/* ══ 8. EFICIENCIA Y EFECTIVIDAD ══ */}
           <H2 id="sec-eficiencia">8. Eficiencia y efectividad</H2>
-          <H3>Eficiencia — ¿qué tan rápido?</H3>
+          <H3>Eficiencia: ¿qué tan rápido?</H3>
           <Ul items={[
             <>Se mide por el <Bold>costo de búsqueda</Bold>: tiempo de CPU + tiempo de E/S (acceso a disco).</>,
             <>Se acelera con estructuras de datos especializadas:
@@ -470,7 +470,7 @@ export default function S10Guide() {
             </>,
           ]} />
 
-          <H3>Efectividad — ¿qué tan buena es la respuesta?</H3>
+          <H3>Efectividad: ¿qué tan buena es la respuesta?</H3>
           <P>
             Calidad de los objetos recuperados. No todos los recuperados son relevantes; se evalúa con la
             matriz de confusión:
