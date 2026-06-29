@@ -16,6 +16,7 @@ import {
   Leaf,
   BarChart2,
   Scissors,
+  Columns3,
   Binary,
   GraduationCap,
   LocateFixed,
@@ -138,6 +139,13 @@ const TREE: TreeEntry[] = [
       { id: "s12-examen", label: "Esencial para el examen", icon: <GraduationCap size={14} />, status: "done" },
     ],
   },
+  {
+    kind: "week", id: "w13", weekLabel: "Semana 13 — Fragmentación Vertical",
+    items: [
+      { id: "s13-vert", label: "Vertical · Matriz de Afinidad", icon: <Columns3 size={14} />, status: "done" },
+      { id: "s13-examen", label: "Esencial para el examen", icon: <GraduationCap size={14} />, status: "done" },
+    ],
+  },
 
   { kind: "divider", id: "div-otros" },
 
@@ -186,7 +194,7 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
   /* Semana 1 starts open; everything else collapsed */
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({
     w2: true, w3: true, w4: true, w5: true, w6: true,
-    w8: true, w9: true, w10: true, w11: true, w12: true, "w-otros": true, utils: false,
+    w8: true, w9: true, w10: true, w11: true, w12: true, w13: true, "w-otros": true, utils: false,
   });
   const [open, setOpen] = useState(true);
 
