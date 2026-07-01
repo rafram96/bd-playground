@@ -265,11 +265,6 @@ ORDER  BY total DESC;`} />
           <Ul items={[
             <><Bold>Fundamento:</Bold> al indexar descriptores locales, basta que un subconjunto haga match; da robustez a oclusión, vistas parciales y cambios de escala (SIFT es invariante a escala, lo que encaja con el enunciado de imágenes de <Bold>distinta resolución</Bold>).</>,
           ]} />
-          <Callout variant="example" title="Ejemplo de dato válido">
-            Dar como consulta el <Bold>recorte de un logotipo</Bold> a baja resolución y recuperar todas las fotos
-            (incluso en alta resolución y con el logo parcialmente tapado) donde aparece. También: detección de
-            copias / near-duplicates y búsqueda de objetos.
-          </Callout>
 
           <H3>2.b k-NN con Distancia de Cota Inferior <Pts>3 pts</Pts></H3>
           <div style={{ margin: "16px 0", padding: "32px 20px", border: "1px dashed var(--border-bright)", borderRadius: 10, textAlign: "center", color: "var(--text-muted)", fontFamily: "var(--font-ui)", fontSize: 15, fontWeight: 600 }}>

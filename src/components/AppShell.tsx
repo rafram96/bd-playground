@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Sidebar, { type PageId } from "@/components/layout/Sidebar";
 import ComingSoon from "@/components/layout/ComingSoon";
@@ -399,10 +399,30 @@ const PLANNED: Record<string, React.ComponentProps<typeof ComingSoon>> = {
 };
 
 /* ─────────────────────────────────────────────────────
-   Página principal
+   Shell principal (sidebar + contenido) con ruteo por URL
    ───────────────────────────────────────────────────── */
-export default function Home() {
-  const [activePage, setActivePage] = useState<PageId>("s1");
+export default function AppShell({ initialSection }: { initialSection?: string }) {
+  const [activePage, setActivePage] = useState<PageId>(initialSection || "s1");
+
+  /* Navegar: cambia el contenido y actualiza la URL a /{seccion} sin recargar.
+     history.pushState no desmonta el sidebar; la recarga la resuelve la ruta
+     catch-all app/[[...seccion]]/page.tsx. */
+  function navigate(id: PageId) {
+    setActivePage(id);
+    if (typeof window !== "undefined") {
+      window.history.pushState({ section: id }, "", "/" + id);
+    }
+  }
+
+  /* Sincroniza con los botones atrás/adelante del navegador */
+  useEffect(() => {
+    function onPop() {
+      const seg = window.location.pathname.replace(/^\/+/, "").split("/")[0];
+      setActivePage(seg || "s1");
+    }
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
 
   function renderPage(id: PageId) {
     if (id === "playground") return <SqlPlayground />;
@@ -438,7 +458,7 @@ export default function Home() {
 
   return (
     <div style={{ display: "flex", height: "100vh", overflow: "hidden", background: "var(--bg-base)" }}>
-      <Sidebar active={activePage} onSelect={setActivePage} />
+      <Sidebar active={activePage} onSelect={navigate} />
       <main style={{ flex: 1, overflow: "hidden" }}>
         {renderPage(activePage)}
       </main>
