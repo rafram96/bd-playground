@@ -148,7 +148,6 @@ export default function ExamenesPasados() {
           <Ul items={[
             <>Integración de <Bold>sistemas heredados</Bold> (legacy) o bases preexistentes.</>,
             <><Bold>Fusiones o adquisiciones</Bold> de empresas, cada una con su base.</>,
-            <><Bold>Federación</Bold> de bases autónomas y heterogéneas que deben verse como una sola.</>,
           ]} />
           <P>
             En Bottom-Up <Bold>no hay problema de fragmentación</Bold> (los datos ya están repartidos): el reto es
@@ -172,8 +171,7 @@ export default function ExamenesPasados() {
             <><Bold>Replicación:</Bold> alta disponibilidad 24/7, failover, escalar lecturas, baja latencia geográfica.</>,
           ]} />
           <Callout variant="note">
-            Son <Bold>complementarios</Bold>: la replicación da disponibilidad; el backup da protección histórica
-            (volver a un estado anterior).
+            Son <Bold>complementarios</Bold>: la replicación da disponibilidad; el backup da protección histórica.
           </Callout>
 
           <H3>1.3 Consulta con GIN que aproxime la similitud de coseno <Pts>1 pt</Pts></H3>
@@ -195,7 +193,7 @@ LIMIT  10;`} />
           <Ul items={[
             <><Code>@@</Code> usa el GIN para traer <Bold>solo docs que comparten términos</Bold> con la consulta.</>,
             <><Code>ts_rank_cd</Code> pondera por <Bold>frecuencia</Bold> de términos (efecto TF) y su cercanía.</>,
-            <>La <Bold>normalización 32</Bold> divide por la longitud del documento, imitando la normalización por <Code>||d||</Code> del coseno.</>,
+            <>La <Bold>normalización</Bold> divide por la longitud del documento, imitando la normalización por <Code>||d||</Code> del coseno.</>,
           ]} />
 
           <H3>1.4 Dos diferencias y dos similitudes: Cassandra vs MongoDB <Pts>1 pt</Pts></H3>
@@ -232,13 +230,13 @@ ORDER  BY total DESC;`} />
           <H3>2.a Búsqueda eficiente con descriptores locales <Pts>4 pts</Pts></H3>
           <P>
             Cada imagen (o una parte) se transforma en uno o varios vectores de dimensión <Code>d</Code>{" "}
-            (descriptores <Bold>locales</Bold>, p. ej. SIFT). Una imagen produce un <Bold>conjunto</Bold> de
+            (descriptores <Bold>locales</Bold>). Una imagen produce un <Bold>conjunto</Bold> de
             vectores, y el número <Bold>varía</Bold> por imagen.
           </P>
           <H4Like>Proceso</H4Like>
           <Ol items={[
             <><Bold>Extracción:</Bold> por cada imagen se detectan puntos de interés y se calcula un descriptor por cada uno: <Code>Imgᵢ → {`{P₁, …, Pₘ}`}</Code> (conviene baja dimensión por la maldición de la dimensionalidad).</>,
-            <><Bold>Indexación:</Bold> se inserta <Bold>cada</Bold> descriptor en un índice multidimensional (R*-Tree / KD-Tree / Ball-Tree o ANN) como pares <Code>(IdImagen, Pⱼ)</Code>.</>,
+            <><Bold>Indexación:</Bold> se inserta <Bold>cada</Bold> descriptor en un índice multidimensional como pares <Code>(IdImagen, Pⱼ)</Code>.</>,
             <><Bold>Consulta:</Bold> de la imagen query se extraen <Code>{`{Q₁, …, Qₙ}`}</Code> y se hace <Bold>k-NN por cada Qᵢ</Bold> con filtrar-y-refinar.</>,
             <><Bold>Combinación de parciales:</Bold> cada Qᵢ vota por las imágenes de sus vecinos; se combinan los votos para el ranking final.</>,
           ]} />
