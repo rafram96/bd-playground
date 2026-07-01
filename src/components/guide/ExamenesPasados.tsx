@@ -149,10 +149,8 @@ export default function ExamenesPasados() {
           {/* ══ EXAMEN FINAL 2025-1 ══ */}
           <H2 id="ex-final-2025-1">Examen Final 2025-1 (sección 1)</H2>
 
-          <Divider />
-
           {/* ══ PREGUNTA 1 ══ */}
-          <H2 id="ex-p1">Pregunta 1: Preguntas cortas <Pts>5 pts</Pts></H2>
+          <H3 id="ex-p1">Pregunta 1: Preguntas cortas <Pts>5 pts</Pts></H3>
 
           <H3>1.1 ¿En qué escenarios se aplica el diseño Bottom-Up? <Pts>1 pt</Pts></H3>
           <P>
@@ -241,7 +239,7 @@ ORDER  BY total DESC;`} />
           <Divider />
 
           {/* ══ PREGUNTA 2 ══ */}
-          <H2 id="ex-p2">Pregunta 2: Base de Datos Multimedia <Pts>7 pts</Pts></H2>
+          <H3 id="ex-p2">Pregunta 2: Base de Datos Multimedia <Pts>7 pts</Pts></H3>
 
           <H3>2.a Búsqueda eficiente con descriptores locales <Pts>4 pts</Pts></H3>
           <P>
@@ -327,7 +325,7 @@ def Lower_Bounding_KNN(Q, K):
           <Divider />
 
           {/* ══ PREGUNTA 3 ══ */}
-          <H2 id="ex-p3">Pregunta 3: Fragmentación y consulta distribuida <Pts>8 pts</Pts></H2>
+          <H3 id="ex-p3">Pregunta 3: Fragmentación y consulta distribuida <Pts>8 pts</Pts></H3>
           <P>
             Repositorio histórico (empresa de delivery tipo RAPPI) con <Code>Pedidos(IdPedido, IdCliente,
             FechaPedido, Monto, Ciudad, Estado)</Code> y <Code>Repartidores(IdRepartidor, Nombre, TipoVehiculo,

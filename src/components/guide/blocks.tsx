@@ -116,15 +116,17 @@ export function H2({ children, id }: { children: React.ReactNode; id?: string })
   );
 }
 
-export function H3({ children }: { children: React.ReactNode }) {
+export function H3({ children, id }: { children: React.ReactNode; id?: string }) {
   return (
     <h3
+      id={id}
       style={{
         fontSize: 16,
         fontWeight: 600,
         color: "var(--text-primary)",
         margin: "24px 0 10px",
         fontFamily: "var(--font-ui)",
+        scrollMarginTop: 28,
       }}
     >
       {children}
