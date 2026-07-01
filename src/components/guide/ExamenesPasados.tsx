@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import {
   H2, H3, P, Bold, Code, Divider,
-  Ul, Ol, Callout, Table, Pseudo, SqlCode, Collapse,
+  Ul, Ol, Callout, Table, Pseudo, SqlCode,
 } from "@/components/guide/blocks";
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -148,10 +148,6 @@ export default function ExamenesPasados() {
 
           {/* ══ EXAMEN FINAL 2025-1 ══ */}
           <H2 id="ex-final-2025-1">Examen Final 2025-1 (sección 1)</H2>
-          <P>
-            <Bold>Profesor:</Bold> Heider Sanchez · <Bold>Duración:</Bold> 110 min · <Bold>Total:</Bold> 20 pts
-            (P1 = 5, P2 = 7, P3 = 8). A continuación cada pregunta con su solución.
-          </P>
 
           <Divider />
 
@@ -226,11 +222,6 @@ LIMIT  10;`} />
               ["Arquitectura (dif. 2)", "Masterless / peer-to-peer (writes rápidas)", "Replica set master-slave"],
             ]}
           />
-          <Callout variant="note">
-            Diferencia extra: MongoDB tiene consultas <Bold>ad-hoc ricas</Bold> (aggregation pipeline); Cassandra
-            usa <Bold>CQL</Bold> con modelado dirigido por la partition key.
-          </Callout>
-
           <H3>1.5 Interpretar la consulta MongoDB <Pts>1 pt</Pts></H3>
           <Pseudo>{`db.usuarios.aggregate([
   { $match: { edad: { $gte: 18 } } },                  // (1) filtra adultos
@@ -374,33 +365,6 @@ def Lower_Bounding_KNN(Q, K):
 
           <DistribDiagram />
 
-          <Collapse title="Pseudocódigo equivalente (estilo CLRS)">
-          <Pseudo>{`LOCAL-AGG(Sj)                          // en cada esclavo j, sobre sus fragmentos
- 1  Rj = mapa vacío                    // repartidores por ciudad (fragmento local)
- 2  for each r in Repartidores_j
- 3      Rj[r.Ciudad] = Rj[r.Ciudad] + 1
- 4  Mj = mapa vacío                    // monto por ciudad (fragmento local)
- 5  for each p in Pedidos_j
- 6      Mj[p.Ciudad] = Mj[p.Ciudad] + p.Monto
- 7  return (Rj, Mj)
-
-DISTRIBUTED-CITY-REPORT()              // en el servidor central (coordinador)
- 1  for each esclavo Sj in {S1, S2, S3}  in parallel       // dispersión
- 2      enviar la subconsulta LOCAL-AGG a Sj
- 3  R = mapa vacío                     // acumulador repartidores por ciudad
- 4  M = mapa vacío                     // acumulador monto por ciudad
- 5  for each esclavo Sj                                      // recolección
- 6      (Rj, Mj) = recibir resultado de Sj
- 7      for each ciudad c in Rj
- 8          R[c] = R[c] + Rj[c]        // mezcla: suma de conteos parciales
- 9      for each ciudad c in Mj
-10          M[c] = M[c] + Mj[c]        // mezcla: suma de montos parciales
-11  result = ⟨⟩
-12  for each ciudad c in claves(R) ∪ claves(M)
-13      ADD(result, (c, R[c], M[c]))
-14  ORDER-BY-DESC(result, MontoTotal)  // ordena por M[c]
-15  return result`}</Pseudo>
-          </Collapse>
           <Ul items={[
             <><Bold>Agregación parcial en el origen:</Bold> solo viajan los agregados, no las filas.</>,
             <><Bold>Evita el join distribuido</Bold> y el doble conteo del monto.</>,
@@ -447,12 +411,6 @@ FROM        parciales_repartidores r
 FULL JOIN   parciales_monto m ON r.Ciudad = m.Ciudad
 GROUP BY    COALESCE(r.Ciudad, m.Ciudad)
 ORDER BY    MontoTotal DESC;`} />
-
-          <Callout variant="note" title="Conceptos del curso aplicados">
-            Diseño de BDD (top-down/bottom-up, fragmentación + asignación), replicación vs backup, NoSQL
-            (MongoDB / Cassandra), índice invertido GIN ≈ coseno, descriptores locales + cota inferior + k-NN
-            exacto, y consulta distribuida optimizada (push-down de agregación, minimizar costo de red).
-          </Callout>
 
         </div>
       </div>
