@@ -27,7 +27,6 @@ import {
   Share2,
   ListChecks,
   Zap,
-  Boxes,
   ChevronDown,
   ChevronRight,
   Circle,
@@ -132,7 +131,6 @@ const TREE: TreeEntry[] = [
     items: [
       { id: "s11-eff", label: "Filtrar-refinar · DTW · Descriptores", icon: <Zap size={14} />, status: "done" },
       { id: "s11-examen", label: "Esencial para el examen", icon: <GraduationCap size={14} />, status: "done" },
-      { id: "s11-viz", label: "Visualizador: maldición dimensión", icon: <Boxes size={14} />, status: "done" },
     ],
   },
   {

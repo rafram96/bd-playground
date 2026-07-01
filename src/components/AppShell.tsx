@@ -96,10 +96,6 @@ const S11Exam = dynamic(
   () => import("@/components/guide/S11/S11Exam"),
 );
 
-const S11CurseViz = dynamic(
-  () => import("@/components/visualizer/S11CurseViz"),
-  { ssr: false }
-);
 
 const S12Guide = dynamic(
   () => import("@/components/guide/S12/S12Guide"),
@@ -443,7 +439,6 @@ export default function AppShell({ initialSection }: { initialSection?: string }
     if (id === "s10-viz")    return <S10KnnViz />;
     if (id === "s11-eff")    return <S11Guide />;
     if (id === "s11-examen") return <S11Exam />;
-    if (id === "s11-viz")    return <S11CurseViz />;
     if (id === "s12-bdd")    return <S12Guide />;
     if (id === "s12-examen") return <S12Exam />;
     if (id === "s13-vert")   return <S13Guide />;

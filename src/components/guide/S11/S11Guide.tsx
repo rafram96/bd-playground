@@ -365,11 +365,6 @@ export default function S11Guide() {
             Por esto los <Bold>descriptores locales de baja dimensión</Bold> (siguiente sección) y la{" "}
             <Bold>búsqueda aproximada</Bold> (ANN) se vuelven necesarios en datos de alta dimensión.
           </Callout>
-          <Callout variant="lab" title="Visualízalo">
-            Abre el <Bold>Visualizador: maldición dimensión</Bold> (Semana 11): sube la dimensión{" "}
-            <Code>D</Code> con el slider y observa cómo el histograma de distancias se concentra y el{" "}
-            <Bold>contraste relativo</Bold> <Code>(dₘₐₓ − dₘᵢₙ)/dₘᵢₙ</Code> cae hacia 0.
-          </Callout>
 
           <Divider />
 
