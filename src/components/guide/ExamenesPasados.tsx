@@ -317,45 +317,19 @@ ORDER  BY total DESC;`} />
           ]} />
 
           <H3>3.3 Sentencias SQL derivadas <Pts>3 pts</Pts></H3>
-          <SqlCode label="DDL de fragmentación (particionamiento declarativo)" sql={`-- Pedidos: horizontal por RANGO de FechaPedido
-CREATE TABLE Pedidos (
-  IdPedido int, IdCliente int, FechaPedido date,
-  Monto numeric, Ciudad text, Estado text
-) PARTITION BY RANGE (FechaPedido);
+          <SqlCode label="Sentencias derivadas (a alto nivel, por fase)" sql={`-- 1) Fragmentación horizontal (una partición por nodo)
+CREATE TABLE Pedidos (...)      PARTITION BY RANGE (FechaPedido);   -- 3 rangos de fecha
+CREATE TABLE Repartidores (...) PARTITION BY HASH  (IdRepartidor);  -- 3 buckets
 
-CREATE TABLE Pedidos_s1 PARTITION OF Pedidos
-  FOR VALUES FROM ('2023-01-01') TO ('2024-01-01');
-CREATE TABLE Pedidos_s2 PARTITION OF Pedidos
-  FOR VALUES FROM ('2024-01-01') TO ('2025-01-01');
-CREATE TABLE Pedidos_s3 PARTITION OF Pedidos
-  FOR VALUES FROM ('2025-01-01') TO ('2026-01-01');
+-- 2) En cada nodo: agregación local por ciudad
+SELECT Ciudad, COUNT(*)   FROM Repartidores GROUP BY Ciudad;   -- parciales de repartidores
+SELECT Ciudad, SUM(Monto) FROM Pedidos       GROUP BY Ciudad;   -- parciales de monto
 
--- Repartidores: horizontal por HASH de IdRepartidor
-CREATE TABLE Repartidores (
-  IdRepartidor int, Nombre text, TipoVehiculo text,
-  Ciudad text, Disponibilidad boolean, Calificacion numeric
-) PARTITION BY HASH (IdRepartidor);
-
-CREATE TABLE Repartidores_s1 PARTITION OF Repartidores
-  FOR VALUES WITH (MODULUS 3, REMAINDER 0);
-CREATE TABLE Repartidores_s2 PARTITION OF Repartidores
-  FOR VALUES WITH (MODULUS 3, REMAINDER 1);
-CREATE TABLE Repartidores_s3 PARTITION OF Repartidores
-  FOR VALUES WITH (MODULUS 3, REMAINDER 2);`} />
-          <SqlCode label="Subconsultas locales (cada esclavo, sobre su fragmento)" sql={`SELECT Ciudad, COUNT(*) AS parcial_repartidores
-FROM   Repartidores
-GROUP  BY Ciudad;
-
-SELECT Ciudad, SUM(Monto) AS parcial_monto
-FROM   Pedidos
-GROUP  BY Ciudad;`} />
-          <SqlCode label="Mezcla final en el coordinador" sql={`SELECT  COALESCE(r.Ciudad, m.Ciudad)             AS Ciudad,
-        COALESCE(SUM(r.parcial_repartidores), 0) AS TotalRepartidores,
-        COALESCE(SUM(m.parcial_monto), 0)        AS MontoTotal
-FROM        parciales_repartidores r
-FULL JOIN   parciales_monto m ON r.Ciudad = m.Ciudad
-GROUP BY    COALESCE(r.Ciudad, m.Ciudad)
-ORDER BY    MontoTotal DESC;`} />
+-- 3) En el coordinador: mezcla de los parciales por ciudad
+SELECT Ciudad, SUM(rep) AS TotalRepartidores, SUM(monto) AS MontoTotal
+FROM   parciales
+GROUP  BY Ciudad
+ORDER  BY MontoTotal DESC;`} />
 
         </div>
       </div>
