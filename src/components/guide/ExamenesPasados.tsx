@@ -317,16 +317,23 @@ ORDER  BY total DESC;`} />
           ]} />
 
           <H3>3.3 Sentencias SQL derivadas <Pts>3 pts</Pts></H3>
-          <SqlCode label="Sentencias derivadas (a alto nivel, por fase)" sql={`-- 1) Fragmentación horizontal (una partición por nodo)
-CREATE TABLE Pedidos (...)      PARTITION BY RANGE (FechaPedido);   -- 3 rangos de fecha
-CREATE TABLE Repartidores (...) PARTITION BY HASH  (IdRepartidor);  -- 3 buckets
+          <SqlCode label="Sentencias derivadas (por fase)" sql={`-- 1) Fragmentación horizontal (una partición por nodo)
+CREATE TABLE Pedidos (...) PARTITION BY RANGE (FechaPedido);
+CREATE TABLE Pedidos_s1 PARTITION OF Pedidos
+  FOR VALUES FROM (...) TO (...);              -- s1, s2, s3: un rango de fecha por nodo
+
+CREATE TABLE Repartidores (...) PARTITION BY HASH (IdRepartidor);
+CREATE TABLE Repartidores_s1 PARTITION OF Repartidores
+  FOR VALUES WITH (MODULUS 3, REMAINDER 0);    -- s1, s2, s3: remainder 0 / 1 / 2
 
 -- 2) En cada nodo: agregación local por ciudad
-SELECT Ciudad, COUNT(*)   FROM Repartidores GROUP BY Ciudad;   -- parciales de repartidores
-SELECT Ciudad, SUM(Monto) FROM Pedidos       GROUP BY Ciudad;   -- parciales de monto
+SELECT Ciudad, COUNT(*)   AS rep   FROM Repartidores GROUP BY Ciudad;
+SELECT Ciudad, SUM(Monto) AS monto FROM Pedidos       GROUP BY Ciudad;
 
 -- 3) En el coordinador: mezcla de los parciales por ciudad
-SELECT Ciudad, SUM(rep) AS TotalRepartidores, SUM(monto) AS MontoTotal
+SELECT Ciudad,
+       SUM(rep)   AS TotalRepartidores,
+       SUM(monto) AS MontoTotal
 FROM   parciales
 GROUP  BY Ciudad
 ORDER  BY MontoTotal DESC;`} />
