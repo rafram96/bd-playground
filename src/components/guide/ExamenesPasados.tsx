@@ -132,17 +132,7 @@ export default function ExamenesPasados() {
             <h1 style={{ fontSize: 30, fontWeight: 800, color: "var(--text-primary)", margin: "0 0 10px", fontFamily: "var(--font-ui)", lineHeight: 1.2 }}>
               Exámenes pasados
             </h1>
-            <P>
-              Recopilación de exámenes anteriores del curso con su <Bold>resolución comentada</Bold>, siguiendo lo
-              visto en las diapositivas. Úsalos para practicar: intenta resolverlos primero y luego compara.
-            </P>
           </div>
-
-          <Callout variant="warning" title="Cómo usarlos">
-            La idea NO es memorizar respuestas, sino entender el <Bold>razonamiento</Bold>. Cada solución enlaza
-            con los conceptos de las semanas (recuperación textual, multimedia, búsqueda eficiente, BD
-            distribuidas y fragmentación).
-          </Callout>
 
           <Divider />
 
