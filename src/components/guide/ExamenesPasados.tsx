@@ -288,56 +288,53 @@ ORDER  BY total DESC;`} />
               ["Repartidores", "IdRepartidor (auto-increment)", "Horizontal por HASH de IdRepartidor", "reparto uniforme entre los 3 nodos; búsqueda por id va a un fragmento"],
             ]}
           />
+          <Callout variant="definition" title="Notación de fragmentación (3 servidores)">
+            Cada tabla se expresa como la <Bold>unión de sus 3 fragmentos</Bold>, definidos por selección{" "}
+            <Code>σ</Code>:
+            <Ul items={[
+              <><Code>Pedidos = P₁ ∪ P₂ ∪ P₃</Code>, con <Code>Pᵢ = σ(FechaPedido ∈ rangoᵢ)(Pedidos)</Code> (by range).</>,
+              <><Code>Repartidores = R₁ ∪ R₂ ∪ R₃</Code>, con <Code>Rᵢ = σ(HASH(IdRepartidor) mod 3 = i)(Repartidores)</Code>.</>,
+            ]} />
+          </Callout>
           <Callout variant="warning" title="Clave para la consulta">
-            Ninguna tabla se fragmenta por <Code>Ciudad</Code>, así que el <Code>JOIN ON Ciudad</Code> NO es local:
-            es una <Bold>agregación distribuida</Bold> que el coordinador debe orquestar.
+            El <Code>JOIN ON Ciudad</Code> NO es local (las tablas están fragmentadas por fecha / id, no por
+            Ciudad), así que hay que <Bold>reparticionar por Ciudad</Bold> antes de unir.
           </Callout>
 
           <H3>3.2 Algoritmo distribuido optimizado <Pts>4 pts</Pts></H3>
-          <Callout variant="note" title="Análisis">
-            La métrica de repartidores viene solo de <Code>Repartidores</Code> y la de monto solo de{" "}
-            <Code>Pedidos</Code>. Hacer el <Code>JOIN</Code> por ciudad antes de agregar <Bold>infla el monto</Bold>{" "}
-            (cada pedido se repite por cada repartidor de la ciudad). La versión óptima calcula <Bold>dos
-            agregaciones por ciudad independientes</Bold> y las mezcla al final: correcto y con <Bold>mínimo
-            tráfico de red</Bold> (solo viajan agregados parciales, no filas).
-          </Callout>
           <P>
-            Como <Code>Repartidores</Code> está particionada por <Code>HASH(IdRepartidor)</Code>, cada repartidor
-            está en un único fragmento, así que <Code>COUNT(DISTINCT IdRepartidor)</Code> se reduce a sumar los
-            conteos parciales. Los fragmentos de <Code>Pedidos</Code> son disjuntos, así que los montos se suman
-            sin doble conteo. Estrategia: push-down de la agregación (Map) + mezcla en el coordinador (Reduce).
+            El <Code>JOIN</Code> es por <Code>Ciudad</Code>, pero las tablas están fragmentadas por otra clave
+            (fecha / id), así que el join <Bold>no es local</Bold>. El plan óptimo optimiza cada operación con una{" "}
+            <Bold>fragmentación intermedia</Bold>:
           </P>
+          <Ol items={[
+            <><Bold>Optimizar el JOIN:</Bold> reparticionar (fragmentación intermedia) <Code>Pedidos</Code> y{" "}
+              <Code>Repartidores</Code> <Bold>por Ciudad</Bold>, para que todas las filas de una ciudad queden en
+              el mismo nodo y el join se resuelva <Bold>localmente</Bold>.</>,
+            <><Bold>JOIN + GROUP BY local:</Bold> en cada nodo se hace el join y el <Code>GROUP BY Ciudad</Code> de
+              forma local (no requiere optimización: cada ciudad está completa en su nodo), calculando{" "}
+              <Code>COUNT(DISTINCT IdRepartidor)</Code> y <Code>SUM(Monto)</Code>.</>,
+            <><Bold>Optimizar el ORDER BY:</Bold> reparticionar por <Bold>rango de MontoTotal</Bold>; así el orden
+              global se obtiene concatenando los nodos por rango, sin un sort centralizado.</>,
+          ]} />
 
           <DistribDiagram />
 
-          <Ul items={[
-            <><Bold>Agregación parcial en el origen:</Bold> solo viajan los agregados, no las filas.</>,
-            <><Bold>Evita el join distribuido</Bold> y el doble conteo del monto.</>,
-            <><Bold>Paralelismo:</Bold> los 3 esclavos trabajan a la vez; el coordinador solo mezcla.</>,
-          ]} />
-
           <H3>3.3 Sentencias SQL derivadas <Pts>3 pts</Pts></H3>
-          <SqlCode label="Sentencias derivadas (por fase)" sql={`-- 1) Fragmentación horizontal (una partición por nodo)
-CREATE TABLE Pedidos (...) PARTITION BY RANGE (FechaPedido);
-CREATE TABLE Pedidos_s1 PARTITION OF Pedidos
-  FOR VALUES FROM (...) TO (...);              -- s1, s2, s3: un rango de fecha por nodo
+          <SqlCode label="Sentencias derivadas" sql={`-- 1) Fragmentación horizontal (una partición por nodo)
+CREATE TABLE Pedidos (...)      PARTITION BY RANGE (FechaPedido);   -- 3 rangos de fecha
+CREATE TABLE Repartidores (...) PARTITION BY HASH  (IdRepartidor);  -- 3 buckets
 
-CREATE TABLE Repartidores (...) PARTITION BY HASH (IdRepartidor);
-CREATE TABLE Repartidores_s1 PARTITION OF Repartidores
-  FOR VALUES WITH (MODULUS 3, REMAINDER 0);    -- s1, s2, s3: remainder 0 / 1 / 2
-
--- 2) En cada nodo: agregación local por ciudad
-SELECT Ciudad, COUNT(*)   AS rep   FROM Repartidores GROUP BY Ciudad;
-SELECT Ciudad, SUM(Monto) AS monto FROM Pedidos       GROUP BY Ciudad;
-
--- 3) En el coordinador: mezcla de los parciales por ciudad
-SELECT r.Ciudad,
-       SUM(r.rep)   AS TotalRepartidores,
-       SUM(m.monto) AS MontoTotal
-FROM      parciales_rep   r
-FULL JOIN parciales_monto m ON r.Ciudad = m.Ciudad
-GROUP  BY r.Ciudad
-ORDER  BY MontoTotal DESC;`} />
+-- 2) Consulta con fragmentación intermedia:
+--    (1) redistribuir por Ciudad          -> JOIN local
+--    (3) redistribuir por RANGE(MontoTotal) -> ORDER BY sin sort central
+SELECT   R.Ciudad,
+         COUNT(DISTINCT R.IdRepartidor) AS TotalRepartidores,
+         SUM(P.Monto)                   AS MontoTotal
+FROM     Repartidores R
+JOIN     Pedidos P ON R.Ciudad = P.Ciudad     -- (1) local tras reparticionar por Ciudad
+GROUP BY R.Ciudad                             -- (2) local
+ORDER BY MontoTotal DESC;                      -- (3) reparticionar por RANGE(MontoTotal)`} />
 
         </div>
       </div>
@@ -357,16 +354,15 @@ function H4Like({ children }: { children: React.ReactNode }) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Diagrama del algoritmo distribuido (P3.2): pipeline de fases de la consulta
-   distribuida (particionar → procesar local → unir → mezclar → resultado).
+   Diagrama del algoritmo distribuido (P3.2): reparticionar por Ciudad (join local)
+   → JOIN + GROUP BY local → reparticionar por rango de MontoTotal (order by).
    ───────────────────────────────────────────────────────────────────────────── */
 function DistribDiagram() {
   const stages: { v: string; s: string; c: string }[] = [
-    { v: "Particionar",    s: "datos fragmentados en los 3 nodos (fecha / hash)",     c: "#3b82f6" },
-    { v: "Procesar local", s: "cada nodo agrega por ciudad → parciales (#Rep, Σ Monto)", c: "#8b5cf6" },
-    { v: "Unir",           s: "el coordinador junta los parciales de los 3 nodos",    c: "#a855f7" },
-    { v: "Mezclar",        s: "suma por ciudad + ORDER BY MontoTotal DESC",           c: "#10b981" },
-    { v: "Resultado",      s: "(Ciudad, TotalRepartidores, MontoTotal)",              c: "var(--accent)" },
+    { v: "Reparticionar por Ciudad",     s: "redistribuir Pedidos y Repartidores por Ciudad → el JOIN queda local", c: "#3b82f6" },
+    { v: "JOIN + GROUP BY (local)",      s: "en cada nodo: join por Ciudad y agregación (COUNT DISTINCT, SUM)",      c: "#8b5cf6" },
+    { v: "Reparticionar por MontoTotal", s: "por RANGO de MontoTotal para optimizar el ORDER BY",                   c: "#10b981" },
+    { v: "Resultado ordenado",           s: "orden global sin sort central: (Ciudad, TotalRep, MontoTotal)",         c: "var(--accent)" },
   ];
   return (
     <div style={{ margin: "16px 0", padding: "18px 14px", border: "1px solid var(--border)", borderRadius: 12, background: "var(--bg-base)", overflowX: "auto" }}>
