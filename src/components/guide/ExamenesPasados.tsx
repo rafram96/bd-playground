@@ -282,32 +282,61 @@ ORDER  BY total DESC;`} />
             <Code>LB(Q,C) ≤ Dist(Q,C)</Code>: si ni la cota cabe en el top-K, la distancia real tampoco. Resultado{" "}
             <Bold>exacto</Bold>, sin falsos negativos.
           </Callout>
-          <Pseudo>{`import heapq
+          <Pseudo>{`LOWER-BOUNDING-KNN(Q, C, K)
+ // C[1..N]: colección de objetos ; Q: consulta ; K: nº de vecinos
+ // H: max-heap por distancia; mantiene los K más cercanos hallados
+ 1  H.heap-size = 0                     // heap vacío
+ 2  best = ∞                            // K-ésima distancia actual (umbral de poda)
+ 3  for i = 1 to N
+ 4      lb = LB-DIST(Q, C[i])           // cota inferior (barata)
+ 5      if lb < best                    // poda: solo si aún puede entrar al top-K
+ 6          d = TRUE-DIST(Q, C[i])      // distancia verdadera (cara)
+ 7          if H.heap-size < K
+ 8              MAX-HEAP-INSERT(H, d, i)
+ 9              if H.heap-size == K
+10                  best = HEAP-MAXIMUM(H).dist    // ya hay K: fija el umbral
+11          elseif d < best
+12              HEAP-EXTRACT-MAX(H)                // descarta el peor de los K
+13              MAX-HEAP-INSERT(H, d, i)           // inserta el nuevo candidato
+14              best = HEAP-MAXIMUM(H).dist        // actualiza la K-ésima
+15  return H                            // los K vecinos más cercanos`}</Pseudo>
 
-# KNN con Lower Bounding Distance
-# Q: objeto de consulta ; K: nº de vecinos
-def Lower_Bounding_KNN(Q, K):
-    heap = []                       # max-heap tamaño K: (-dist_real, id)
-    kth = float('inf')              # K-ésima distancia (umbral de poda)
+          <P>
+            Cada entrada del heap es un par <Code>(dist, obj)</Code> ordenado por <Code>dist</Code>. Con{" "}
+            <Code>PARENT(k) = ⌊k/2⌋</Code>, <Code>LEFT(k) = 2k</Code> y <Code>RIGHT(k) = 2k + 1</Code>, las
+            operaciones son las del <Bold>max-heap de Cormen</Bold>:
+          </P>
+          <Pseudo>{`HEAP-MAXIMUM(H)
+1  return H[1]                          // la raíz: elemento de MAYOR distancia (peor de los K)
 
-    for i, C in enumerate(collection):
-        lb = LB(Q, C)               # cota inferior (barata)
-        if lb >= kth:               # PODA: ni en el mejor caso entra al top-K
-            continue
-        d = Dist(Q, C)              # distancia verdadera (cara) solo si pasa el filtro
-        if len(heap) < K:
-            heapq.heappush(heap, (-d, i))
-            if len(heap) == K:
-                kth = -heap[0][0]   # ya hay K: fija el umbral
-        elif d < kth:
-            heapq.heapreplace(heap, (-d, i))  # saca el peor, mete el nuevo (O(log K))
-            kth = -heap[0][0]                 # actualiza la K-ésima
+MAX-HEAP-INSERT(H, d, i)
+1  H.heap-size = H.heap-size + 1
+2  H[H.heap-size] = (dist: d, obj: i)
+3  k = H.heap-size
+4  while k > 1 and H[PARENT(k)].dist < H[k].dist
+5      intercambiar H[k] con H[PARENT(k)]
+6      k = PARENT(k)
 
-    return [i for (_, i) in sorted(heap, reverse=True)]   # del más cercano al más lejano`}</Pseudo>
+HEAP-EXTRACT-MAX(H)
+1  max = H[1]
+2  H[1] = H[H.heap-size]
+3  H.heap-size = H.heap-size − 1
+4  MAX-HEAPIFY(H, 1)
+5  return max
+
+MAX-HEAPIFY(H, k)
+1  l = LEFT(k);  r = RIGHT(k);  largest = k
+2  if l ≤ H.heap-size and H[l].dist > H[largest].dist
+3      largest = l
+4  if r ≤ H.heap-size and H[r].dist > H[largest].dist
+5      largest = r
+6  if largest ≠ k
+7      intercambiar H[k] con H[largest]
+8      MAX-HEAPIFY(H, largest)`}</Pseudo>
           <Ul items={[
-            <>Evita el <Code>Dist</Code> caro en todo candidato cuya cota ya supera la K-ésima distancia.</>,
-            <>El heap de tamaño K mantiene el umbral lo más bajo posible desde temprano (poda agresiva).</>,
-            <>Cada inserción/reemplazo es <Code>O(log K)</Code>; garantiza el k-NN <Bold>exacto</Bold>.</>,
+            <>Evita <Code>TRUE-DIST</Code> (caro) en todo candidato cuya cota <Code>LB-DIST</Code> ya supera la K-ésima distancia.</>,
+            <>El heap de tamaño K mantiene el umbral <Code>best</Code> lo más bajo posible desde temprano (poda agresiva).</>,
+            <>Cada <Code>MAX-HEAP-INSERT</Code> / <Code>HEAP-EXTRACT-MAX</Code> es <Code>O(log K)</Code>; el resultado es el k-NN <Bold>exacto</Bold>.</>,
           ]} />
 
           <Divider />
