@@ -331,11 +331,12 @@ SELECT Ciudad, COUNT(*)   AS rep   FROM Repartidores GROUP BY Ciudad;
 SELECT Ciudad, SUM(Monto) AS monto FROM Pedidos       GROUP BY Ciudad;
 
 -- 3) En el coordinador: mezcla de los parciales por ciudad
-SELECT Ciudad,
-       SUM(rep)   AS TotalRepartidores,
-       SUM(monto) AS MontoTotal
-FROM   parciales
-GROUP  BY Ciudad
+SELECT r.Ciudad,
+       SUM(r.rep)   AS TotalRepartidores,
+       SUM(m.monto) AS MontoTotal
+FROM      parciales_rep   r
+FULL JOIN parciales_monto m ON r.Ciudad = m.Ciudad
+GROUP  BY r.Ciudad
 ORDER  BY MontoTotal DESC;`} />
 
         </div>
