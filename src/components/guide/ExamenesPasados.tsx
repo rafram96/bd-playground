@@ -134,8 +134,6 @@ export default function ExamenesPasados() {
             </h1>
           </div>
 
-          <Divider />
-
           {/* ══ EXAMEN FINAL 2025-1 ══ */}
           <H2 id="ex-final-2025-1">Examen Final 2025-1 (sección 1)</H2>
 
