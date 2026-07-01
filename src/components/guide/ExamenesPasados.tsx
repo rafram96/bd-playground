@@ -272,72 +272,9 @@ ORDER  BY total DESC;`} />
           </Callout>
 
           <H3>2.b k-NN con Distancia de Cota Inferior <Pts>3 pts</Pts></H3>
-          <P>
-            El algoritmo de 1-NN solo calcula la distancia real cuando la cota inferior no permite descartar. Para
-            K vecinos eficientemente: mantener un <Bold>heap máximo de tamaño K</Bold>; su raíz es la{" "}
-            <Bold>K-ésima distancia</Bold> y sirve de <Bold>umbral de poda</Bold>.
-          </P>
-          <Callout variant="definition" title="Garantía de la poda">
-            Se descarta sin calcular la distancia real cuando <Code>LB(Q,C) ≥ K-ésima</Code>. Es correcto porque{" "}
-            <Code>LB(Q,C) ≤ Dist(Q,C)</Code>: si ni la cota cabe en el top-K, la distancia real tampoco. Resultado{" "}
-            <Bold>exacto</Bold>, sin falsos negativos.
-          </Callout>
-          <Pseudo>{`LOWER-BOUNDING-KNN(Q, C, K)
- // C[1..N]: colección de objetos ; Q: consulta ; K: nº de vecinos
- // H: max-heap por distancia; mantiene los K más cercanos hallados
- 1  H.heap-size = 0                     // heap vacío
- 2  best = ∞                            // K-ésima distancia actual (umbral de poda)
- 3  for i = 1 to N
- 4      lb = LB-DIST(Q, C[i])           // cota inferior (barata)
- 5      if lb < best                    // poda: solo si aún puede entrar al top-K
- 6          d = TRUE-DIST(Q, C[i])      // distancia verdadera (cara)
- 7          if H.heap-size < K
- 8              MAX-HEAP-INSERT(H, d, i)
- 9              if H.heap-size == K
-10                  best = HEAP-MAXIMUM(H).dist    // ya hay K: fija el umbral
-11          elseif d < best
-12              HEAP-EXTRACT-MAX(H)                // descarta el peor de los K
-13              MAX-HEAP-INSERT(H, d, i)           // inserta el nuevo candidato
-14              best = HEAP-MAXIMUM(H).dist        // actualiza la K-ésima
-15  return H                            // los K vecinos más cercanos`}</Pseudo>
-
-          <P>
-            Cada entrada del heap es un par <Code>(dist, obj)</Code> ordenado por <Code>dist</Code>. Con{" "}
-            <Code>PARENT(k) = ⌊k/2⌋</Code>, <Code>LEFT(k) = 2k</Code> y <Code>RIGHT(k) = 2k + 1</Code>, las
-            operaciones son las del <Bold>max-heap de Cormen</Bold>:
-          </P>
-          <Pseudo>{`HEAP-MAXIMUM(H)
-1  return H[1]                          // la raíz: elemento de MAYOR distancia (peor de los K)
-
-MAX-HEAP-INSERT(H, d, i)
-1  H.heap-size = H.heap-size + 1
-2  H[H.heap-size] = (dist: d, obj: i)
-3  k = H.heap-size
-4  while k > 1 and H[PARENT(k)].dist < H[k].dist
-5      intercambiar H[k] con H[PARENT(k)]
-6      k = PARENT(k)
-
-HEAP-EXTRACT-MAX(H)
-1  max = H[1]
-2  H[1] = H[H.heap-size]
-3  H.heap-size = H.heap-size − 1
-4  MAX-HEAPIFY(H, 1)
-5  return max
-
-MAX-HEAPIFY(H, k)
-1  l = LEFT(k);  r = RIGHT(k);  largest = k
-2  if l ≤ H.heap-size and H[l].dist > H[largest].dist
-3      largest = l
-4  if r ≤ H.heap-size and H[r].dist > H[largest].dist
-5      largest = r
-6  if largest ≠ k
-7      intercambiar H[k] con H[largest]
-8      MAX-HEAPIFY(H, largest)`}</Pseudo>
-          <Ul items={[
-            <>Evita <Code>TRUE-DIST</Code> (caro) en todo candidato cuya cota <Code>LB-DIST</Code> ya supera la K-ésima distancia.</>,
-            <>El heap de tamaño K mantiene el umbral <Code>best</Code> lo más bajo posible desde temprano (poda agresiva).</>,
-            <>Cada <Code>MAX-HEAP-INSERT</Code> / <Code>HEAP-EXTRACT-MAX</Code> es <Code>O(log K)</Code>; el resultado es el k-NN <Bold>exacto</Bold>.</>,
-          ]} />
+          <div style={{ margin: "16px 0", padding: "32px 20px", border: "1px dashed var(--border-bright)", borderRadius: 10, textAlign: "center", color: "var(--text-muted)", fontFamily: "var(--font-ui)", fontSize: 15, fontWeight: 600 }}>
+            Próximamente
+          </div>
 
           <Divider />
 
