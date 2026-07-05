@@ -241,12 +241,6 @@ export default function S14Guide() {
               ["Grafo", "Nodos y relaciones (aristas)", "Neo4j", "Redes sociales, recomendación, fraude"],
             ]}
           />
-          <Callout variant="example" title="Ejemplo de consulta en grafo (Cypher, Neo4j)">
-            <SqlCode sql={`MATCH (persona:Persona)-[:AMIGO_DE]->(amigo)
-WHERE persona.nombre = "Heider"
-RETURN amigo`} />
-            Devuelve los amigos de Heider recorriendo las relaciones <Code>AMIGO_DE</Code>.
-          </Callout>
           <Callout variant="note" title="¿Cuál elegir?">
             <Ul items={[
               <><Bold>Catálogo de e-commerce</Bold> (atributos distintos por producto) → <Bold>documentos</Bold> (MongoDB).</>,
