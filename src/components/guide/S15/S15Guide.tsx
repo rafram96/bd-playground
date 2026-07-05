@@ -138,14 +138,6 @@ export default function S15Guide() {
             </P>
           </div>
 
-          <Callout variant="note" title="Hilo de la semana">
-            Columna ancha (BigTable → Cassandra): column family, keyspace, partition key + clustering key, CQL →
-            clave-valor (Redis): en memoria, persistencia (RDB/AOF), escalabilidad, comandos, TTL y estructuras
-            (listas, hashes, sets, sorted sets).
-          </Callout>
-
-          <Divider />
-
           {/* ══ 1. COLUMNA ANCHA ══ */}
           <H2 id="sec-columna">1. Bases de datos de columna ancha</H2>
           <P>
@@ -243,6 +235,13 @@ export default function S15Guide() {
             <>Todas las lecturas de un mismo <Code>(Sensor, Date)</Code> caen en el <Bold>mismo nodo</Bold> y
               vienen <Bold>ordenadas por Timestamp</Bold>: ideal para consultas por rango de tiempo.</>,
           ]} />
+          <PartitionClusteringDiagram />
+          <Callout variant="warning" title="Cuidado con una mala partition key">
+            Si eliges una partition key con pocos valores o muy desbalanceada (ej. un sensor "estrella" con casi
+            todos los datos), esa partición crece enorme y cae siempre en el <Bold>mismo nodo</Bold>: es una{" "}
+            <Bold>hot partition</Bold> que satura ese nodo mientras los demás están ociosos. Se busca una clave
+            que <Bold>reparta parejo</Bold> la carga.
+          </Callout>
 
           <Divider />
 
@@ -372,6 +371,15 @@ EXISTS clave1            # ¿existe?`} />
               ["SETEX clave seg valor", "crea la clave con TTL en un solo paso"],
             ]}
           />
+
+          <H3>Patrón de caché con TTL (cache-aside)</H3>
+          <P>
+            El uso estrella de Redis: poner una caché <Bold>delante</Bold> de la BD. Se busca primero en Redis; si
+            está (<Bold>HIT</Bold>) se devuelve al instante; si no (<Bold>MISS</Bold>) se consulta la BD y se{" "}
+            <Bold>cachea con TTL</Bold> para las próximas lecturas.
+          </P>
+          <CacheFlowDiagram />
+
           <Collapse title="Ejemplo: caché de una API (Python)">
             <SqlCode sql={`import redis, requests, json
 rc = redis.StrictRedis(host='localhost', port=6379, db=0)
@@ -424,12 +432,137 @@ ZRANGE ranking 0 -1 WITHSCORES`} />
             columna ancha para Big Data distribuido y consultas por rango, clave-valor en memoria para caché y
             baja latencia. Todos comparten el ADN NoSQL: <Bold>escala horizontal</Bold> y disponibilidad sobre
             consistencia estricta (CAP: AP).
+
+            Suerte en el examen final
           </Callout>
 
         </div>
       </div>
 
       <Toc active={activeSection} />
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Diagrama Partition Key vs Clustering Key (sección 4):
+   las filas se distribuyen a un nodo por la partition key (Sensor, Date) y,
+   dentro del nodo, se ordenan por la clustering key (Timestamp).
+   ───────────────────────────────────────────────────────────────────────────── */
+function PartitionClusteringDiagram() {
+  const col: Record<string, string> = { A: "#3b82f6", B: "#a855f7", C: "#10b981" };
+  const incoming = [
+    { p: "S1 · 01-Ene", t: "09:05", g: "A" },
+    { p: "S2 · 01-Ene", t: "10:30", g: "B" },
+    { p: "S1 · 01-Ene", t: "08:55", g: "A" },
+    { p: "S1 · 02-Ene", t: "07:10", g: "C" },
+    { p: "S1 · 01-Ene", t: "09:00", g: "A" },
+    { p: "S2 · 01-Ene", t: "10:00", g: "B" },
+    { p: "S1 · 02-Ene", t: "07:00", g: "C" },
+  ];
+  const nodes = [
+    { node: "Nodo 1", part: "(S1, 01-Ene)", rows: ["08:55", "09:00", "09:05"], g: "A" },
+    { node: "Nodo 2", part: "(S2, 01-Ene)", rows: ["10:00", "10:30"], g: "B" },
+    { node: "Nodo 3", part: "(S1, 02-Ene)", rows: ["07:00", "07:10"], g: "C" },
+  ];
+  return (
+    <div style={{ margin: "16px 0", padding: "18px 14px", border: "1px solid var(--border)", borderRadius: 12, background: "var(--bg-base)", overflowX: "auto" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14, minWidth: 540 }}>
+        <div style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-ui)", lineHeight: 1.5 }}>
+          <b style={{ color: "var(--accent)" }}>Partition Key (Sensor, Date)</b><br />decide el <b>nodo</b> (distribución)
+        </div>
+        <div style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-ui)", textAlign: "right", lineHeight: 1.5 }}>
+          <b style={{ color: "var(--accent)" }}>Clustering Key (Timestamp)</b><br />decide el <b>orden</b> dentro del nodo
+        </div>
+      </div>
+
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 12, minWidth: 540 }}>
+        {/* filas que llegan */}
+        <div style={{ flexShrink: 0, width: 138 }}>
+          <div style={{ fontSize: 10, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6, fontFamily: "var(--font-ui)" }}>Filas (en desorden)</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+            {incoming.map((r, i) => (
+              <div key={i} style={{ borderLeft: `3px solid ${col[r.g]}`, background: "var(--bg-surface)", border: "1px solid var(--border)", borderLeftWidth: 3, borderRadius: 5, padding: "4px 8px", fontFamily: "var(--font-code)", fontSize: 10.5 }}>
+                <span style={{ color: "var(--text-secondary)" }}>{r.p}</span>{" "}<span style={{ color: "var(--text-muted)" }}>{r.t}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* flecha */}
+        <div style={{ alignSelf: "center", textAlign: "center", color: "var(--text-muted)", fontFamily: "var(--font-ui)", fontSize: 10, minWidth: 66, lineHeight: 1.4 }}>
+          hash de la<br />partition key<br /><span style={{ fontSize: 20 }}>⟶</span>
+        </div>
+
+        {/* nodos */}
+        <div style={{ display: "flex", gap: 8, flex: 1 }}>
+          {nodes.map((n) => (
+            <div key={n.node} style={{ flex: 1, minWidth: 118, border: `1.5px solid ${col[n.g]}`, borderRadius: 9, padding: 8, background: `color-mix(in srgb, ${col[n.g]} 7%, var(--bg-surface))` }}>
+              <div style={{ fontWeight: 700, fontSize: 11.5, color: col[n.g], fontFamily: "var(--font-ui)", marginBottom: 5 }}>{n.node}</div>
+              <div style={{ border: `1px dashed ${col[n.g]}`, borderRadius: 6, padding: "5px 6px", background: "var(--bg-surface)" }}>
+                <div style={{ fontSize: 10, color: "var(--text-secondary)", fontFamily: "var(--font-code)", marginBottom: 4 }}>partición {n.part}</div>
+                {n.rows.map((t, i) => (
+                  <div key={i} style={{ fontSize: 10.5, color: "var(--text-muted)", fontFamily: "var(--font-code)", padding: "2px 4px", borderTop: i > 0 ? "1px solid var(--border)" : "none" }}>
+                    ⏱ {t}
+                  </div>
+                ))}
+                <div style={{ fontSize: 9, color: "var(--text-muted)", marginTop: 3, fontStyle: "italic", fontFamily: "var(--font-ui)" }}>↑ orden por Timestamp</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Diagrama del patrón cache-aside con TTL (sección 9):
+   App → GET en Redis → ¿existe? HIT: devuelve / MISS: consulta BD + SETEX + devuelve.
+   ───────────────────────────────────────────────────────────────────────────── */
+function FlowStep({ n, title, sub, color }: { n?: string; title: React.ReactNode; sub?: string; color?: string }) {
+  return (
+    <div style={{ border: `1.5px solid ${color || "var(--border-bright)"}`, background: color ? `color-mix(in srgb, ${color} 9%, var(--bg-surface))` : "var(--bg-surface)", borderRadius: 9, padding: "8px 12px", textAlign: "center", minWidth: 150 }}>
+      <div style={{ fontWeight: 700, fontSize: 12, color: color || "var(--text-primary)", fontFamily: "var(--font-ui)" }}>
+        {n && <span>{n}. </span>}{title}
+      </div>
+      {sub && <div style={{ fontSize: 10.5, color: "var(--text-muted)", marginTop: 2, fontFamily: "var(--font-ui)" }}>{sub}</div>}
+    </div>
+  );
+}
+
+function CacheFlowDiagram() {
+  const Down = () => <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: 16, lineHeight: 1.2, margin: "2px 0" }}>▼</div>;
+  return (
+    <div style={{ margin: "16px 0", padding: "18px 14px", border: "1px solid var(--border)", borderRadius: 12, background: "var(--bg-base)" }}>
+      <div style={{ maxWidth: 240, margin: "0 auto" }}>
+        <FlowStep n="1" title="App pide un dato" />
+        <Down />
+        <FlowStep n="2" title="GET clave" sub="busca en Redis" />
+        <Down />
+        <FlowStep title="¿existe la clave?" sub="(y no expiró el TTL)" color="var(--accent)" />
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, maxWidth: 520, margin: "6px auto 0", alignItems: "start" }}>
+        {/* HIT */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: "var(--success)", fontFamily: "var(--font-code)" }}>HIT (sí) ▼</div>
+          <FlowStep title="Devuelve desde Redis" sub="latencia mínima" color="var(--success)" />
+        </div>
+        {/* MISS */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: "var(--warning)", fontFamily: "var(--font-code)", marginBottom: 4 }}>MISS (no) ▼</div>
+          <FlowStep n="3" title="Consulta la BD" sub="más lento" color="var(--warning)" />
+          <Down />
+          <FlowStep n="4" title="SETEX clave TTL valor" sub="cachea con expiración" color="var(--warning)" />
+          <Down />
+          <FlowStep title="Devuelve al App" color="var(--warning)" />
+        </div>
+      </div>
+
+      <div style={{ textAlign: "center", fontSize: 11, color: "var(--text-muted)", margin: "12px auto 0", fontFamily: "var(--font-ui)", maxWidth: 520, lineHeight: 1.5 }}>
+        Las siguientes lecturas serán <b style={{ color: "var(--success)" }}>HIT</b> hasta que expire el TTL; entonces se vuelve a cachear.
+      </div>
     </div>
   );
 }
