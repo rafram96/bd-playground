@@ -147,13 +147,26 @@ const TREE: TreeEntry[] = [
       { id: "s13-examen", label: "Esencial para el examen", icon: <GraduationCap size={14} />, status: "done" },
     ],
   },
+  {
+    kind: "week", id: "w14", weekLabel: "Semana 14 — NoSQL: Documentos",
+    items: [
+      { id: "s14-nosql", label: "NoSQL · CAP · MongoDB", icon: <Leaf size={14} />, status: "done" },
+      { id: "s14-examen", label: "Esencial para el examen", icon: <GraduationCap size={14} />, status: "done" },
+    ],
+  },
+  {
+    kind: "week", id: "w15", weekLabel: "Semana 15 — NoSQL: Columna y Clave-Valor",
+    items: [
+      { id: "s15-nosql", label: "Cassandra · Redis", icon: <Database size={14} />, status: "done" },
+      { id: "s15-examen", label: "Esencial para el examen", icon: <GraduationCap size={14} />, status: "done" },
+    ],
+  },
 
   { kind: "divider", id: "div-otros" },
 
   {
     kind: "week", id: "w-otros", weekLabel: "Módulo II–III · Próximos temas",
     items: [
-      { id: "s8", label: "NoSQL (MongoDB · Cassandra · Redis)", icon: <Leaf size={14} />, status: "planned" },
       { id: "s9", label: "OLAP / Data Warehousing", icon: <BarChart2 size={14} />, status: "planned" },
     ],
   },
@@ -196,7 +209,7 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
   /* Semana 1 starts open; everything else collapsed */
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({
     w2: true, w3: true, w4: true, w5: true, w6: true,
-    w8: true, w9: true, w10: true, w11: true, w12: true, w13: true, "w-otros": true, utils: false,
+    w8: true, w9: true, w10: true, w11: true, w12: true, w13: true, w14: true, w15: true, "w-otros": true, utils: false,
   });
   const [open, setOpen] = useState(true);
 
