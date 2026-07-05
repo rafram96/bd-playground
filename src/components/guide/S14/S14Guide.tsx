@@ -140,14 +140,6 @@ export default function S14Guide() {
             </P>
           </div>
 
-          <Callout variant="note" title="Hilo de la semana">
-            Línea de tiempo (relacional → NoSQL) → por qué el relacional no siempre alcanza (costo del ACID,
-            escalabilidad) → Teorema CAP → los 4 modelos NoSQL → BD de documentos → MongoDB: estructura, CRUD,
-            operadores, agregaciones, índices y escalabilidad (réplicas + sharding).
-          </Callout>
-
-          <Divider />
-
           {/* ══ 1. TIMELINE ══ */}
           <H2 id="sec-timeline">1. Del relacional a NoSQL</H2>
           <P>
@@ -182,9 +174,10 @@ export default function S14Guide() {
             <><Bold>La distribución no es sencilla:</Bold> repartir una BD relacional entre muchos nodos es complejo.</>,
           ]} />
           <Callout variant="warning" title="El costo del ACID (medido)">
-            En un estudio clásico, un sistema con soporte transaccional completo (ACID) hacía{" "}
-            <Bold>~640 transacciones/segundo</Bold>; el mismo sistema <Bold>sin logging ni bloqueos</Bold> hacía{" "}
-            <Bold>~12 700 transacciones/segundo</Bold>. <Bold>Más del 90%</Bold> de las instrucciones se iban en{" "}
+            En un estudio clásico, un sistema con soporte transaccional completo (ACID) hacía aproximadamente{" "}
+            <Bold>640 transacciones/segundo</Bold>; el mismo sistema <Bold>sin logging ni bloqueos</Bold> hacía
+            aproximadamente <Bold>12 700 transacciones/segundo</Bold>. <Bold>Más del 90%</Bold> de las
+            instrucciones se iban en{" "}
             <Bold>sobrecarga administrativa</Bold>, no en procesar la transacción.
           </Callout>
           <H3>Escalar hacia arriba vs hacia los lados</H3>
@@ -479,20 +472,12 @@ db.users.dropIndex("nombre_del_indice")  // eliminar`} />
 }`} />
             <P>
               Una consulta por <Code>sede = "Lima"</Code> va directo a <Code>mongo3</Code>. También se puede
-              repartir por hash de la clave (ej. <Code>X % 3</Code>) para un balance uniforme.
+              repartir por hash de la clave (ej. <Code>X % 3</Code>) para un balance uniforme (Round Robin referencia).
             </P>
           </Callout>
           <Callout variant="note" title="Sharding + Replica Set">
             En producción se combinan: cada <Bold>shard</Bold> es a su vez un <Bold>Replica Set</Bold>, logrando{" "}
             <Bold>escalabilidad</Bold> (sharding) y <Bold>disponibilidad</Bold> (replicación) a la vez.
-          </Callout>
-
-          <Callout variant="note" title="Cierre de la semana">
-            NoSQL responde a datos <Bold>grandes, flexibles y distribuidos</Bold> relajando ACID (Teorema{" "}
-            <Bold>CAP</Bold>: casi todas son <Bold>AP</Bold>). Hay <Bold>4 modelos</Bold> (clave-valor, documento,
-            columna ancha, grafo). Las <Bold>bases de documentos</Bold> (MongoDB) guardan JSON/BSON flexible, con
-            <Bold> CRUD</Bold>, operadores, <Bold>agregaciones</Bold>, <Bold>índices B+Tree</Bold> y escalan con{" "}
-            <Bold>réplicas + sharding</Bold>. La próxima semana: columna ancha (Cassandra) y clave-valor (Redis).
           </Callout>
 
         </div>
