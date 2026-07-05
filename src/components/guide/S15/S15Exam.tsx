@@ -13,7 +13,7 @@ const SECTIONS = [
   { id: "ex-conceptos", label: "1. Conceptos clave" },
   { id: "ex-cassandra", label: "2. Cassandra: modelo" },
   { id: "ex-cql",       label: "3. Partition + Clustering (CQL)" },
-  { id: "ex-redis",     label: "4. Redis: persistencia y escala" },
+  { id: "ex-redis",     label: "4. Redis: replicación y HA" },
   { id: "ex-comandos",  label: "5. Comandos, TTL y estructuras" },
 ];
 
@@ -208,7 +208,38 @@ export default function S15Exam() {
           <Divider />
 
           {/* ══ 4. REDIS ══ */}
-          <H2 id="ex-redis">4. Redis: persistencia y escalabilidad</H2>
+          <H2 id="ex-redis">4. Redis: replicación y alta disponibilidad</H2>
+
+          <H3>Master-Slave (replicación)</H3>
+          <Callout variant="definition" title="Cómo funciona">
+            Un nodo <Bold>master</Bold> recibe las <Bold>escrituras</Bold> y las replica a uno o más{" "}
+            <Bold>slaves (réplicas)</Bold>, que copian sus datos y sirven <Bold>lecturas</Bold>. Da{" "}
+            <Bold>escala de lectura</Bold> y un respaldo en caliente. Es la <Bold>base de la alta
+            disponibilidad</Bold> de Redis.
+          </Callout>
+          <Table
+            headers={["Modo", "Qué es", "Qué aporta"]}
+            rows={[
+              ["Standalone", "un solo nodo, sin réplica", "simple; sin tolerancia a fallos"],
+              ["Master-Slave", "1 master (escrituras) + N slaves (réplicas de lectura)", "escala lecturas + respaldo"],
+              [<><Bold>Sentinel</Bold></>, "monitorea el master-slave y hace failover automático", "ALTA DISPONIBILIDAD: promueve un slave si el master cae"],
+              ["Cluster", "sharding por slots entre varios masters, cada uno con sus slaves", "escala horizontal (escritura) + HA"],
+            ]}
+          />
+          <Callout variant="warning" title="Sentinel vs Cluster">
+            <Bold>Redis Sentinel</Bold> vigila master y slaves; si el <Bold>master cae</Bold>, promueve
+            automáticamente un slave a master y reconfigura al resto (<Bold>failover automático</Bold>), sin
+            intervención manual. Da <Bold>alta disponibilidad</Bold> pero NO reparte los datos.{" "}
+            <Bold>Redis Cluster</Bold>, en cambio, hace <Bold>sharding</Bold> (reparte los datos entre varios
+            masters, cada uno con réplicas): suma <Bold>escalabilidad de escritura</Bold> a la disponibilidad.
+          </Callout>
+          <Callout variant="note" title="Vocabulario: master-slave ≈ Replica Set">
+            En Redis, el conjunto master + réplicas es la <Bold>replicación master-slave</Bold>. En MongoDB el
+            equivalente es el <Bold>Replica Set</Bold> (primario + secundarios con failover). Misma idea:{" "}
+            <Bold>copias vivas para disponibilidad</Bold> (distinto de un backup, que es una copia histórica).
+          </Callout>
+
+          <H3>Persistencia a disco</H3>
           <Table
             headers={["Persistencia", "Qué guarda", "Trade-off"]}
             rows={[
@@ -217,10 +248,6 @@ export default function S15Exam() {
               ["Híbrido", "carga RDB + reproduce AOF", "rendimiento + durabilidad"],
             ]}
           />
-          <Callout variant="note" title="Modos">
-            <Bold>Standalone</Bold> (un nodo), <Bold>Sentinel</Bold> (replicación master-slave, alta
-            disponibilidad), <Bold>Cluster</Bold> (sharding, escala horizontal).
-          </Callout>
 
           <Divider />
 
