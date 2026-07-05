@@ -211,11 +211,27 @@ export default function S15Exam() {
           <H2 id="ex-redis">4. Redis: replicación y alta disponibilidad</H2>
 
           <H3>Master-Slave (replicación)</H3>
-          <Callout variant="definition" title="Cómo funciona">
-            Un nodo <Bold>master</Bold> recibe las <Bold>escrituras</Bold> y las replica a uno o más{" "}
-            <Bold>slaves (réplicas)</Bold>, que copian sus datos y sirven <Bold>lecturas</Bold>. Da{" "}
-            <Bold>escala de lectura</Bold> y un respaldo en caliente. Es la <Bold>base de la alta
-            disponibilidad</Bold> de Redis.
+          <P>
+            En la replicación <Bold>master-slave</Bold> hay un único nodo <Bold>master</Bold> que acepta{" "}
+            <Bold>todas las escrituras</Bold>. Los cambios se propagan (replican) de forma <Bold>asíncrona</Bold>{" "}
+            a uno o más <Bold>slaves</Bold>, que son <Bold>copias de solo lectura</Bold>. El cliente escribe en el
+            master y reparte sus <Bold>lecturas</Bold> entre los slaves.
+          </P>
+          <MasterSlaveDiagram />
+          <Ul items={[
+            <><Bold>Escrituras:</Bold> solo al master; de ahí se replican a los slaves. Por defecto es asíncrono,
+              así que puede haber un pequeño <Bold>retraso de replicación</Bold> (consistencia eventual).</>,
+            <><Bold>Lecturas:</Bold> se sirven desde los slaves → <Bold>reparten la carga de lectura</Bold> (escala
+              de lectura) y dan <Bold>redundancia</Bold> de datos.</>,
+            <><Bold>Alta disponibilidad:</Bold> si el master cae, un slave puede <Bold>promoverse a master</Bold>{" "}
+              (manual, o automático con Sentinel).</>,
+            <><Bold>Límite:</Bold> todas las escrituras pasan por un <Bold>único master</Bold>, así que no escala la
+              escritura (eso lo resuelve el Cluster con sharding).</>,
+          ]} />
+          <Callout variant="definition" title="Failover: si el master cae">
+            Un <Bold>slave</Bold> se promueve a <Bold>nuevo master</Bold> y el resto se reconfigura para replicar
+            de él. Puede ser <Bold>manual</Bold> o <Bold>automático</Bold> (con Sentinel). Así el servicio sigue
+            disponible pese a la caída de un nodo.
           </Callout>
           <Table
             headers={["Modo", "Qué es", "Qué aporta"]}
@@ -233,12 +249,6 @@ export default function S15Exam() {
             <Bold>Redis Cluster</Bold>, en cambio, hace <Bold>sharding</Bold> (reparte los datos entre varios
             masters, cada uno con réplicas): suma <Bold>escalabilidad de escritura</Bold> a la disponibilidad.
           </Callout>
-          <Callout variant="note" title="Vocabulario: master-slave ≈ Replica Set">
-            En Redis, el conjunto master + réplicas es la <Bold>replicación master-slave</Bold>. En MongoDB el
-            equivalente es el <Bold>Replica Set</Bold> (primario + secundarios con failover). Misma idea:{" "}
-            <Bold>copias vivas para disponibilidad</Bold> (distinto de un backup, que es una copia histórica).
-          </Callout>
-
           <H3>Persistencia a disco</H3>
           <Table
             headers={["Persistencia", "Qué guarda", "Trade-off"]}
@@ -275,6 +285,47 @@ EXPIRE clave 10   TTL clave   PERSIST clave`} />
       </div>
 
       <Toc active={activeSection} />
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Diagrama Master-Slave: el master recibe escrituras y las replica a los slaves,
+   que son copias de solo lectura (reparten las lecturas).
+   ───────────────────────────────────────────────────────────────────────────── */
+function MasterSlaveDiagram() {
+  return (
+    <div style={{ margin: "16px 0", padding: "20px 16px", border: "1px solid var(--border)", borderRadius: 12, background: "var(--bg-base)" }}>
+      {/* WRITE → MASTER */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 11, fontWeight: 700, color: "var(--warning)", fontFamily: "var(--font-code)" }}>WRITE ⟶</span>
+        <div style={{ border: "1.5px solid var(--accent)", background: "color-mix(in srgb, var(--accent) 12%, var(--bg-surface))", borderRadius: 10, padding: "10px 20px", textAlign: "center", minWidth: 170 }}>
+          <div style={{ fontWeight: 700, fontSize: 13, color: "var(--accent)", fontFamily: "var(--font-ui)" }}>MASTER</div>
+          <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2, fontFamily: "var(--font-ui)" }}>única fuente de escrituras</div>
+        </div>
+      </div>
+
+      {/* etiqueta de replicación + flechas hacia abajo */}
+      <div style={{ textAlign: "center", fontSize: 10.5, color: "var(--text-muted)", margin: "10px 0 0", fontFamily: "var(--font-ui)" }}>
+        replica (copia asíncrona)
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", maxWidth: 520, margin: "0 auto", textAlign: "center", color: "var(--text-muted)", fontSize: 18, lineHeight: 1.2 }}>
+        <span>▼</span><span>▼</span><span>▼</span>
+      </div>
+
+      {/* SLAVES */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, maxWidth: 520, margin: "2px auto 0" }}>
+        {[1, 2, 3].map((j) => (
+          <div key={j} style={{ border: "1.5px solid var(--success)", background: "color-mix(in srgb, var(--success) 12%, var(--bg-surface))", borderRadius: 9, padding: "9px 8px", textAlign: "center" }}>
+            <div style={{ fontWeight: 700, fontSize: 12, color: "var(--success)", fontFamily: "var(--font-ui)" }}>SLAVE {j}</div>
+            <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 2, fontFamily: "var(--font-ui)" }}>réplica de solo lectura</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ textAlign: "center", fontSize: 11, fontWeight: 700, color: "var(--success)", marginTop: 10, fontFamily: "var(--font-code)" }}>
+        ⟵ READ (las lecturas se reparten entre las réplicas)
+      </div>
     </div>
   );
 }
