@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import ResultTable from "./ResultTable";
 import ExplainTree from "./ExplainTree";
@@ -49,6 +49,7 @@ function StatusBadge({ status }: { status: "idle" | "running" | "ready" | "error
     return (
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <div
+                className="sql-playground"
                 style={{
                     width: 7,
                     height: 7,
@@ -142,6 +143,7 @@ export default function SqlPlayground() {
             >
                 {/* LEFT — Editor + Results */}
                 <div
+                    className="sql-workspace"
                     style={{
                         display: "grid",
                         gridTemplateRows: "auto 2fr auto 1fr",
@@ -150,6 +152,7 @@ export default function SqlPlayground() {
                 >
                     {/* Toolbar */}
                     <div
+                        className="sql-toolbar"
                         style={{
                             display: "flex",
                             alignItems: "center",
@@ -275,6 +278,7 @@ export default function SqlPlayground() {
 
                 {/* RIGHT — Snippet panel */}
                 <div
+                    className="sql-snippets"
                     style={{
                         borderLeft: "1px solid var(--border)",
                         overflow: "hidden",

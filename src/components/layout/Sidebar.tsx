@@ -36,11 +36,11 @@ import {
   Wrench,
 } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
+import type { PageId } from "@/lib/navigation";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Types
    ───────────────────────────────────────────────────────────────────────────── */
-export type PageId = string;
 type Status = "done" | "wip" | "planned";
 
 interface NavItem {
@@ -217,9 +217,15 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
     setCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
   }
 
+  function selectPage(id: PageId) {
+    onSelect(id);
+    if (window.matchMedia("(max-width: 800px)").matches) setOpen(false);
+  }
+
   if (!open) {
     return (
       <aside
+        className="app-sidebar app-sidebar--collapsed"
         style={{
           width: 48,
           flexShrink: 0,
@@ -251,6 +257,7 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
 
   return (
     <aside
+      className="app-sidebar app-sidebar--open"
       style={{
         width: 240,
         flexShrink: 0,
@@ -331,7 +338,7 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
                 key={entry.item.id}
                 item={entry.item}
                 active={active === entry.item.id}
-                onClick={() => onSelect(entry.item.id)}
+                onClick={() => selectPage(entry.item.id)}
               />
             );
           }
@@ -377,7 +384,7 @@ export default function Sidebar({ active, onSelect }: SidebarProps) {
                     key={item.id}
                     item={item}
                     active={active === item.id}
-                    onClick={() => onSelect(item.id)}
+                    onClick={() => selectPage(item.id)}
                     indent
                   />
                 ))}

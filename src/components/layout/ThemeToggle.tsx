@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { Sun, Moon } from "lucide-react";
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -11,17 +11,28 @@ import { Sun, Moon } from "lucide-react";
    ───────────────────────────────────────────────────────────────────────────── */
 type Theme = "dark" | "light";
 
-export default function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>("dark");
+function getThemeSnapshot(): Theme {
+  return document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+}
 
-  useEffect(() => {
-    const current = (document.documentElement.getAttribute("data-theme") as Theme) || "dark";
-    setTheme(current);
-  }, []);
+function subscribeToTheme(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  });
+  window.addEventListener("storage", onChange);
+  return () => {
+    observer.disconnect();
+    window.removeEventListener("storage", onChange);
+  };
+}
+
+export default function ThemeToggle() {
+  const theme = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, () => "dark");
 
   function toggle() {
     const next: Theme = theme === "dark" ? "light" : "dark";
-    setTheme(next);
     if (next === "light") document.documentElement.setAttribute("data-theme", "light");
     else document.documentElement.removeAttribute("data-theme");
     try {

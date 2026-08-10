@@ -1,29 +1,22 @@
 "use client";
 
+import GuideLayout, { GuideHeader } from "@/components/guide/GuideLayout";
 import {
-  H2, H3, P, Bold, Code, Callout, Divider, Ul, Ol, Table, SqlCode, MathBlock,
+  H2, H3, P, Bold, Code, Callout, Divider, Ul, Table, SqlCode, MathBlock,
 } from "@/components/guide/blocks";
 
 export default function FuncionalDepsGuide() {
   return (
-    <div style={{ height: "100%", overflowY: "auto", background: "var(--bg-base)" }}>
-      <div style={{ maxWidth: 780, margin: "0 auto", padding: "32px 32px 80px" }}>
+    <GuideLayout maxWidth={780}>
 
-        {/* Header */}
-        <div style={{ marginBottom: 18 }}>
-          <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-code)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-            Utilidades · Diseño relacional
-          </div>
-          <h1 style={{ fontSize: 30, fontWeight: 800, color: "var(--text-primary)", margin: "0 0 10px", fontFamily: "var(--font-ui)", lineHeight: 1.2 }}>
-            Dependencias Funcionales
-          </h1>
+        <GuideHeader eyebrow="Utilidades · Diseño relacional" title="Dependencias Funcionales">
           <P>
             Las <Bold>dependencias funcionales (DF)</Bold> son la base teórica del diseño relacional:
             permiten detectar redundancias, guiar la normalización y justificar la fragmentación. Esta
             página resume qué son, sus reglas (axiomas de Armstrong), el cierre de atributos y los conceptos
             de superclave y atributo primo.
           </P>
-        </div>
+        </GuideHeader>
 
         <Divider />
 
@@ -165,7 +158,6 @@ id_emp → nombre, salario, depto`} />
           ]}
         />
 
-      </div>
-    </div>
+    </GuideLayout>
   );
 }

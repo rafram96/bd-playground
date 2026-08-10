@@ -1,5 +1,6 @@
 "use client";
 
+import GuideLayout, { GuideHeader } from "@/components/guide/GuideLayout";
 import { H2, P, Bold, Code, Callout, Divider, Pipeline, SqlCode } from "@/components/guide/blocks";
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -53,23 +54,15 @@ function QueryCard({ children }: { children: React.ReactNode }) {
    ───────────────────────────────────────────────────────────────────────────── */
 export default function SqlSyntaxGuide() {
   return (
-    <div style={{ height: "100%", overflowY: "auto", background: "var(--bg-base)" }}>
-      <div style={{ maxWidth: 760, margin: "0 auto", padding: "32px 32px 80px" }}>
+    <GuideLayout maxWidth={760}>
 
-        {/* Header */}
-        <div style={{ marginBottom: 18 }}>
-          <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-code)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-            Utilidades
-          </div>
-          <h1 style={{ fontSize: 30, fontWeight: 800, color: "var(--text-primary)", margin: "0 0 10px", fontFamily: "var(--font-ui)", lineHeight: 1.2 }}>
-            Sintaxis SQL
-          </h1>
+        <GuideHeader eyebrow="Utilidades" title="Sintaxis SQL">
           <P>
             <Bold>SQL</Bold> (Structured Query Language) es un lenguaje de consulta estructurada que permite{" "}
             <Bold>administrar y recuperar información</Bold> en la base de datos. Aquí tienes la estructura de
             una consulta <Code>SELECT</Code>, cláusula por cláusula.
           </P>
-        </div>
+        </GuideHeader>
 
         <Divider />
 
@@ -198,7 +191,6 @@ ORDER BY total_libros DESC;       -- ordena por la cantidad (mayor primero)`} />
           <Code>WHERE</Code> y observa el error: es la mejor forma de entender la diferencia.
         </Callout>
 
-      </div>
-    </div>
+    </GuideLayout>
   );
 }

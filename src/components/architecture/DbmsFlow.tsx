@@ -123,18 +123,6 @@ function SectionBox({ title, color, children }: { title: string; color?: string;
   );
 }
 
-function BulletList({ items, color }: { items: string[]; color?: string }) {
-  return (
-    <ul style={{ margin: 0, padding: "0 0 0 18px" }}>
-      {items.map((item, i) => (
-        <li key={i} style={{ fontSize: 13, color: color ?? "var(--text-secondary)", marginBottom: 6, lineHeight: 1.6 }}>
-          {item}
-        </li>
-      ))}
-    </ul>
-  );
-}
-
 function Chip({ label, color, bg }: { label: string; color: string; bg: string }) {
   return (
     <span

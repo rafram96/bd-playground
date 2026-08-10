@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { StepNavigator, VisualizerLayout, type LearningMode } from "./VisualizerLayout";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Geometría del lienzo (cuadrado para que las "bolas" de cada métrica se vean
@@ -73,25 +74,29 @@ export default function S10KnnViz() {
   const [k, setK] = useState(3);
   const [r, setR] = useState(METRIC_INFO.euclidiana.rDefault);
   const [drag, setDrag] = useState<number | "q" | null>(null);
+  const [learningMode, setLearningMode] = useState<LearningMode>("guided");
+  const [learningStep, setLearningStep] = useState(0);
 
   const info = METRIC_INFO[metric];
 
   /* Distancias y ranking */
-  const ranked = points
+  const ranked = useMemo(() => points
     .map((p) => ({ ...p, d: distance(metric, query, p) }))
-    .sort((a, b) => a.d - b.d);
+    .sort((a, b) => a.d - b.d), [points, query, metric]);
 
   const kClamped = Math.min(k, points.length);
-  const highlighted = new Set<number>(
+  const highlighted = useMemo(() => new Set<number>(
     mode === "knn"
       ? ranked.slice(0, kClamped).map((p) => p.id)
       : ranked.filter((p) => p.d <= r).map((p) => p.id)
-  );
+  ), [mode, ranked, kClamped, r]);
 
   /* ── Drag ── */
   function pointerToData(e: React.PointerEvent) {
     const rect = svgRef.current!.getBoundingClientRect();
-    return { x: xData(e.clientX - rect.left), y: yData(e.clientY - rect.top) };
+    const svgX = (e.clientX - rect.left) * (W / rect.width);
+    const svgY = (e.clientY - rect.top) * (W / rect.height);
+    return { x: xData(svgX), y: yData(svgY) };
   }
   function onMove(e: React.PointerEvent) {
     if (drag === null) return;
@@ -156,23 +161,26 @@ export default function S10KnnViz() {
     );
   }
 
-  return (
-    <div style={{ display: "flex", height: "100%", background: "var(--bg-base)", overflow: "auto" }}>
-      <div style={{ maxWidth: 980, margin: "0 auto", padding: "32px 32px 60px", width: "100%" }}>
+  const learningSteps = [
+    { title: "Define la consulta", description: "Arrastra q y los objetos. Sus coordenadas representan dos características comparables." },
+    { title: "Elige la geometría", description: "Cambia la métrica: cada fórmula redefine qué significa estar cerca y la forma de la región." },
+    { title: "Lee el resultado", description: "La tabla ordena las distancias; k-NN toma los primeros k y la consulta por rango usa un umbral r." },
+  ];
 
-        {/* Header */}
-        <div style={{ marginBottom: 18 }}>
-          <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-code)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-            Semana 10 · Visualizador interactivo
+  return (
+    <VisualizerLayout
+      eyebrow="Semana 10 · Bases vectoriales · Visualizador interactivo"
+      title="Búsqueda por similitud: k‑NN y distancias"
+      description={<>Arrastra el punto de consulta <b style={{ color: "var(--accent)" }}>q</b> o cualquier objeto. Cambia la métrica y observa cómo cambian los vecinos y la geometría del rango.</>}
+      mode={learningMode}
+      onModeChange={(value) => { setLearningMode(value); if (value === "guided") setLearningStep(0); }}
+    >
+      <div style={{ maxWidth: 980, margin: "0 auto", width: "100%" }}>
+        {learningMode === "guided" ? (
+          <div style={{ marginBottom: 14 }}>
+            <StepNavigator current={learningStep} total={learningSteps.length} title={learningSteps[learningStep].title} description={learningSteps[learningStep].description} onPrevious={() => setLearningStep((value) => Math.max(0, value - 1))} onNext={() => setLearningStep((value) => Math.min(learningSteps.length - 1, value + 1))} onStart={() => setLearningStep(0)} onEnd={() => setLearningStep(learningSteps.length - 1)} />
           </div>
-          <h1 style={{ fontSize: 28, fontWeight: 800, color: "var(--text-primary)", margin: "0 0 8px", fontFamily: "var(--font-ui)", lineHeight: 1.2 }}>
-            Búsqueda por similitud: k-NN y medidas de distancia
-          </h1>
-          <p style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.7, margin: 0, fontFamily: "var(--font-ui)" }}>
-            Arrastra el punto de consulta <b style={{ color: "var(--accent)" }}>q</b> o cualquier objeto.
-            Cambia la métrica y observa cómo cambian los vecinos más cercanos y la forma del rango.
-          </p>
-        </div>
+        ) : null}
 
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
           {/* ── Lienzo ── */}
@@ -180,11 +188,15 @@ export default function S10KnnViz() {
             ref={svgRef}
             width={W}
             height={W}
-            style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 12, touchAction: "none", flexShrink: 0 }}
+            viewBox={`0 0 ${W} ${W}`}
+            role="img"
+            aria-label="Plano de puntos para búsqueda por similitud"
+            style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 12, touchAction: "none", flexShrink: 1, maxWidth: "100%", height: "auto" }}
             onPointerMove={onMove}
             onPointerUp={() => setDrag(null)}
-            onPointerLeave={() => setDrag(null)}
           >
+            <title>Espacio vectorial bidimensional</title>
+            <desc>Los puntos verdes satisfacen la consulta seleccionada. El punto morado q es la consulta y puede arrastrarse.</desc>
             <defs>
               <clipPath id="plotclip">
                 <rect x={PAD} y={PAD} width={SIZE} height={SIZE} />
@@ -329,7 +341,7 @@ export default function S10KnnViz() {
           dirección que <b style={{ color: "var(--accent)" }}>q</b> resulta “muy similar” aunque su distancia euclidiana sea grande.
         </div>
       </div>
-    </div>
+    </VisualizerLayout>
   );
 }
 

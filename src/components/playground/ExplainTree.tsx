@@ -110,7 +110,6 @@ function NodeCard({ node, maxCost, depth }: NodeCardProps) {
     const icon = NODE_ICONS[node["Node Type"]] ?? DEFAULT_NODE_ICON;
 
     const actualTime = node["Actual Total Time"];
-    const estimatedTime = node["Startup Cost"];
     const estimation_error =
         actualTime !== undefined && node["Plan Rows"] !== undefined
             ? Math.abs(

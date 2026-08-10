@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import GuideLayout from "@/components/guide/GuideLayout";
 import {
   H2, H3, P, Bold, Code, Divider,
-  Ul, Ol, Callout, Table, CompareCards,
+  Ul, Callout, Table, CompareCards,
   Collapse, Pipeline, SqlCode,
 } from "@/components/guide/blocks";
 
@@ -23,104 +23,17 @@ const SECTIONS = [
   { id: "sec-escala",       label: "10. Réplicas y sharding" },
 ];
 
-function scrollToSection(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-}
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Right-side Table of Contents (con toggle ocultar/mostrar)
    ───────────────────────────────────────────────────────────────────────────── */
-function Toc({ active }: { active: string }) {
-  const [open, setOpen] = useState(true);
-
-  if (!open) {
-    return (
-      <aside style={{ width: 36, flexShrink: 0, borderLeft: "1px solid var(--border)", padding: "36px 0", display: "flex", justifyContent: "center" }}>
-        <button
-          onClick={() => setOpen(true)}
-          title="Mostrar índice"
-          aria-label="Mostrar índice"
-          style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text-secondary)", cursor: "pointer", width: 30, height: 30, fontSize: 15, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center" }}
-        >
-          ☰
-        </button>
-      </aside>
-    );
-  }
-
-  return (
-    <aside style={{ width: 230, flexShrink: 0, borderLeft: "1px solid var(--border)", padding: "36px 0 36px 16px", overflowY: "auto" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-        <span style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: 1, fontFamily: "var(--font-ui)" }}>
-          En esta página
-        </span>
-        <button
-          onClick={() => setOpen(false)}
-          title="Ocultar índice"
-          aria-label="Ocultar índice"
-          style={{ background: "transparent", border: "1px solid var(--border)", borderRadius: 6, color: "var(--text-secondary)", cursor: "pointer", width: 26, height: 24, fontSize: 13, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
-        >
-          ☰
-        </button>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
-        {SECTIONS.map((s) => {
-          const isActive = active === s.id;
-          return (
-            <button
-              key={s.id}
-              onClick={() => scrollToSection(s.id)}
-              style={{
-                display: "block", width: "100%", textAlign: "left", background: "transparent", border: "none",
-                padding: "5px 8px", fontSize: 12, color: isActive ? "var(--accent)" : "var(--text-muted)",
-                fontWeight: isActive ? 600 : 400, fontFamily: "var(--font-ui)", cursor: "pointer",
-                borderLeft: `2px solid ${isActive ? "var(--accent)" : "transparent"}`, lineHeight: 1.4,
-                transition: "color 0.15s, border-color 0.15s", borderRadius: "0 4px 4px 0",
-              }}
-              onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.color = "var(--text-secondary)"; }}
-              onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.color = "var(--text-muted)"; }}
-            >
-              {s.label}
-            </button>
-          );
-        })}
-      </div>
-    </aside>
-  );
-}
 
 /* ─────────────────────────────────────────────────────────────────────────────
    S14 Guide — NoSQL: Introducción y Bases de Datos de Documentos (MongoDB)
    ───────────────────────────────────────────────────────────────────────────── */
 export default function S14Guide() {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [activeSection, setActiveSection] = useState("sec-timeline");
-
-  useEffect(() => {
-    const root = scrollRef.current;
-    if (!root) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.filter((e) => e.isIntersecting);
-        if (visible.length === 0) return;
-        const topmost = visible.reduce((a, b) =>
-          a.boundingClientRect.top < b.boundingClientRect.top ? a : b
-        );
-        setActiveSection(topmost.target.id);
-      },
-      { root, threshold: 0, rootMargin: "-8% 0px -78% 0px" }
-    );
-    SECTIONS.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <div style={{ display: "flex", height: "100%", background: "var(--bg-base)" }}>
-      <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", minWidth: 0 }}>
-        <div style={{ maxWidth: 820, margin: "0 auto", padding: "32px 32px 80px" }}>
+    <GuideLayout sections={SECTIONS}>
 
           {/* Header */}
           <div style={{ marginBottom: 24 }}>
@@ -339,11 +252,11 @@ db.productos.find({ categoria: "Electrónica" }, { stock: 0 })`} />
           <Table
             headers={["Operador", "Significado", "Ejemplo"]}
             rows={[
-              [<Code>$eq / $ne</Code>, "igual / distinto", "{ edad: { $gt: 30 } }"],
-              [<Code>$gt $gte $lt $lte</Code>, "mayor / mayor-igual / menor / menor-igual", "{ precio: { $gte: 500 } }"],
-              [<Code>$in / $nin</Code>, "está / no está en una lista", "{ categoria: { $in: [\"Electrónica\", \"Hogar\"] } }"],
-              [<Code>$and / $or / $not</Code>, "combinar / negar condiciones", "{ $or: [ {a:1}, {b:2} ] }"],
-              [<Code>$exists</Code>, "el campo existe", "{ nombre: { $exists: true } }"],
+              [<Code key="equality">$eq / $ne</Code>, "igual / distinto", "{ edad: { $gt: 30 } }"],
+              [<Code key="compare">$gt $gte $lt $lte</Code>, "mayor / mayor-igual / menor / menor-igual", "{ precio: { $gte: 500 } }"],
+              [<Code key="list">$in / $nin</Code>, "está / no está en una lista", "{ categoria: { $in: [\"Electrónica\", \"Hogar\"] } }"],
+              [<Code key="logic">$and / $or / $not</Code>, "combinar / negar condiciones", "{ $or: [ {a:1}, {b:2} ] }"],
+              [<Code key="exists">$exists</Code>, "el campo existe", "{ nombre: { $exists: true } }"],
             ]}
           />
           <SqlCode label="Ejemplos combinados" sql={`// Electrónicos O precio > 500
@@ -474,10 +387,6 @@ db.users.dropIndex("nombre_del_indice")  // eliminar`} />
             <Bold>escalabilidad</Bold> (sharding) y <Bold>disponibilidad</Bold> (replicación) a la vez.
           </Callout>
 
-        </div>
-      </div>
-
-      <Toc active={activeSection} />
-    </div>
+    </GuideLayout>
   );
 }

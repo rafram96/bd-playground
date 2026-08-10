@@ -1,13 +1,12 @@
 "use client";
 
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import Editor, { loader, type OnMount, type BeforeMount } from "@monaco-editor/react";
 import type { editor, Position } from "monaco-editor";
 
 /* ── Use local monaco-editor core + SQL only (avoids importing ALL languages) ── */
-// @ts-expect-error — ESM deep import has no .d.ts; runtime is fine
-import * as monacoCore from "monaco-editor/esm/vs/editor/editor.api";
-import "monaco-editor/esm/vs/basic-languages/sql/sql.contribution";
+import * as monacoCore from "monaco-editor/editor/editor.api";
+import "monaco-editor/languages/definitions/sql/register";
 loader.config({ monaco: monacoCore });
 
 interface SqlEditorProps {
@@ -27,8 +26,11 @@ export default function SqlEditor({
 }: SqlEditorProps) {
     const onRunRef = useRef(onRun);
     const onExplainRef = useRef(onExplain);
-    onRunRef.current = onRun;
-    onExplainRef.current = onExplain;
+
+    useEffect(() => {
+        onRunRef.current = onRun;
+        onExplainRef.current = onExplain;
+    }, [onRun, onExplain]);
 
     const handleBeforeMount: BeforeMount = useCallback((monaco) => {
         monaco.editor.defineTheme("db-dark", {

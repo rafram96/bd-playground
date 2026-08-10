@@ -1,29 +1,22 @@
 "use client";
 
+import GuideLayout, { GuideHeader } from "@/components/guide/GuideLayout";
 import {
   H2, P, Bold, Code, Callout, Divider, Ul, Table, SqlCode, MathBlock,
 } from "@/components/guide/blocks";
 
 export default function NormalizacionGuide() {
   return (
-    <div style={{ height: "100%", overflowY: "auto", background: "var(--bg-base)" }}>
-      <div style={{ maxWidth: 780, margin: "0 auto", padding: "32px 32px 80px" }}>
+    <GuideLayout maxWidth={780}>
 
-        {/* Header */}
-        <div style={{ marginBottom: 18 }}>
-          <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-code)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-            Utilidades · Diseño relacional
-          </div>
-          <h1 style={{ fontSize: 30, fontWeight: 800, color: "var(--text-primary)", margin: "0 0 10px", fontFamily: "var(--font-ui)", lineHeight: 1.2 }}>
-            Normalización
-          </h1>
+        <GuideHeader eyebrow="Utilidades · Diseño relacional" title="Normalización">
           <P>
             La <Bold>normalización</Bold> es el proceso de organizar los datos para{" "}
             <Bold>eliminar redundancias</Bold>, evitar <Bold>anomalías</Bold> (de inserción, actualización y
             eliminación) y <Bold>mejorar la integridad</Bold>. Se basa en las{" "}
             <Bold>dependencias funcionales</Bold> y otras dependencias más complejas (multivaluadas, de join).
           </P>
-        </div>
+        </GuideHeader>
 
         <Callout variant="note" title="Requisito previo">
           La normalización se apoya en las <Bold>dependencias funcionales</Bold>, superclaves y atributos
@@ -154,7 +147,6 @@ DF:  materia → aula
 -- empleado, proyecto y rol; si se separa incorrectamente,
 -- al recomponer con JOIN se generan combinaciones falsas (espurias)`} />
 
-      </div>
-    </div>
+    </GuideLayout>
   );
 }

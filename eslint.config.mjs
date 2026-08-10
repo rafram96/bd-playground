@@ -13,6 +13,13 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    // Las guías contienen prosa, ejemplos SQL y notación técnica con comillas.
+    // Escaparlas no aporta seguridad porque el contenido es estático.
+    rules: {
+      "react/no-unescaped-entities": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

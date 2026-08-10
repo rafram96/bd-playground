@@ -12,19 +12,7 @@ interface ResultTableProps {
 
 const PAGE_SIZE = 50;
 
-// PG OIDs — https://www.postgresql.org/docs/current/catalog-pg-type.html
-function getTypeColor(dataTypeID: number): string {
-    // int2, int4, int8, float4, float8, numeric, oid, serial
-    if ([21, 23, 20, 700, 701, 1700, 26, 16, 2278].includes(dataTypeID))
-        return "#60a5fa"; // blue for numbers/bool
-    // date, timestamp, timestamptz, time
-    if ([1082, 1114, 1184, 1083].includes(dataTypeID)) return "#f0c060"; // yellow for dates
-    // bool
-    if (dataTypeID === 16) return "#22d3a0";
-    return "var(--text-primary)"; // default
-}
-
-function formatCell(value: unknown, dataTypeID: number): string {
+function formatCell(value: unknown): string {
     if (value === null || value === undefined) return "NULL";
     if (typeof value === "boolean") return value ? "true" : "false";
     if (typeof value === "object") return JSON.stringify(value);
@@ -224,9 +212,9 @@ export default function ResultTable({
                                                 whiteSpace: "nowrap",
                                                 ...getCellStyle(val, f.dataTypeID),
                                             }}
-                                            title={formatCell(val, f.dataTypeID)}
+                                            title={formatCell(val)}
                                         >
-                                            {formatCell(val, f.dataTypeID)}
+                                            {formatCell(val)}
                                         </td>
                                     );
                                 })}

@@ -1,558 +1,451 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useMemo, useState } from "react";
+import {
+  ActionButton,
+  MetricCard,
+  StepNavigator,
+  VisualizerLayout,
+  VisualizerPanel,
+  type LearningMode,
+} from "./VisualizerLayout";
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   B+Tree data structure
-   ═══════════════════════════════════════════════════════════════════════════════ */
 interface BNode {
+  uid: number;
   keys: number[];
   children: BNode[];
   isLeaf: boolean;
-  next?: BNode;        // leaf chaining
-  uid: number;
 }
 
-let _uid = 0;
-function mkNode(isLeaf: boolean): BNode {
-  return { keys: [], children: [], isLeaf, uid: _uid++ };
+interface TraceFrame {
+  tree: BNode;
+  title: string;
+  description: string;
+  highlighted: number[];
+  key: number | null;
 }
 
-class BPTree {
-  root: BNode;
-  order: number;
+let nextUid = 1;
+const makeNode = (isLeaf: boolean): BNode => ({ uid: nextUid++, keys: [], children: [], isLeaf });
+const cloneNode = (node: BNode): BNode => ({
+  uid: node.uid,
+  keys: [...node.keys],
+  isLeaf: node.isLeaf,
+  children: node.children.map(cloneNode),
+});
 
-  constructor(order: number) {
-    this.order = order;
-    this.root = mkNode(true);
-  }
-
-  /* ── search ── */
-  search(key: number): { found: boolean; path: number[] } {
-    const path: number[] = [];
-    let node = this.root;
-    while (true) {
-      path.push(node.uid);
-      if (node.isLeaf) return { found: node.keys.includes(key), path };
-      let i = 0;
-      while (i < node.keys.length && key >= node.keys[i]) i++;
-      node = node.children[i];
-    }
-  }
-
-  has(key: number): boolean { return this.search(key).found; }
-
-  /* ── insert ── */
-  insert(key: number): boolean {
-    if (this.has(key)) return false;
-    const r = this.root;
-    if (r.keys.length === this.order - 1) {
-      const s = mkNode(false);
-      s.children = [r];
-      this._splitChild(s, 0);
-      this.root = s;
-    }
-    this._insertNonFull(this.root, key);
-    return true;
-  }
-
-  private _insertNonFull(node: BNode, key: number) {
-    if (node.isLeaf) {
-      const i = node.keys.findIndex(k => k > key);
-      if (i === -1) node.keys.push(key);
-      else node.keys.splice(i, 0, key);
-      return;
-    }
-    let i = node.keys.length - 1;
-    while (i >= 0 && key < node.keys[i]) i--;
-    i++;
-    if (node.children[i].keys.length === this.order - 1) {
-      this._splitChild(node, i);
-      if (key >= node.keys[i]) i++;
-    }
-    this._insertNonFull(node.children[i], key);
-  }
-
-  private _splitChild(parent: BNode, idx: number) {
-    const full = parent.children[idx];
-    const mid = Math.floor((this.order - 1) / 2);
-    const right = mkNode(full.isLeaf);
-
-    if (full.isLeaf) {
-      right.keys = full.keys.splice(mid);
-      parent.keys.splice(idx, 0, right.keys[0]);
-      right.next = full.next;
-      full.next = right;
-    } else {
-      right.keys = full.keys.splice(mid + 1);
-      const upKey = full.keys.pop()!;
-      right.children = full.children.splice(mid + 1);
-      parent.keys.splice(idx, 0, upKey);
-    }
-    parent.children.splice(idx + 1, 0, right);
-  }
-
-  /* ── collect all keys via leaf scan ── */
-  allKeys(): number[] {
-    let leaf: BNode | undefined = this.root;
-    while (!leaf.isLeaf) leaf = leaf.children[0];
-    const out: number[] = [];
-    while (leaf) { out.push(...leaf.keys); leaf = leaf.next; }
-    return out;
-  }
-
-  /* ── stats ── */
-  stats() {
-    let height = 0, nodes = 0, leaves = 0, keys = 0;
-    const dfs = (n: BNode, d: number) => {
-      nodes++; keys += n.keys.length; height = Math.max(height, d);
-      if (n.isLeaf) leaves++;
-      n.children.forEach(c => dfs(c, d + 1));
-    };
-    dfs(this.root, 1);
-    return { height, nodes, leaves, keys };
-  }
+function maxUid(node: BNode): number {
+  return Math.max(node.uid, ...node.children.map(maxUid), 0);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   Layout engine — recursive width calculation + centering
-   ═══════════════════════════════════════════════════════════════════════════════ */
-interface LNode {
-  node: BNode;
-  x: number; y: number; w: number;
-  children: LNode[];
+function allKeys(node: BNode): number[] {
+  if (node.isLeaf) return [...node.keys];
+  return node.children.flatMap(allKeys);
 }
 
-const KEY_W   = 38;
-const KEY_H   = 30;
-const NODE_PY = 6;
-const NODE_PX = 4;
-const GAP_X   = 16;
-const GAP_Y   = 64;
-
-function nodeW(n: BNode) { return Math.max(n.keys.length, 1) * KEY_W + NODE_PX * 2; }
-
-function layoutTree(root: BNode): { tree: LNode; totalW: number; totalH: number } {
-  function measure(n: BNode, depth: number): LNode {
-    const ch = n.children.map(c => measure(c, depth + 1));
-    const selfW = nodeW(n);
-    const chW = ch.length > 0
-      ? ch.reduce((s, c) => s + c.w, 0) + (ch.length - 1) * GAP_X
-      : 0;
-    const w = Math.max(selfW, chW);
-    return { node: n, x: 0, y: depth * (KEY_H + NODE_PY * 2 + GAP_Y), w, children: ch };
-  }
-
-  function position(ln: LNode, left: number) {
-    if (ln.children.length === 0) {
-      ln.x = left + (ln.w - nodeW(ln.node)) / 2;
-    } else {
-      let cx = left;
-      const totalChW = ln.children.reduce((s, c) => s + c.w, 0) + (ln.children.length - 1) * GAP_X;
-      const startX = left + (ln.w - totalChW) / 2;
-      cx = startX;
-      ln.children.forEach(c => { position(c, cx); cx += c.w + GAP_X; });
-      // center parent above children
-      const firstCh = ln.children[0];
-      const lastCh  = ln.children[ln.children.length - 1];
-      const childCenter = (firstCh.x + nodeW(firstCh.node) / 2 + lastCh.x + nodeW(lastCh.node) / 2) / 2;
-      ln.x = childCenter - nodeW(ln.node) / 2;
-    }
-  }
-
-  const tree = measure(root, 0);
-  position(tree, 0);
-
-  // compute total height
-  let maxY = 0;
-  const walk = (ln: LNode) => { maxY = Math.max(maxY, ln.y); ln.children.forEach(walk); };
-  walk(tree);
-
-  return { tree, totalW: tree.w, totalH: maxY + KEY_H + NODE_PY * 2 + 20 };
+function stats(root: BNode) {
+  let height = 0;
+  let nodes = 0;
+  let leaves = 0;
+  const visit = (node: BNode, depth: number) => {
+    nodes += 1;
+    height = Math.max(height, depth);
+    if (node.isLeaf) leaves += 1;
+    node.children.forEach((child) => visit(child, depth + 1));
+  };
+  visit(root, 1);
+  return { height, nodes, leaves, keys: allKeys(root).length };
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   Component
-   ═══════════════════════════════════════════════════════════════════════════════ */
-export default function BPlusTreeViz() {
-  const [order, setOrder] = useState(4);
-  const [tree, setTree]   = useState(() => new BPTree(4));
-  const [input, setInput] = useState("");
-  const [msg, setMsg]     = useState<{ text: string; ok: boolean } | null>(null);
-  const [hlPath, setHlPath]     = useState<Set<number>>(new Set());
-  const [hlKey, setHlKey]       = useState<number | null>(null);
-  const [logs, setLogs]         = useState<string[]>([]);
+function insertWithTrace(source: BNode, key: number, order: number): { root: BNode; frames: TraceFrame[]; inserted: boolean } {
+  const root = cloneNode(source);
+  nextUid = maxUid(root) + 1;
+  if (allKeys(root).includes(key)) return { root, frames: [], inserted: false };
 
-  const addLog = (s: string) => setLogs(p => [s, ...p].slice(0, 30));
+  const frames: TraceFrame[] = [{
+    tree: cloneNode(root),
+    title: "Estado inicial",
+    description: `Preparando la inserción de ${key}. Cada nodo admite como máximo ${order - 1} claves.`,
+    highlighted: [root.uid],
+    key,
+  }];
 
-  /* rebuild tree preserving keys */
-  const rebuild = useCallback((keys: number[], ord: number) => {
-    _uid = 0;
-    const t = new BPTree(ord);
-    keys.forEach(k => t.insert(k));
-    return t;
-  }, []);
-
-  const flash = (text: string, ok: boolean) => {
-    setMsg({ text, ok });
-    setTimeout(() => setMsg(null), 2000);
+  const capture = (title: string, description: string, highlighted: number[]) => {
+    frames.push({ tree: cloneNode(root), title, description, highlighted, key });
   };
 
-  /* ── handlers ── */
-  const doInsert = useCallback(() => {
-    const v = parseInt(input);
-    if (isNaN(v)) return;
-    const keys = tree.allKeys();
-    if (keys.includes(v)) { flash(`${v} ya existe`, false); addLog(`✗ INSERT ${v} — duplicado`); setInput(""); return; }
-    const nt = rebuild([...keys, v], order);
-    setTree(nt);
-    setHlKey(v);
-    setTimeout(() => setHlKey(null), 1200);
-    flash(`Insertado ${v}`, true);
-    addLog(`✓ INSERT ${v}`);
-    setInput("");
-  }, [input, tree, order, rebuild]);
+  type Promotion = { separator: number; right: BNode; kind: "leaf" | "internal"; splitDescription: string } | null;
 
-  const doSearch = useCallback(() => {
-    const v = parseInt(input);
-    if (isNaN(v)) return;
-    const { found, path } = tree.search(v);
-    setHlPath(new Set(path));
-    if (found) { setHlKey(v); flash(`Encontrado ${v}`, true); }
-    else flash(`${v} no encontrado`, false);
-    addLog(found ? `🔍 SEARCH ${v} — encontrado` : `🔍 SEARCH ${v} — no encontrado`);
-    setTimeout(() => { setHlPath(new Set()); setHlKey(null); }, 2000);
-    setInput("");
-  }, [input, tree]);
-
-  const doReset = useCallback(() => {
-    setTree(rebuild([], order));
-    setLogs([]);
-    flash("Árbol reiniciado", true);
-  }, [order, rebuild]);
-
-  const doRandom = useCallback(() => {
-    const v = Math.floor(Math.random() * 999) + 1;
-    const keys = tree.allKeys();
-    if (keys.includes(v)) { doRandom(); return; }
-    const nt = rebuild([...keys, v], order);
-    setTree(nt);
-    setHlKey(v);
-    setTimeout(() => setHlKey(null), 1200);
-    addLog(`✓ INSERT ${v} (aleatorio)`);
-  }, [tree, order, rebuild]);
-
-  const doRandomBatch = useCallback(() => {
-    const keys = tree.allKeys();
-    const newKeys = [...keys];
-    for (let i = 0; i < 10; i++) {
-      let v: number;
-      do { v = Math.floor(Math.random() * 999) + 1; } while (newKeys.includes(v));
-      newKeys.push(v);
-    }
-    setTree(rebuild(newKeys, order));
-    addLog(`✓ INSERT ×10 aleatorios`);
-  }, [tree, order, rebuild]);
-
-  const changeOrder = useCallback((o: number) => {
-    setOrder(o);
-    setTree(rebuild(tree.allKeys(), o));
-    addLog(`Orden cambiado a ${o}`);
-  }, [tree, rebuild]);
-
-  /* ── layout ── */
-  const { tree: lt, totalW, totalH } = useMemo(() => layoutTree(tree.root), [tree]);
-  const st = useMemo(() => tree.stats(), [tree]);
-
-  /* ── SVG lines & leaf chain ── */
-  function svgLines(ln: LNode): React.ReactNode[] {
-    const lines: React.ReactNode[] = [];
-    const px = ln.x + nodeW(ln.node) / 2;
-    const py = ln.y + KEY_H + NODE_PY * 2;
-    ln.children.forEach(ch => {
-      const cx = ch.x + nodeW(ch.node) / 2;
-      const cy = ch.y;
-      const isHl = hlPath.has(ln.node.uid) && hlPath.has(ch.node.uid);
-      lines.push(
-        <line key={`l-${ln.node.uid}-${ch.node.uid}`}
-          x1={px} y1={py} x2={cx} y2={cy}
-          stroke={isHl ? "#f0c060" : "var(--border-bright)"}
-          strokeWidth={isHl ? 2.5 : 1.5}
-          style={{ transition: "stroke 0.4s, stroke-width 0.4s" }}
-        />
+  function insert(node: BNode, path: number[]): Promotion {
+    const activePath = [...path, node.uid];
+    if (node.isLeaf) {
+      capture("Hoja localizada", `La búsqueda termina en la hoja [${node.keys.join(", ") || "vacía"}].`, activePath);
+      const position = node.keys.findIndex((value) => value > key);
+      node.keys.splice(position < 0 ? node.keys.length : position, 0, key);
+      capture(
+        node.keys.length >= order ? "Overflow detectado" : "Clave insertada",
+        node.keys.length >= order
+          ? `La hoja contiene ${node.keys.length} claves y supera su capacidad de ${order - 1}. Debe dividirse.`
+          : `${key} queda ordenada dentro de la hoja; no se necesita split.`,
+        activePath,
       );
-      lines.push(...svgLines(ch));
-    });
-    return lines;
-  }
+      if (node.keys.length < order) return null;
 
-  function leafChainLines(): React.ReactNode[] {
-    const lines: React.ReactNode[] = [];
-    // collect leaf layout nodes
-    const leaves: LNode[] = [];
-    const collect = (ln: LNode) => {
-      if (ln.node.isLeaf) leaves.push(ln);
-      ln.children.forEach(collect);
+      const splitAt = Math.ceil(node.keys.length / 2);
+      const right = makeNode(true);
+      right.keys = node.keys.splice(splitAt);
+      const separator = right.keys[0];
+      return {
+        separator,
+        right,
+        kind: "leaf",
+        splitDescription: `La hoja se divide en [${node.keys.join(", ")}] y [${right.keys.join(", ")}].`,
+      };
+    }
+
+    let childIndex = 0;
+    while (childIndex < node.keys.length && key >= node.keys[childIndex]) childIndex += 1;
+    capture(
+      "Descenso por índice",
+      childIndex === node.keys.length
+        ? `${key} es mayor o igual que los separadores: seguimos el puntero derecho.`
+        : `${key} es menor que ${node.keys[childIndex]}: seguimos el puntero ${childIndex + 1}.`,
+      activePath,
+    );
+
+    const promotion = insert(node.children[childIndex], activePath);
+    if (!promotion) return null;
+
+    node.keys.splice(childIndex, 0, promotion.separator);
+    node.children.splice(childIndex + 1, 0, promotion.right);
+    capture(
+      promotion.kind === "leaf" ? "Split de hoja" : "Split interno",
+      `${promotion.splitDescription} El nuevo nodo ya está conectado al padre.`,
+      [...activePath, node.children[childIndex].uid, promotion.right.uid],
+    );
+    capture(
+      node.keys.length >= order ? "Overflow interno" : "Separador propagado",
+      node.keys.length >= order
+        ? `El separador ${promotion.separator} llegó al nodo interno y ahora este también debe dividirse.`
+        : `El padre incorpora ${promotion.separator} y apunta a la nueva página derecha.`,
+      [...activePath, promotion.right.uid],
+    );
+    if (node.keys.length < order) return null;
+
+    const middle = Math.floor(node.keys.length / 2);
+    const separator = node.keys[middle];
+    const right = makeNode(false);
+    right.keys = node.keys.splice(middle + 1);
+    node.keys.splice(middle, 1);
+    right.children = node.children.splice(middle + 1);
+    return {
+      separator,
+      right,
+      kind: "internal",
+      splitDescription: `El nodo interno se divide y el separador ${separator} sale de ambos lados.`,
     };
-    collect(lt);
-    for (let i = 0; i < leaves.length - 1; i++) {
-      const a = leaves[i], b = leaves[i + 1];
-      const ax = a.x + nodeW(a.node) + 2;
-      const bx = b.x - 2;
-      const ay = a.y + (KEY_H + NODE_PY * 2) / 2;
-      lines.push(
-        <line key={`chain-${i}`}
-          x1={ax} y1={ay} x2={bx} y2={ay}
-          stroke="rgba(34,211,160,0.35)" strokeWidth={1.5} strokeDasharray="5,4"
-        />
-      );
-      // arrow
-      lines.push(
-        <polygon key={`arrow-${i}`}
-          points={`${bx},${ay} ${bx - 6},${ay - 3} ${bx - 6},${ay + 3}`}
-          fill="rgba(34,211,160,0.5)"
-        />
-      );
-    }
-    return lines;
   }
 
-  /* ── render nodes ── */
-  function renderNodes(ln: LNode): React.ReactNode[] {
-    const isHl = hlPath.has(ln.node.uid);
-    const nw = nodeW(ln.node);
-    const nh = KEY_H + NODE_PY * 2;
-    const borderColor = ln.node.isLeaf ? "#22d3a0" : "#7c6af7";
+  const promotion = insert(root, []);
+  let finalRoot = root;
+  if (promotion) {
+    finalRoot = makeNode(false);
+    finalRoot.keys = [promotion.separator];
+    finalRoot.children = [root, promotion.right];
+    frames.push({
+      tree: cloneNode(finalRoot),
+      title: promotion.kind === "leaf" ? "Split de hoja raíz" : "Split de raíz interna",
+      description: `${promotion.splitDescription} El separador ${promotion.separator} necesita un nivel superior.`,
+      highlighted: [root.uid, promotion.right.uid],
+      key,
+    });
+    frames.push({
+      tree: cloneNode(finalRoot),
+      title: "Nueva raíz",
+      description: `El split alcanzó la raíz. ${promotion.separator} se convierte en el separador de una nueva raíz.`,
+      highlighted: [finalRoot.uid, root.uid, promotion.right.uid],
+      key,
+    });
+  }
 
-    const nodes: React.ReactNode[] = [
-      <g key={`n-${ln.node.uid}`}>
-        <rect
-          x={ln.x} y={ln.y} width={nw} height={nh} rx={7}
-          fill={ln.node.isLeaf ? "var(--bg-surface)" : "var(--bg-elevated)"}
-          stroke={isHl ? "#f0c060" : borderColor}
-          strokeWidth={isHl ? 2.5 : 1.5}
-          style={{ transition: "stroke 0.4s, stroke-width 0.4s" }}
-          filter={isHl ? "url(#glow)" : undefined}
-        />
-        {ln.node.keys.map((k, i) => {
-          const kx = ln.x + NODE_PX + i * KEY_W;
-          const ky = ln.y + NODE_PY;
-          const isKeyHl = hlKey === k;
+  frames.push({
+    tree: cloneNode(finalRoot),
+    title: "Inserción completada",
+    description: `${key} ya es accesible desde la raíz y permanece en una hoja enlazada.`,
+    highlighted: [],
+    key,
+  });
+  return { root: finalRoot, frames, inserted: true };
+}
+
+function searchTrace(root: BNode, key: number): TraceFrame[] {
+  const frames: TraceFrame[] = [];
+  const path: number[] = [];
+  let node = root;
+  while (true) {
+    path.push(node.uid);
+    if (node.isLeaf) {
+      const found = node.keys.includes(key);
+      frames.push({
+        tree: cloneNode(root),
+        title: found ? "Clave encontrada" : "Clave ausente",
+        description: found ? `${key} aparece en la hoja [${node.keys.join(", ")}].` : `La hoja [${node.keys.join(", ")}] no contiene ${key}.`,
+        highlighted: [...path],
+        key: found ? key : null,
+      });
+      break;
+    }
+    let index = 0;
+    while (index < node.keys.length && key >= node.keys[index]) index += 1;
+    frames.push({
+      tree: cloneNode(root),
+      title: "Comparar separadores",
+      description: index === node.keys.length ? `${key} continúa por el último puntero.` : `${key} < ${node.keys[index]}, por eso baja por el puntero ${index + 1}.`,
+      highlighted: [...path],
+      key,
+    });
+    node = node.children[index];
+  }
+  return frames;
+}
+
+function buildTree(keys: number[], order: number): BNode {
+  nextUid = 1;
+  let root = makeNode(true);
+  for (const key of keys) root = insertWithTrace(root, key, order).root;
+  return root;
+}
+
+interface LayoutNode {
+  node: BNode;
+  x: number;
+  y: number;
+  width: number;
+  children: LayoutNode[];
+}
+
+const KEY_W = 39;
+const NODE_H = 42;
+const GAP_X = 18;
+const GAP_Y = 76;
+const nodeWidth = (node: BNode) => Math.max(1, node.keys.length) * KEY_W + 10;
+
+function layoutTree(root: BNode) {
+  function measure(node: BNode, depth: number): LayoutNode {
+    const children = node.children.map((child) => measure(child, depth + 1));
+    const childrenWidth = children.reduce((sum, child) => sum + child.width, 0) + Math.max(0, children.length - 1) * GAP_X;
+    return { node, x: 0, y: depth * (NODE_H + GAP_Y), width: Math.max(nodeWidth(node), childrenWidth), children };
+  }
+  function position(item: LayoutNode, left: number) {
+    if (item.children.length === 0) item.x = left + (item.width - nodeWidth(item.node)) / 2;
+    else {
+      const childrenWidth = item.children.reduce((sum, child) => sum + child.width, 0) + (item.children.length - 1) * GAP_X;
+      let cursor = left + (item.width - childrenWidth) / 2;
+      item.children.forEach((child) => { position(child, cursor); cursor += child.width + GAP_X; });
+      const first = item.children[0];
+      const last = item.children[item.children.length - 1];
+      item.x = (first.x + nodeWidth(first.node) / 2 + last.x + nodeWidth(last.node) / 2) / 2 - nodeWidth(item.node) / 2;
+    }
+  }
+  const tree = measure(root, 0);
+  position(tree, 0);
+  let maxY = 0;
+  const walk = (item: LayoutNode) => { maxY = Math.max(maxY, item.y); item.children.forEach(walk); };
+  walk(tree);
+  return { tree, width: tree.width + 60, height: maxY + NODE_H + 70 };
+}
+
+function TreeCanvas({ root, highlighted, activeKey }: { root: BNode; highlighted: number[]; activeKey: number | null }) {
+  const layout = useMemo(() => layoutTree(root), [root]);
+  const active = useMemo(() => new Set(highlighted), [highlighted]);
+  const lines: React.ReactNode[] = [];
+  const nodes: React.ReactNode[] = [];
+  const leaves: LayoutNode[] = [];
+
+  function render(item: LayoutNode) {
+    const width = nodeWidth(item.node);
+    if (item.node.isLeaf) leaves.push(item);
+    item.children.forEach((child) => {
+      lines.push(<line key={`edge-${item.node.uid}-${child.node.uid}`} x1={item.x + width / 2} y1={item.y + NODE_H} x2={child.x + nodeWidth(child.node) / 2} y2={child.y} stroke={active.has(item.node.uid) && active.has(child.node.uid) ? "var(--warning)" : "var(--border-bright)"} strokeWidth={active.has(item.node.uid) && active.has(child.node.uid) ? 2.5 : 1.5} />);
+      render(child);
+    });
+    const border = active.has(item.node.uid) ? "var(--warning)" : item.node.isLeaf ? "var(--success)" : "var(--accent)";
+    nodes.push(
+      <g key={`node-${item.node.uid}`}>
+        <text x={item.x + width / 2} y={item.y - 7} textAnchor="middle" fill="var(--text-muted)" fontSize="8" fontFamily="var(--font-code)">{item.node.isLeaf ? "HOJA" : "ÍNDICE"}</text>
+        <rect x={item.x} y={item.y} width={width} height={NODE_H} rx={8} fill={item.node.isLeaf ? "var(--bg-surface)" : "var(--bg-elevated)"} stroke={border} strokeWidth={active.has(item.node.uid) ? 2.5 : 1.5} />
+        {item.node.keys.map((key, index) => {
+          const x = item.x + 5 + index * KEY_W;
           return (
-            <g key={`k-${ln.node.uid}-${k}`}>
-              {isKeyHl && (
-                <rect x={kx} y={ky} width={KEY_W - 2} height={KEY_H} rx={4}
-                  fill="#22d3a0" style={{ transition: "fill 0.3s" }}
-                />
-              )}
-              <text
-                x={kx + KEY_W / 2 - 1} y={ky + KEY_H / 2 + 1}
-                textAnchor="middle" dominantBaseline="middle"
-                fill={isKeyHl ? "#0a0a0f" : "var(--text-primary)"}
-                fontSize={13} fontFamily="JetBrains Mono, monospace" fontWeight={500}
-                style={{ transition: "fill 0.3s" }}
-              >
-                {k}
-              </text>
-              {/* separator */}
-              {i < ln.node.keys.length - 1 && (
-                <line x1={kx + KEY_W - 1} y1={ky + 4} x2={kx + KEY_W - 1} y2={ky + KEY_H - 4}
-                  stroke="var(--border)" strokeWidth={1}
-                />
-              )}
+            <g key={`${item.node.uid}-${key}`}>
+              {activeKey === key ? <rect x={x + 2} y={item.y + 6} width={KEY_W - 4} height={30} rx={5} fill="var(--success)" /> : null}
+              <text x={x + KEY_W / 2} y={item.y + 22} dominantBaseline="middle" textAnchor="middle" fill={activeKey === key ? "#07130f" : "var(--text-primary)"} fontSize="13" fontWeight="600" fontFamily="var(--font-code)">{key}</text>
+              {index < item.node.keys.length - 1 ? <line x1={x + KEY_W} y1={item.y + 8} x2={x + KEY_W} y2={item.y + 34} stroke="var(--border-bright)" /> : null}
             </g>
           );
         })}
-        {/* leaf indicator */}
-        {ln.node.isLeaf && (
-          <text x={ln.x + nw / 2} y={ln.y - 6} textAnchor="middle"
-            fill="rgba(34,211,160,0.4)" fontSize={8} fontFamily="JetBrains Mono, monospace">
-            HOJA
-          </text>
-        )}
       </g>,
-    ];
-    ln.children.forEach(ch => nodes.push(...renderNodes(ch)));
-    return nodes;
+    );
+  }
+  render(layout.tree);
+  leaves.sort((a, b) => a.x - b.x);
+  leaves.slice(0, -1).forEach((leaf, index) => {
+    const next = leaves[index + 1];
+    const y = leaf.y + NODE_H / 2;
+    lines.push(<g key={`leaf-link-${leaf.node.uid}`}><line x1={leaf.x + nodeWidth(leaf.node) + 2} y1={y} x2={next.x - 5} y2={y} stroke="var(--success)" strokeOpacity=".45" strokeDasharray="5 4" /><path d={`M ${next.x - 5} ${y} l -6 -4 v 8 z`} fill="var(--success)" opacity=".55" /></g>);
+  });
+
+  return (
+    <div style={{ minHeight: 330, overflow: "auto", padding: 18 }}>
+      {allKeys(root).length === 0 ? <div style={{ minHeight: 290, display: "grid", placeItems: "center", color: "var(--text-muted)", fontSize: 13 }}>Árbol vacío · inserta una clave para comenzar</div> : (
+        <svg role="img" aria-label={`Árbol B+ con ${allKeys(root).length} claves`} width={Math.max(layout.width, 520)} height={Math.max(layout.height, 300)} style={{ display: "block", margin: "0 auto" }}>
+          <title>Estructura actual del árbol B+</title>
+          <desc>Los nodos morados son índices, los verdes son hojas y las líneas discontinuas enlazan las hojas.</desc>
+          {lines}{nodes}
+        </svg>
+      )}
+    </div>
+  );
+}
+
+const INITIAL_KEYS = [10, 20, 5, 15, 25, 30, 12];
+
+export default function BPlusTreeViz() {
+  const [order, setOrder] = useState(4);
+  const [root, setRoot] = useState(() => buildTree(INITIAL_KEYS, 4));
+  const [input, setInput] = useState("18");
+  const [mode, setMode] = useState<LearningMode>("guided");
+  const [frames, setFrames] = useState<TraceFrame[]>([]);
+  const [step, setStep] = useState(0);
+  const [logs, setLogs] = useState<string[]>(["Ejemplo inicial cargado"]);
+  const [message, setMessage] = useState("");
+
+  const frame = frames[step];
+  const shownRoot = frame?.tree ?? root;
+  const treeStats = useMemo(() => stats(shownRoot), [shownRoot]);
+
+  function runInsert(value = Number(input)) {
+    if (!Number.isFinite(value)) { setMessage("Ingresa una clave numérica válida."); return; }
+    const result = insertWithTrace(root, value, order);
+    if (!result.inserted) { setMessage(`${value} ya existe en el árbol.`); return; }
+    setRoot(result.root);
+    setFrames(result.frames);
+    setStep(mode === "guided" ? 0 : result.frames.length - 1);
+    setLogs((items) => [`INSERT ${value} · ${result.frames.length - 2} etapas`, ...items].slice(0, 20));
+    setMessage("");
   }
 
-  /* ═════════════════════════════════════════════════════════════════════════════
-     Render
-     ═════════════════════════════════════════════════════════════════════════════ */
+  function runSearch() {
+    const value = Number(input);
+    if (!Number.isFinite(value)) { setMessage("Ingresa una clave numérica válida."); return; }
+    const trace = searchTrace(root, value);
+    setFrames(trace);
+    setStep(mode === "guided" ? 0 : trace.length - 1);
+    setLogs((items) => [`SEARCH ${value} · ${trace.at(-1)?.title}`, ...items].slice(0, 20));
+    setMessage("");
+  }
+
+  function reset(keys = INITIAL_KEYS) {
+    setRoot(buildTree(keys, order));
+    setFrames([]);
+    setStep(0);
+    setLogs([keys.length ? "Ejemplo inicial cargado" : "Árbol reiniciado"]);
+    setMessage("");
+  }
+
+  function changeOrder(value: number) {
+    const keys = allKeys(root);
+    setOrder(value);
+    setRoot(buildTree(keys, value));
+    setFrames([]);
+    setStep(0);
+    setLogs((items) => [`Orden cambiado a ${value}`, ...items]);
+  }
+
+  function randomKey() {
+    const used = new Set(allKeys(root));
+    const candidates = Array.from({ length: 99 }, (_, index) => index + 1).filter((value) => !used.has(value));
+    if (candidates.length) runInsert(candidates[Math.floor(Math.random() * candidates.length)]);
+  }
+
   return (
-    <div style={{
-      display: "flex", flexDirection: "column", height: "100%",
-      background: "var(--bg-base)", color: "var(--text-primary)", fontFamily: "var(--font-ui)", overflow: "hidden",
-    }}>
-      {/* Header */}
-      <div style={{ padding: "24px 32px 16px", borderBottom: "1px solid var(--border)", flexShrink: 0 }}>
-        <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-code)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-          Semana 3 · Módulo I — Visualizador interactivo
-        </div>
-        <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0, fontFamily: "var(--font-ui)", lineHeight: 1.2 }}>B+Tree Interactivo</h1>
-        <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: "8px 0 0", lineHeight: 1.6 }}>
-          Inserta claves y observa cómo el árbol crece con splits. Busca claves para ver el camino de la raíz a la hoja.
-          Las hojas están enlazadas (leaf chaining) para range queries eficientes.
-        </p>
-      </div>
-
-      {/* Controls */}
-      <div style={{
-        display: "flex", gap: 8, alignItems: "center", padding: "12px 32px", flexWrap: "wrap",
-        background: "var(--bg-surface)", borderBottom: "1px solid var(--border)", flexShrink: 0,
-      }}>
-        <input type="number" value={input} onChange={e => setInput(e.target.value)}
-          onKeyDown={e => { if (e.key === "Enter") doInsert(); }}
-          placeholder="Clave numérica..."
-          style={{
-            width: 140, padding: "7px 12px", background: "var(--bg-base)", color: "var(--text-primary)",
-            border: "1px solid var(--border)", borderRadius: 6, fontFamily: "var(--font-code)", fontSize: 13, outline: "none",
-          }}
-        />
-        <Btn label="INSERTAR" color="#22d3a0" onClick={doInsert} />
-        <Btn label="BUSCAR"   color="#7c6af7" onClick={doSearch} />
-        <div style={{ width: 1, height: 24, background: "var(--border)" }} />
-        <Btn label="+1 Aleatorio" color="#3b82f6" onClick={doRandom} outline />
-        <Btn label="+10"          color="#3b82f6" onClick={doRandomBatch} outline />
-        <div style={{ width: 1, height: 24, background: "var(--border)" }} />
-        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-code)" }}>
-          Orden
-          <select value={order} onChange={e => changeOrder(+e.target.value)} style={{
-            padding: "5px 8px", background: "var(--bg-base)", color: "var(--text-primary)",
-            border: "1px solid var(--border)", borderRadius: 5, fontFamily: "var(--font-code)", fontSize: 12,
-          }}>
-            <option value={3}>3</option>
-            <option value={4}>4</option>
-            <option value={5}>5</option>
-          </select>
-        </label>
-        <Btn label="REINICIAR" color="#6b7280" onClick={doReset} outline />
-
-        {msg && (
-          <span style={{
-            marginLeft: "auto", fontSize: 12, fontWeight: 600, fontFamily: "var(--font-code)",
-            color: msg.ok ? "#22d3a0" : "#f87171", transition: "opacity 0.3s",
-          }}>
-            {msg.text}
-          </span>
-        )}
-      </div>
-
-      {/* Main area */}
-      <div style={{ display: "flex", flex: 1, minHeight: 0, overflow: "hidden" }}>
-
-        {/* SVG tree */}
-        <div style={{
-          flex: 1, overflow: "auto", background: "var(--bg-surface)",
-          borderRight: "1px solid var(--border)", position: "relative",
-        }}>
-          {st.keys === 0 ? (
-            <div style={{
-              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-              height: "100%", gap: 8, color: "var(--text-muted)",
-            }}>
-              <span style={{ fontSize: 32 }}>🌱</span>
-              <span style={{ fontSize: 14 }}>Árbol vacío — inserta claves para empezar</span>
+    <VisualizerLayout
+      eyebrow="Semana 3 · Índices · Visualizador interactivo"
+      title="B+Tree: de la búsqueda al split"
+      description="Inserta claves y observa la mutación estructural completa. Las hojas conservan los datos ordenados y el nivel interno solo guía la búsqueda."
+      mode={mode}
+      onModeChange={(value) => { setMode(value); if (frames.length) setStep(value === "guided" ? 0 : frames.length - 1); }}
+    >
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 270px", gap: 16, alignItems: "start" }} className="bpt-grid">
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, minWidth: 0 }}>
+          <VisualizerPanel>
+            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", padding: 12 }}>
+              <label className="viz-label" htmlFor="bpt-key">Clave</label>
+              <input id="bpt-key" type="number" value={input} onChange={(event) => setInput(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") runInsert(); }} style={inputStyle} />
+              <ActionButton variant="success" onClick={() => runInsert()}>Insertar</ActionButton>
+              <ActionButton variant="primary" onClick={runSearch}>Buscar</ActionButton>
+              <ActionButton onClick={randomKey}>Clave aleatoria</ActionButton>
+              <span style={{ width: 1, height: 24, background: "var(--border)" }} />
+              <label className="viz-label" htmlFor="bpt-order">Orden</label>
+              <select id="bpt-order" value={order} onChange={(event) => changeOrder(Number(event.target.value))} style={inputStyle}>
+                <option value={3}>3</option><option value={4}>4</option><option value={5}>5</option>
+              </select>
+              <ActionButton onClick={() => reset([])}>Vaciar</ActionButton>
+              <ActionButton onClick={() => reset()}>Ejemplo</ActionButton>
+              {message ? <span role="alert" style={{ marginLeft: "auto", color: "var(--error)", fontSize: 11 }}>{message}</span> : null}
             </div>
-          ) : (
-            <svg width={Math.max(totalW + 60, 400)} height={Math.max(totalH + 40, 300)}
-              style={{ padding: "28px 30px", display: "block" }}>
-              <defs>
-                <filter id="glow">
-                  <feGaussianBlur stdDeviation="4" result="blur" />
-                  <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-                </filter>
-              </defs>
-              {svgLines(lt)}
-              {leafChainLines()}
-              {renderNodes(lt)}
-            </svg>
-          )}
+          </VisualizerPanel>
+
+          {mode === "guided" && frame ? (
+            <StepNavigator current={step} total={frames.length} title={frame.title} description={frame.description} onPrevious={() => setStep((value) => Math.max(0, value - 1))} onNext={() => setStep((value) => Math.min(frames.length - 1, value + 1))} onStart={() => setStep(0)} onEnd={() => setStep(frames.length - 1)} />
+          ) : null}
+
+          <VisualizerPanel title="Estructura del árbol" meta={`orden ${order} · máximo ${order - 1} claves por nodo`}>
+            <TreeCanvas root={shownRoot} highlighted={frame?.highlighted ?? []} activeKey={frame?.key ?? null} />
+          </VisualizerPanel>
         </div>
 
-        {/* Right panel: stats + log */}
-        <div style={{ width: 260, flexShrink: 0, display: "flex", flexDirection: "column", overflow: "auto", background: "var(--bg-base)" }}>
-          {/* Stats */}
-          <div style={{ padding: "16px 20px", borderBottom: "1px solid var(--border)" }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>
-              Estadísticas
+        <aside style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <VisualizerPanel title="Estado">
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, padding: 12 }}>
+              <MetricCard label="Altura" value={treeStats.height} />
+              <MetricCard label="Claves" value={treeStats.keys} />
+              <MetricCard label="Nodos" value={treeStats.nodes} />
+              <MetricCard label="Hojas" value={treeStats.leaves} />
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              <Stat label="Altura"  value={st.height} />
-              <Stat label="Claves"  value={st.keys} />
-              <Stat label="Nodos"   value={st.nodes} />
-              <Stat label="Hojas"   value={st.leaves} />
+          </VisualizerPanel>
+          <VisualizerPanel title="Cómo leerlo">
+            <div style={{ display: "grid", gap: 9, padding: 12, color: "var(--text-secondary)", fontSize: 11, lineHeight: 1.45 }}>
+              <Legend color="var(--accent)" label="Nodo índice: contiene separadores" />
+              <Legend color="var(--success)" label="Hoja: contiene las claves" />
+              <Legend color="var(--warning)" label="Ruta o nodos de la etapa actual" />
+              <p style={{ margin: "5px 0 0", color: "var(--text-muted)" }}>“Orden {order}” se usa aquí como máximo {order} hijos y {order - 1} claves por nodo.</p>
             </div>
-            <div style={{ marginTop: 10, fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-code)" }}>
-              Orden {order} → máx {order - 1} claves/nodo
+          </VisualizerPanel>
+          <VisualizerPanel title="Operaciones">
+            <div aria-live="polite" style={{ display: "grid", gap: 5, padding: 12, maxHeight: 210, overflow: "auto" }}>
+              {logs.map((log, index) => <div key={`${log}-${index}`} style={{ padding: "6px 8px", borderRadius: 5, background: "var(--bg-base)", color: "var(--text-secondary)", font: "500 10px/1.35 var(--font-code)" }}>{log}</div>)}
             </div>
-          </div>
-
-          {/* Legend */}
-          <div style={{ padding: "12px 20px", borderBottom: "1px solid var(--border)", display: "flex", gap: 14, flexWrap: "wrap" }}>
-            <LegendDot color="#7c6af7" label="Interno" />
-            <LegendDot color="#22d3a0" label="Hoja" />
-            <LegendDot color="#f0c060" label="Búsqueda" />
-          </div>
-
-          {/* Log */}
-          <div style={{ flex: 1, padding: "12px 20px", overflow: "auto" }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-              Operaciones
-            </div>
-            {logs.length === 0 ? (
-              <div style={{ fontSize: 11, color: "var(--text-muted)" }}>Sin operaciones aún</div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                {logs.map((l, i) => (
-                  <div key={i} style={{
-                    fontSize: 11, fontFamily: "var(--font-code)", color: "var(--text-secondary)",
-                    padding: "4px 8px", background: "var(--bg-surface)", borderRadius: 4,
-                  }}>
-                    {l}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+          </VisualizerPanel>
+        </aside>
       </div>
-    </div>
+      <style>{`@media(max-width:980px){.bpt-grid{grid-template-columns:1fr!important}.bpt-grid aside{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}}`}</style>
+    </VisualizerLayout>
   );
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   Tiny sub-components
-   ───────────────────────────────────────────────────────────────────────────── */
-function Btn({ label, color, onClick, outline, disabled }: { label: string; color: string; onClick: () => void; outline?: boolean; disabled?: boolean }) {
-  return (
-    <button onClick={onClick} disabled={disabled} style={{
-      padding: "7px 14px", border: outline ? `1px solid ${color}50` : "none", borderRadius: 6,
-      background: outline ? "transparent" : disabled ? "var(--bg-elevated)" : color,
-      color: outline ? color : disabled ? "var(--text-muted)" : "#fff",
-      fontSize: 12, fontWeight: 700, fontFamily: "var(--font-code)",
-      cursor: disabled ? "not-allowed" : "pointer", transition: "opacity 0.15s", opacity: disabled ? 0.4 : 1,
-    }}
-      onMouseEnter={e => !disabled && (e.currentTarget.style.opacity = "0.8")}
-      onMouseLeave={e => !disabled && (e.currentTarget.style.opacity = "1")}
-    >{label}</button>
-  );
+function Legend({ color, label }: { color: string; label: string }) {
+  return <div style={{ display: "flex", alignItems: "center", gap: 7 }}><span style={{ width: 11, height: 11, borderRadius: 3, border: `2px solid ${color}` }} />{label}</div>;
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
-  return (
-    <div style={{ padding: "6px 10px", background: "var(--bg-surface)", borderRadius: 6, border: "1px solid var(--border)" }}>
-      <div style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "var(--font-code)" }}>{label}</div>
-      <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-code)" }}>{value}</div>
-    </div>
-  );
-}
-
-function LegendDot({ color, label }: { color: string; label: string }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-      <div style={{ width: 10, height: 10, borderRadius: 3, border: `2px solid ${color}`, background: `${color}20` }} />
-      <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "var(--font-code)" }}>{label}</span>
-    </div>
-  );
-}
+const inputStyle: React.CSSProperties = {
+  width: 105,
+  minHeight: 32,
+  padding: "6px 9px",
+  border: "1px solid var(--border-bright)",
+  borderRadius: 7,
+  outline: "none",
+  background: "var(--bg-base)",
+  color: "var(--text-primary)",
+  font: "500 12px var(--font-code)",
+};

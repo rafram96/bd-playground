@@ -1,12 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import Sidebar, { type PageId } from "@/components/layout/Sidebar";
+import type { PageId } from "@/lib/navigation";
 import ComingSoon from "@/components/layout/ComingSoon";
 import {
-  HardDrive,
-  GitBranch,
   Hash,
   Layers,
   Cpu,
@@ -410,32 +407,7 @@ const PLANNED: Record<string, React.ComponentProps<typeof ComingSoon>> = {
   },
 };
 
-/* ─────────────────────────────────────────────────────
-   Shell principal (sidebar + contenido) con ruteo por URL
-   ───────────────────────────────────────────────────── */
-export default function AppShell({ initialSection }: { initialSection?: string }) {
-  const [activePage, setActivePage] = useState<PageId>(initialSection || "s1");
-
-  /* Navegar: cambia el contenido y actualiza la URL a /{seccion} sin recargar.
-     history.pushState no desmonta el sidebar; la recarga la resuelve la ruta
-     catch-all app/[[...seccion]]/page.tsx. */
-  function navigate(id: PageId) {
-    setActivePage(id);
-    if (typeof window !== "undefined") {
-      window.history.pushState({ section: id }, "", "/" + id);
-    }
-  }
-
-  /* Sincroniza con los botones atrás/adelante del navegador */
-  useEffect(() => {
-    function onPop() {
-      const seg = window.location.pathname.replace(/^\/+/, "").split("/")[0];
-      setActivePage(seg || "s1");
-    }
-    window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
-  }, []);
-
+export default function SectionContent({ section }: { section: PageId }) {
   function renderPage(id: PageId) {
     if (id === "playground") return <SqlPlayground />;
     if (id === "s1")         return <S1Guide />;
@@ -471,12 +443,5 @@ export default function AppShell({ initialSection }: { initialSection?: string }
     return <ComingSoon title={id} icon={<Construction size={22} color="var(--text-muted)" />} />;
   }
 
-  return (
-    <div style={{ display: "flex", height: "100vh", overflow: "hidden", background: "var(--bg-base)" }}>
-      <Sidebar active={activePage} onSelect={navigate} />
-      <main style={{ flex: 1, overflow: "hidden" }}>
-        {renderPage(activePage)}
-      </main>
-    </div>
-  );
+  return renderPage(section);
 }

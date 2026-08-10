@@ -70,7 +70,7 @@ export default function CostComparatorViz() {
       default:
         return { heap: 0, sorted: 0, hash: 0, bTree: 0 };
     }
-  }, [selectedOp, pageCount, fanOut, logFB, halfB, log2B]);
+  }, [selectedOp, pageCount, logFB, halfB, log2B]);
 
   // Display formulas
   const formulas: FormulaDisplay = useMemo(() => {

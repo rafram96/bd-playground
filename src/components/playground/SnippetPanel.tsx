@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { SNIPPET_GROUPS, type SnippetGroup } from "@/lib/snippets";
+import { SNIPPET_GROUPS } from "@/lib/snippets";
 import {
     Shield,
     Layers,

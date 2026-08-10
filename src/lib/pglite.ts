@@ -204,8 +204,27 @@ export async function runExplain(
         `EXPLAIN (ANALYZE, FORMAT JSON) ${sql}`
     );
     const time = performance.now() - start;
-    const plan = (result.rows[0] as Record<string, unknown>)["QUERY PLAN"] as ExplainNode[];
-    return { plan: plan[0], time };
+    const documents = (result.rows[0] as Record<string, unknown>)["QUERY PLAN"] as ExplainDocument[];
+    const document = documents?.[0];
+    if (!document?.Plan) {
+        throw new Error("PGlite devolvió un plan EXPLAIN con un formato inesperado.");
+    }
+
+    // PostgreSQL envuelve el nodo raíz en un documento que contiene también
+    // los tiempos globales. Se copian al nodo para mantener una única estructura
+    // consumible por el visualizador.
+    const plan: ExplainNode = {
+        ...document.Plan,
+        "Planning Time": document["Planning Time"],
+        "Execution Time": document["Execution Time"],
+    };
+    return { plan, time };
+}
+
+interface ExplainDocument {
+    Plan: ExplainNode;
+    "Planning Time"?: number;
+    "Execution Time"?: number;
 }
 
 export interface ExplainNode {
